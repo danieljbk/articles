@@ -1,0 +1,38 @@
+---
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path.startsWith(href);
+---
+
+<header class="border-b border-border">
+  <div
+    class="mx-auto flex max-w-2xl items-center justify-between px-6 py-4"
+  >
+    <a
+      href="/"
+      class="font-semibold tracking-tight hover:text-foreground/80"
+    >
+      articles
+    </a>
+    <nav class="flex items-center gap-5 text-sm text-muted-foreground">
+      <a
+        href="/"
+        class:list={[
+          "hover:text-foreground",
+          isActive("/") && "text-foreground",
+        ]}
+      >
+        Home
+      </a>
+      <a
+        href="/about"
+        class:list={[
+          "hover:text-foreground",
+          isActive("/about") && "text-foreground",
+        ]}
+      >
+        About
+      </a>
+    </nav>
+  </div>
+</header>

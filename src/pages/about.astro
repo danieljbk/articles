@@ -1,0 +1,43 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout
+  title="About"
+  description="About articles.kwon.ai — a personal article archive by Daniel Kwon."
+>
+  <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
+    <header class="mb-10">
+      <h1 class="text-3xl font-semibold tracking-tight">About</h1>
+    </header>
+
+    <article
+      class="prose prose-neutral dark:prose-invert max-w-none prose-a:text-foreground prose-a:underline prose-a:decoration-border prose-a:underline-offset-4 hover:prose-a:decoration-foreground"
+    >
+      <p>
+        A personal article archive by Daniel Kwon — a permanent home for
+        research notes, technical writeups, and references he wants to keep
+        and share.
+      </p>
+      <p>
+        Most pieces here started as Claude Code sessions: Daniel asks for a
+        structured information document, Claude writes a self-contained
+        article, and Daniel publishes the ones worth sharing. Pieces tied to
+        his specific situation stay private; everything you can read here
+        passed that filter.
+      </p>
+      <p>
+        The site is built with <a href="https://astro.build/">Astro</a>, the
+        <a href="https://ui.shadcn.com/">shadcn/ui</a> design tokens, and
+        <a href="https://vercel.com/font">Geist</a>. Source at
+        <a href="https://github.com/danieljbk/articles"
+          >github.com/danieljbk/articles</a
+        >.
+      </p>
+      <p>
+        For Daniel's other work, see
+        <a href="https://kwon.ai">kwon.ai</a>.
+      </p>
+    </article>
+  </main>
+</Layout>
