@@ -136,3 +136,92 @@
     --ring: 0 0% 83.1%;
   }
 }
+
+/*
+ * Article content style — used by every page that renders Markdown.
+ *
+ * Binds Tailwind Typography's color variables to shadcn tokens so prose stays
+ * in sync with the rest of the site, and no surface ends up dimmer than the
+ * design intends. Both light- and dark-mode color sets point at the same
+ * shadcn vars; the actual swap happens at the token level above.
+ *
+ * IMPORTANT: this block is NOT wrapped in `@layer components`. Tailwind v4's
+ * typography plugin emits `.prose` styles in `@layer utilities`, which beats
+ * any lower-layer override regardless of selector specificity. Unlayered
+ * styles win over layered ones, so the bindings actually apply.
+ */
+.prose.article-prose {
+  --tw-prose-body: hsl(var(--foreground));
+  --tw-prose-headings: hsl(var(--foreground));
+  --tw-prose-lead: hsl(var(--muted-foreground));
+  --tw-prose-links: hsl(var(--foreground));
+  --tw-prose-bold: hsl(var(--foreground));
+  --tw-prose-counters: hsl(var(--muted-foreground));
+  --tw-prose-bullets: hsl(var(--muted-foreground));
+  --tw-prose-hr: hsl(var(--border));
+  --tw-prose-quotes: hsl(var(--foreground));
+  --tw-prose-quote-borders: hsl(var(--foreground));
+  --tw-prose-captions: hsl(var(--muted-foreground));
+  --tw-prose-code: hsl(var(--foreground));
+  --tw-prose-pre-code: hsl(var(--foreground));
+  --tw-prose-pre-bg: hsl(var(--secondary));
+  --tw-prose-th-borders: hsl(var(--border));
+  --tw-prose-td-borders: hsl(var(--border));
+  /* Mirror invert vars so dark:prose-invert lands on the same tokens. */
+  --tw-prose-invert-body: hsl(var(--foreground));
+  --tw-prose-invert-headings: hsl(var(--foreground));
+  --tw-prose-invert-lead: hsl(var(--muted-foreground));
+  --tw-prose-invert-links: hsl(var(--foreground));
+  --tw-prose-invert-bold: hsl(var(--foreground));
+  --tw-prose-invert-counters: hsl(var(--muted-foreground));
+  --tw-prose-invert-bullets: hsl(var(--muted-foreground));
+  --tw-prose-invert-hr: hsl(var(--border));
+  --tw-prose-invert-quotes: hsl(var(--foreground));
+  --tw-prose-invert-quote-borders: hsl(var(--foreground));
+  --tw-prose-invert-captions: hsl(var(--muted-foreground));
+  --tw-prose-invert-code: hsl(var(--foreground));
+  --tw-prose-invert-pre-code: hsl(var(--foreground));
+  --tw-prose-invert-pre-bg: hsl(var(--secondary));
+  --tw-prose-invert-th-borders: hsl(var(--border));
+  --tw-prose-invert-td-borders: hsl(var(--border));
+}
+
+/* Element-level overrides: layout/style not covered by color vars. */
+.article-prose :where(h2, h3, h4, h5, h6) {
+  scroll-margin-top: 5rem;
+  letter-spacing: -0.015em;
+}
+.article-prose :where(blockquote) {
+  font-style: normal;
+  font-weight: normal;
+  border-left-width: 3px;
+}
+.article-prose :where(blockquote p):first-of-type::before,
+.article-prose :where(blockquote p):last-of-type::after {
+  content: none;
+}
+.article-prose :where(code):not(pre code) {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  font-weight: normal;
+}
+.article-prose :where(code):not(pre code)::before,
+.article-prose :where(code):not(pre code)::after {
+  content: none;
+}
+.article-prose :where(pre) {
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+}
+.article-prose :where(a) {
+  text-decoration-color: hsl(var(--border));
+  text-underline-offset: 0.25rem;
+}
+.article-prose :where(a):hover {
+  text-decoration-color: hsl(var(--foreground));
+}
+.article-prose :where(img) {
+  border-radius: 0.5rem;
+}
