@@ -5,8 +5,10 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
+    "dev:private": "INCLUDE_PRIVATE=1 astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
+    "build:private": "INCLUDE_PRIVATE=1 astro check && INCLUDE_PRIVATE=1 astro build",
     "preview": "astro preview",
     "astro": "astro"
   },

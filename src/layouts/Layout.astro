@@ -15,6 +15,8 @@ const {
 
 const fullTitle =
   title === "articles.kwon.ai" ? title : `${title} · articles.kwon.ai`;
+
+const noindex = Astro.url.pathname.startsWith("/private");
 ---
 
 <!doctype html>
@@ -25,6 +27,7 @@ const fullTitle =
     <meta name="generator" content={Astro.generator} />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
