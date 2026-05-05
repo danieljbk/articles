@@ -37,10 +37,55 @@ const noindex = Astro.url.pathname.startsWith("/private");
     />
 
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="articles.kwon.ai"
+      href="/rss.xml"
+    />
   </head>
   <body class="flex min-h-screen flex-col">
     <Header />
     <slot />
     <Footer />
+
+    <script is:inline>
+      // Decorate every <pre> inside article prose with a copy button.
+      // Runs after each navigation in case Astro adds View Transitions later.
+      function decorateCodeBlocks() {
+        document
+          .querySelectorAll(".article-prose pre:not([data-copy-attached])")
+          .forEach(pre => {
+            const code = pre.querySelector("code");
+            if (!code) return;
+            // Cache textContent BEFORE appending the button — otherwise the
+            // button's own text would end up on the clipboard.
+            const text = code.textContent ?? "";
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "copy-button";
+            button.setAttribute("aria-label", "Copy code to clipboard");
+            button.textContent = "Copy";
+            button.addEventListener("click", () => {
+              navigator.clipboard.writeText(text).then(() => {
+                button.textContent = "Copied";
+                button.dataset.copied = "true";
+                setTimeout(() => {
+                  button.textContent = "Copy";
+                  delete button.dataset.copied;
+                }, 1500);
+              });
+            });
+            pre.appendChild(button);
+            pre.setAttribute("data-copy-attached", "true");
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", decorateCodeBlocks);
+      } else {
+        decorateCodeBlocks();
+      }
+    </script>
   </body>
 </html>

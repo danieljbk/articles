@@ -7,8 +7,8 @@
     "dev": "astro dev",
     "dev:private": "INCLUDE_PRIVATE=1 astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build",
-    "build:private": "INCLUDE_PRIVATE=1 astro check && INCLUDE_PRIVATE=1 astro build",
+    "build": "astro check && astro build && pagefind --site dist",
+    "build:private": "INCLUDE_PRIVATE=1 astro check && INCLUDE_PRIVATE=1 astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
+    "pagefind": "^1.5.2",
     "typescript": "^5.7.0"
   }
 }

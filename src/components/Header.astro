@@ -2,6 +2,13 @@
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
   href === "/" ? path === "/" : path.startsWith(href);
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/tags", label: "Tags" },
+  { href: "/search", label: "Search" },
+  { href: "/about", label: "About" },
+];
 ---
 
 <header class="border-b border-border">
@@ -15,24 +22,19 @@ const isActive = (href: string) =>
       articles
     </a>
     <nav class="flex items-center gap-5 text-sm text-muted-foreground">
-      <a
-        href="/"
-        class:list={[
-          "hover:text-foreground",
-          isActive("/") && "text-foreground",
-        ]}
-      >
-        Home
-      </a>
-      <a
-        href="/about"
-        class:list={[
-          "hover:text-foreground",
-          isActive("/about") && "text-foreground",
-        ]}
-      >
-        About
-      </a>
+      {
+        links.map(link => (
+          <a
+            href={link.href}
+            class:list={[
+              "hover:text-foreground",
+              isActive(link.href) && "text-foreground",
+            ]}
+          >
+            {link.label}
+          </a>
+        ))
+      }
     </nav>
   </div>
 </header>
