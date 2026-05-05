@@ -16,10 +16,20 @@ import Layout from "@/layouts/Layout.astro";
 
   <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
   <script src="/pagefind/pagefind-ui.js" is:inline></script>
-  <script is:inline define:vars={{ initialQuery: Astro.url.searchParams.get("q") }}>
+  <script
+    is:inline
+    define:vars={{ initialQuery: Astro.url.searchParams.get("q") }}
+  >
+    // Re-initialize Pagefind UI on every page-load. With ClientRouter, the
+    // search page can be re-entered without a full reload — astro:page-load
+    // fires for both fresh loads and client-side navigations.
     function initSearch() {
-      if (typeof PagefindUI === "undefined") return;
-      const ui = new PagefindUI({
+      const target = document.querySelector("#search");
+      if (!target || target.dataset.pagefindAttached === "true") return;
+      if (typeof window.PagefindUI === "undefined") return;
+      target.dataset.pagefindAttached = "true";
+      // eslint-disable-next-line no-new
+      new window.PagefindUI({
         element: "#search",
         showImages: false,
         showSubResults: true,
@@ -27,9 +37,7 @@ import Layout from "@/layouts/Layout.astro";
         resetStyles: false,
       });
       if (initialQuery) {
-        const input = document.querySelector(
-          "#search input[type='text']"
-        );
+        const input = document.querySelector("#search input[type='text']");
         if (input) {
           input.value = initialQuery;
           input.dispatchEvent(new Event("input", { bubbles: true }));
@@ -37,10 +45,6 @@ import Layout from "@/layouts/Layout.astro";
       }
     }
 
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", initSearch);
-    } else {
-      initSearch();
-    }
+    document.addEventListener("astro:page-load", initSearch);
   </script>
 </Layout>

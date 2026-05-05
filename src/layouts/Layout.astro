@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css";
+import { ClientRouter } from "astro:transitions";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 
@@ -43,15 +44,18 @@ const noindex = Astro.url.pathname.startsWith("/private");
       title="articles.kwon.ai"
       href="/rss.xml"
     />
+
+    <ClientRouter />
   </head>
   <body class="flex min-h-screen flex-col">
     <Header />
     <slot />
     <Footer />
 
-    <script is:inline>
+    <script>
       // Decorate every <pre> inside article prose with a copy button.
-      // Runs after each navigation in case Astro adds View Transitions later.
+      // Uses astro:page-load so it re-runs after every client-side navigation
+      // when ClientRouter is active (and on first load when it isn't).
       function decorateCodeBlocks() {
         document
           .querySelectorAll(".article-prose pre:not([data-copy-attached])")
@@ -81,11 +85,7 @@ const noindex = Astro.url.pathname.startsWith("/private");
           });
       }
 
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", decorateCodeBlocks);
-      } else {
-        decorateCodeBlocks();
-      }
+      document.addEventListener("astro:page-load", decorateCodeBlocks);
     </script>
   </body>
 </html>
