@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tailscale + Cloudflare WARP on macOS</title>
+<meta name="date" content="2026-05-05" />
+<meta name="description" content="Why macOS only allows one VPN at a time, and two real ways to run Tailscale and Cloudflare WARP together." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #09090b;
+    --muted: #71717a;
+    --muted-bg: #f4f4f5;
+    --border: #e4e4e7;
+    --border-strong: #d4d4d8;
+    --accent: #18181b;
+    --code-bg: #fafafa;
+    --code-fg: #09090b;
+    --warn-bg: #fef9c3;
+    --warn-border: #fde047;
+    --warn-fg: #713f12;
+    --good-bg: #ecfdf5;
+    --good-border: #6ee7b7;
+    --good-fg: #065f46;
+    --bad-bg: #fef2f2;
+    --bad-border: #fca5a5;
+    --bad-fg: #991b1b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #09090b;
+      --fg: #fafafa;
+      --muted: #a1a1aa;
+      --muted-bg: #18181b;
+      --border: #27272a;
+      --border-strong: #3f3f46;
+      --accent: #fafafa;
+      --code-bg: #18181b;
+      --code-fg: #fafafa;
+      --warn-bg: #422006;
+      --warn-border: #854d0e;
+      --warn-fg: #fde68a;
+      --good-bg: #022c22;
+      --good-border: #047857;
+      --good-fg: #6ee7b7;
+      --bad-bg: #450a0a;
+      --bad-border: #b91c1c;
+      --bad-fg: #fca5a5;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+  header { margin-bottom: 48px; }
+  header .eyebrow {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+    line-height: 1.2;
+  }
+  header p {
+    color: var(--muted);
+    margin: 0;
+    font-size: 16px;
+  }
+  h2 {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 56px 0 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  h2:first-of-type { border-top: none; padding-top: 0; }
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 32px 0 8px;
+    letter-spacing: -0.005em;
+  }
+  p { margin: 12px 0; }
+  ul, ol { margin: 12px 0; padding-left: 22px; }
+  li { margin: 6px 0; }
+  li > ul, li > ol { margin: 6px 0; }
+  strong { font-weight: 600; }
+  a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--fg); }
+
+  code {
+    font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    font-size: 0.92em;
+    background: var(--muted-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+  pre {
+    position: relative;
+    background: var(--code-bg);
+    color: var(--code-fg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 16px 0;
+    font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.12s ease, background 0.12s ease;
+  }
+  pre:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { background: var(--muted-bg); }
+  .copy-btn.copied { background: var(--good-bg); color: var(--good-fg); border-color: var(--good-border); opacity: 1; }
+
+  .callout {
+    border: 1px solid var(--border);
+    border-left-width: 3px;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 20px 0;
+    background: var(--muted-bg);
+  }
+  .callout.warn { border-left-color: #eab308; background: var(--warn-bg); color: var(--warn-fg); border-color: var(--warn-border); }
+  .callout.good { border-left-color: #10b981; background: var(--good-bg); color: var(--good-fg); border-color: var(--good-border); }
+  .callout.bad  { border-left-color: #ef4444; background: var(--bad-bg);  color: var(--bad-fg);  border-color: var(--bad-border); }
+  .callout p:first-child { margin-top: 0; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout strong { color: inherit; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    font-weight: 600;
+    background: var(--muted-bg);
+    border-bottom: 1px solid var(--border-strong);
+  }
+
+  .meta {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .pill {
+    display: inline-block;
+    background: var(--muted-bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 1px 9px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-right: 6px;
+    vertical-align: 1px;
+  }
+  .pill.rec { background: var(--good-bg); color: var(--good-fg); border-color: var(--good-border); }
+  .pill.alt { background: var(--muted-bg); color: var(--fg); border-color: var(--border-strong); }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .sources li { font-size: 13.5px; color: var(--muted); }
+  .sources a { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="eyebrow">macOS networking</div>
+  <h1>Running Tailscale and Cloudflare WARP together</h1>
+  <p>Why one disconnects the other, what's actually layerable, and how to set it up.</p>
+</header>
+
+<h2>The verdict, up front</h2>
+
+<div class="callout bad">
+<p><strong>Your stated layering doesn't exist.</strong> You asked for Tailscale &ldquo;inside&rdquo; and WARP &ldquo;outside&rdquo; — Tailscale's UDP transiting WARP's tunnel. That's the configuration that <em>breaks</em> both apps. WARP NATs and MASQUE-encapsulates packets; Tailscale's WireGuard peer/DERP traffic can't survive that. Every working coexistence config explicitly punches Tailscale's bytes <em>out</em> of WARP, in the opposite direction.</p>
+</div>
+
+<div class="callout good">
+<p><strong>What's deliverable.</strong> If your real intent is &ldquo;all my open-internet traffic exits through Cloudflare and my Tailnet still works,&rdquo; that's a solved problem. WARP holds the default route; Tailscale runs alongside; WARP's split-tunnel exclusions let Tailscale reach its peers and control plane via the physical interface. Browser, curl, apps → Cloudflare. Tailscale → tailnet, directly.</p>
+</div>
+
+<p>You're picking between two real setups. There is no third option I'd put in front of you.</p>
+
+<table>
+  <thead>
+    <tr><th>Option</th><th>WARP scope</th><th>Tailscale</th><th>Pick when</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="pill rec">A · Recommended</span> Systemwide WARP + Tailscale alongside</td>
+      <td>Every byte of internet traffic egresses through Cloudflare</td>
+      <td>Native, full Tailnet</td>
+      <td>You want WARP applied to everything, no per-app config. Requires a free Cloudflare Zero Trust account.</td>
+    </tr>
+    <tr>
+      <td><span class="pill alt">B · Alternative</span> WARP Proxy Mode + native Tailscale</td>
+      <td>Per-app SOCKS5/HTTP proxy on <code>127.0.0.1:40000</code></td>
+      <td>Native, full Tailnet</td>
+      <td>You only want WARP for specific apps (browser, curl). No NetworkExtension conflict at all because WARP isn't a system VPN in this mode.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Why only one VPN at a time</h2>
+
+<p>It's a hard framework limit, not a soft UI choice. Both Tailscale (App Store and standalone) and WARP install themselves as <code>NEPacketTunnelProvider</code> system extensions on the Apple NetworkExtension framework. Apple's developer-tools engineering, on the developer forums, states the rule directly: <em>only one <code>NEPacketTunnelProvider</code> can run on the system at one time because they are considered Enterprise VPNs.</em> A &ldquo;Personal VPN&rdquo; (the older <code>NEVPNManager</code> path used by IKEv2) can coexist with one Enterprise tunnel — but that's not what either of these apps uses.</p>
+
+<p>Even where macOS is more permissive than iOS at the kernel level (you can have multiple <code>utun</code> interfaces in principle), the moment two NE apps both try to claim the system default route or system DNS, they fight. WARP grabs <code>0.0.0.0/0</code> as egress and intercepts everything — including Tailscale's control-plane and DERP relay traffic — even though WARP's defaults already exclude the <code>100.64.0.0/10</code> CGNAT range Tailscale's peers live in. The fix is to extend WARP's exclusion list far enough to cover everything Tailscale needs to talk to.</p>
+
+<h2>Option A — Systemwide WARP + Tailscale alongside</h2>
+
+<p>The configuration: WARP is the default-route VPN; Tailscale runs without an exit node and without route acceptance; WARP's Split Tunnel exclusions cover Tailscale's full set of endpoints so they exit directly via Wi-Fi/Ethernet.</p>
+
+<h3>1. Cloudflare Zero Trust account (free)</h3>
+
+<p>Consumer 1.1.1.1+WARP has a Split Tunnel editor in <em>Preferences → Advanced</em>, but the full exclusion list (especially domain wildcards and IPv6 ranges) is cleaner to manage in the Zero Trust dashboard. Free up to 50 users, no credit card. Sign up at <a href="https://one.dash.cloudflare.com/">one.dash.cloudflare.com</a>, pick a team name, complete onboarding.</p>
+
+<h3>2. Install the apps</h3>
+
+<ul>
+  <li><strong>Tailscale</strong>: standalone PKG from <a href="https://pkgs.tailscale.com/stable/">pkgs.tailscale.com/stable</a>. Don't use the App Store version alongside it — they conflict. If you've installed Tailscale before, fully remove it first (the <a href="https://github.com/tailscale/tailscale/issues/17891">Tahoe + orphaned-extension</a> install break is real).</li>
+  <li><strong>WARP</strong>: Cloudflare One client from <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/">Cloudflare's docs</a>. Enroll the device into your Zero Trust team.</li>
+</ul>
+
+<h3>3. Bring up Tailscale without owning routes</h3>
+
+<pre><code>tailscale up --accept-routes=false</code></pre>
+
+<p>No <code>--exit-node</code>. If you ever turn on a Tailscale exit node, this whole config breaks — Tailscale will then claim <code>0.0.0.0/0</code> and fight WARP for the default route. Tailscale's own KB confirms this is unworkable.</p>
+
+<h3>4. Add WARP Split Tunnel exclusions</h3>
+
+<p>Zero Trust dashboard → <em>Settings → WARP Client → Device Settings → Profile → Split Tunnels → Manage</em>. Confirm mode is <em>Exclude IPs and domains</em>. Add:</p>
+
+<pre><code>100.64.0.0/10
+fd7a:115c:a1e0::/48
+2606:B740:49::/48
+controlplane.tailscale.com
+login.tailscale.com
+*.tailscale.com
+*.ts.net</code></pre>
+
+<p>The <code>*.tailscale.com</code> wildcard covers DERP relay hostnames (<code>derpN.tailscale.com</code>), which is important — DERP IPs change over time, so excluding them by domain is more durable than by IP. Domain-based exclusions are slightly slower than IP-based per Cloudflare's docs, but with the wildcard backstop here the safety wins.</p>
+
+<h3>5. Fix MagicDNS resolution</h3>
+
+<p>Both apps want to set the system resolver. Without intervention, lookups for <code>*.ts.net</code> hit WARP's resolver, which doesn't know MagicDNS. The fix is Local Domain Fallback: in the Zero Trust dashboard under <em>WARP → Profile → Local Domains</em>, add:</p>
+
+<pre><code>ts.net</code></pre>
+
+<p>(Plus your custom MagicDNS suffix if you've set one.) This tells WARP to hand <code>.ts.net</code> queries to the system resolver, which Tailscale has pointed at <code>100.100.100.100</code>.</p>
+
+<h2>Option B — WARP Proxy Mode + native Tailscale</h2>
+
+<p>Different shape: WARP doesn't run as a system VPN at all. It runs as a local proxy on <code>127.0.0.1:40000</code> (SOCKS5 or HTTPS). Tailscale gets full native networking; nothing fights for the default route; you opt apps into Cloudflare egress on a per-app basis.</p>
+
+<p>This is the cleanest match for the &ldquo;Tailscale native, WARP as a configurable filter&rdquo; mental model — but it's per-app, not systemwide.</p>
+
+<h3>Setup</h3>
+
+<ol>
+  <li>Install Tailscale (standalone PKG) and the WARP client.</li>
+  <li>Tailscale: <code>tailscale up</code>. Nothing special needed.</li>
+  <li>WARP: open the menu bar app → <em>Preferences → Advanced → Configure Proxy</em>. Toggle on. Default port <code>40000</code>, SOCKS5 + HTTPS both available.</li>
+  <li>Switch WARP from VPN mode to Proxy mode (the toggle replaces the system-VPN behavior; WARP stops claiming default route).</li>
+  <li>Configure your apps:
+    <ul>
+      <li>Browser: SOCKS5 proxy <code>127.0.0.1:40000</code>, or use a per-tab proxy extension.</li>
+      <li>curl: <code>curl --socks5 127.0.0.1:40000 https://example.com</code>.</li>
+      <li>Shell: <code>export ALL_PROXY=socks5://127.0.0.1:40000</code> in the sessions you want.</li>
+    </ul>
+  </li>
+</ol>
+
+<h2>Verifying it works</h2>
+
+<p>Run these after either setup. Output should look as described.</p>
+
+<pre><code>tailscale status</code></pre>
+<p class="meta">Peers should show <code>active</code> or <code>direct</code>, not <code>relay only</code> indefinitely.</p>
+
+<pre><code>tailscale ping &lt;peer-name&gt;</code></pre>
+<p class="meta">Should succeed with low latency. <code>pong via DERP</code> for an extended period means peer connections aren't establishing — your exclusions are missing something.</p>
+
+<pre><code>curl https://www.cloudflare.com/cdn-cgi/trace</code></pre>
+<p class="meta">Option A: <code>warp=on</code> and <code>ip=</code> a Cloudflare egress IP. Option B (without forcing the proxy): <code>warp=off</code>; with <code>--socks5 127.0.0.1:40000</code>: <code>warp=on</code>.</p>
+
+<pre><code>traceroute 1.1.1.1</code></pre>
+<p class="meta">Option A: first hop inside Cloudflare's network. Option B (no proxy): your normal ISP path.</p>
+
+<pre><code>traceroute &lt;peer-100.x-IP&gt;</code></pre>
+<p class="meta">Should leave via the Tailscale <code>utun</code> interface, not Cloudflare. If a tailnet peer's traceroute shows Cloudflare hops, your exclusions for the CGNAT range broke.</p>
+
+<pre><code>scutil --dns | head -40</code></pre>
+<p class="meta">Resolver chain. <code>ts.net</code> should route via <code>100.100.100.100</code> (Tailscale MagicDNS).</p>
+
+<pre><code>dig +short controlplane.tailscale.com</code></pre>
+<p class="meta">Should resolve. Then <code>traceroute</code> the result and verify it leaves the box on the physical interface, not via WARP.</p>
+
+<h2>Gotchas</h2>
+
+<ul>
+  <li><strong>MagicDNS is the most common &ldquo;it's broken&rdquo; mode.</strong> If <code>*.ts.net</code> intermittently fails, you forgot the Local Domain Fallback. Tailscale appears connected but unreachable by name.</li>
+  <li><strong>MTU stacking.</strong> Both tunnels add overhead. If large transfers hang in Option A, drop Tailscale's MTU below the default 1280.</li>
+  <li><strong>Performance hit.</strong> Option A adds ~10–30 ms latency on every internet request (depends on closest Cloudflare PoP). Free WARP de-prioritizes at peak times; WARP+ helps if it bites.</li>
+  <li><strong>Don't run two Tailscale variants.</strong> App Store + standalone simultaneously can prevent the Tailscale extension from launching. Pick one.</li>
+  <li><strong>Tahoe install pitfall.</strong> An orphaned App Store Tailscale system extension can break a fresh standalone PKG install on macOS 26. Fully uninstall first.</li>
+  <li><strong>Exit nodes are off the table in Option A.</strong> A Tailscale exit node will fight WARP for <code>0.0.0.0/0</code> and one of them loses. If you need an exit node sometimes, switch to Option B for that period, or accept toggling.</li>
+  <li><strong>DERP IPs aren't stable.</strong> The <code>*.tailscale.com</code> wildcard is what makes the exclusion list survive over time; don't replace it with a hardcoded IP list.</li>
+</ul>
+
+<h2>Sources</h2>
+<ul class="sources">
+  <li><a href="https://developer.apple.com/forums/thread/675507">Apple Developer Forums — Multiple Simultaneous VPN Tunnels in macOS (DTS engineer answer)</a></li>
+  <li><a href="https://developer.apple.com/documentation/networkextension/nepackettunnelprovider">Apple Developer Docs — NEPacketTunnelProvider</a></li>
+  <li><a href="https://github.com/tailscale/tailscale/issues/5631">Tailscale #5631 — Tailscale and Cloudflare WARP do not interoperate on macOS</a></li>
+  <li><a href="https://github.com/tailscale/tailscale/issues/7252">Tailscale #7252 — Incompatibility with Cloudflare WARP</a></li>
+  <li><a href="https://mxcao.me/posts/tailscale-cloudflare-warp-coexistence/">mxcao.me — Running Tailscale and Cloudflare WARP Together on macOS (Oct 2025, tested)</a></li>
+  <li><a href="https://tailscale.com/kb/1105/other-vpns">Tailscale KB 1105 — Using Tailscale alongside other VPNs</a></li>
+  <li><a href="https://tailscale.com/docs/concepts/macos-variants">Tailscale Docs — Three ways to run Tailscale on macOS</a></li>
+  <li><a href="https://developers.cloudflare.com/warp-client/warp-modes/">Cloudflare Docs — WARP modes (consumer)</a></li>
+  <li><a href="https://developers.cloudflare.com/cloudflare-one/team-and-resources/devices/warp/configure-warp/route-traffic/split-tunnels/">Cloudflare Docs — Split Tunnels</a></li>
+  <li><a href="https://blog.cloudflare.com/teams-plans/">Cloudflare Blog — Zero Trust Free plan (50 users)</a></li>
+  <li><a href="https://jasongodson.com/blog/warp-with-local-dns/">jasongodson.com — Local DNS Resolution with WARP and Zero Trust</a></li>
+  <li><a href="https://github.com/tailscale/tailscale/issues/17891">Tailscale #17891 — Tahoe orphaned App Store extension breaks PKG install</a></li>
+</ul>
+
+</main>
+
+<script>
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var code = pre.querySelector('code');
+    if (!code) return;
+    var text = code.textContent;
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', function () {
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function () {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    });
+    pre.appendChild(btn);
+  });
+</script>
+
+</body>
+</html>
