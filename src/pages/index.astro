@@ -6,6 +6,17 @@ import { toUrlSlug } from "@/utils/slug";
 const articles = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 
+const tagCounts = new Map<string, number>();
+for (const article of articles) {
+  for (const tag of article.data.tags) {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+}
+const tags = Array.from(tagCounts.entries()).sort((a, b) => {
+  if (b[1] !== a[1]) return b[1] - a[1];
+  return a[0].localeCompare(b[0]);
+});
+
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "short",
@@ -16,43 +27,248 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 
 <Layout>
   <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
-    <header class="mb-14">
+    <header class="mb-10">
       <h1 class="text-3xl font-semibold tracking-tight">articles</h1>
       <p class="mt-3 text-balance text-muted-foreground">
         Research notes, technical writeups, and references by Daniel Kwon.
       </p>
     </header>
 
+    <div class="mb-8 flex flex-col gap-3">
+      <label class="relative block">
+        <span class="sr-only">Search articles</span>
+        <input
+          id="search-input"
+          type="search"
+          placeholder="Search…"
+          autocomplete="off"
+          spellcheck="false"
+          class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+        />
+      </label>
+
+      {
+        tags.length > 0 && (
+          <div
+            id="tag-bar"
+            class="flex flex-wrap gap-1.5"
+            data-active-tag=""
+          >
+            <button
+              type="button"
+              data-tag=""
+              class="tag-pill is-active inline-flex items-center gap-1.5 rounded-md border border-border bg-foreground px-2.5 py-1 font-mono text-xs text-background transition-colors"
+            >
+              all
+              <span class="text-background/70">{articles.length}</span>
+            </button>
+            {tags.map(([tag, count]) => (
+              <button
+                type="button"
+                data-tag={tag}
+                class="tag-pill inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary/50 px-2.5 py-1 font-mono text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                {tag}
+                <span class="text-muted-foreground">{count}</span>
+              </button>
+            ))}
+          </div>
+        )
+      }
+    </div>
+
     {
       articles.length === 0 ? (
         <p class="text-muted-foreground">No articles yet.</p>
       ) : (
-        <ul class="divide-y divide-border border-y border-border">
-          {articles.map(article => (
-            <li>
-              <a
-                href={`/${toUrlSlug(article.id)}`}
-                class="group flex flex-col gap-1.5 py-5 transition-colors hover:bg-secondary/40 sm:-mx-4 sm:px-4"
+        <>
+          <ul
+            id="article-list"
+            class="divide-y divide-border border-y border-border"
+          >
+            {articles.map(article => (
+              <li
+                data-slug={toUrlSlug(article.id)}
+                data-tags={article.data.tags.join(",")}
               >
-                <div class="flex items-baseline justify-between gap-4">
-                  <span class="font-medium tracking-tight group-hover:text-foreground">
-                    {article.data.title}
-                  </span>
-                  <time
-                    datetime={article.data.pubDate.toISOString().slice(0, 10)}
-                    class="shrink-0 font-mono text-xs text-muted-foreground"
-                  >
-                    {dateFormatter.format(article.data.pubDate)}
-                  </time>
-                </div>
-                <p class="line-clamp-2 text-sm text-muted-foreground">
-                  {article.data.description}
-                </p>
-              </a>
-            </li>
-          ))}
-        </ul>
+                <a
+                  href={`/${toUrlSlug(article.id)}`}
+                  class="group flex flex-col gap-1.5 py-5 transition-colors hover:bg-secondary/40 sm:-mx-4 sm:px-4"
+                >
+                  <div class="flex items-baseline justify-between gap-4">
+                    <span class="font-medium tracking-tight group-hover:text-foreground">
+                      {article.data.title}
+                    </span>
+                    <time
+                      datetime={article.data.pubDate.toISOString().slice(0, 10)}
+                      class="shrink-0 font-mono text-xs text-muted-foreground"
+                    >
+                      {dateFormatter.format(article.data.pubDate)}
+                    </time>
+                  </div>
+                  <p class="line-clamp-2 text-sm text-muted-foreground">
+                    {article.data.description}
+                  </p>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p
+            id="empty-state"
+            class="mt-8 text-center text-sm text-muted-foreground"
+            hidden
+          >
+            No matching articles.
+          </p>
+        </>
       )
     }
   </main>
+
+  <script is:inline>
+    // Inlined (not bundled by Vite/Rollup) so the dynamic import to the
+    // post-build /pagefind/pagefind.js path stays a runtime concern.
+    (() => {
+      let pagefindModule = null;
+      let pagefindUnavailable = false;
+
+      async function loadPagefind() {
+        if (pagefindUnavailable) return null;
+        if (pagefindModule) return pagefindModule;
+        try {
+          pagefindModule = await import("/pagefind/pagefind.js");
+          return pagefindModule;
+        } catch {
+          pagefindUnavailable = true;
+          return null;
+        }
+      }
+
+      function urlToSlug(url) {
+        return url
+          .replace(/^\//, "")
+          .replace(/\/$/, "")
+          .replace(/\/index$/, "");
+      }
+
+      function setupHomeFilter() {
+        const input = document.querySelector("#search-input");
+        const tagBar = document.querySelector("#tag-bar");
+        const list = document.querySelector("#article-list");
+        const emptyState = document.querySelector("#empty-state");
+        if (!input || !list) return;
+
+        let query = "";
+        let activeTag = "";
+        let searchSlugs = null;
+        let searchToken = 0;
+
+        const items = Array.from(list.querySelectorAll("li"));
+
+        function syncTagButtons() {
+          if (!tagBar) return;
+          tagBar.querySelectorAll(".tag-pill").forEach(btn => {
+            const tag = btn.dataset.tag || "";
+            const isActive = tag === activeTag;
+            btn.classList.toggle("is-active", isActive);
+            btn.classList.toggle("bg-foreground", isActive);
+            btn.classList.toggle("text-background", isActive);
+            btn.classList.toggle("bg-secondary/50", !isActive);
+            btn.classList.toggle("text-muted-foreground", !isActive);
+            btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+          });
+        }
+
+        function applyFilter() {
+          let visible = 0;
+          for (const li of items) {
+            const slug = li.dataset.slug || "";
+            const tagList = (li.dataset.tags || "")
+              .split(",")
+              .filter(Boolean);
+            const matchesSearch = !searchSlugs || searchSlugs.has(slug);
+            const matchesTag = !activeTag || tagList.includes(activeTag);
+            const show = matchesSearch && matchesTag;
+            li.hidden = !show;
+            if (show) visible++;
+          }
+          if (emptyState) emptyState.hidden = visible > 0;
+        }
+
+        async function runSearch(q) {
+          const myToken = ++searchToken;
+          if (!q) {
+            searchSlugs = null;
+            applyFilter();
+            return;
+          }
+          const pf = await loadPagefind();
+          if (myToken !== searchToken) return;
+          if (!pf) {
+            // Dev fallback: substring match on each card's text content.
+            const lower = q.toLowerCase();
+            searchSlugs = new Set(
+              items
+                .filter(li =>
+                  (li.textContent || "").toLowerCase().includes(lower)
+                )
+                .map(li => li.dataset.slug || "")
+            );
+            applyFilter();
+            return;
+          }
+          const r = await pf.search(q);
+          if (myToken !== searchToken) return;
+          const slugs = await Promise.all(
+            r.results.map(async res => urlToSlug((await res.data()).url))
+          );
+          searchSlugs = new Set(slugs);
+          applyFilter();
+        }
+
+        function pushUrlState() {
+          const url = new URL(window.location.href);
+          if (query) url.searchParams.set("q", query);
+          else url.searchParams.delete("q");
+          if (activeTag) url.searchParams.set("tag", activeTag);
+          else url.searchParams.delete("tag");
+          history.replaceState({}, "", url);
+        }
+
+        input.addEventListener("input", () => {
+          query = input.value.trim();
+          pushUrlState();
+          runSearch(query);
+        });
+
+        if (tagBar) {
+          tagBar.addEventListener("click", e => {
+            const button = e.target.closest(".tag-pill");
+            if (!button) return;
+            const tag = button.dataset.tag || "";
+            activeTag = tag === activeTag ? "" : tag;
+            syncTagButtons();
+            pushUrlState();
+            applyFilter();
+          });
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const initialQuery = params.get("q") || "";
+        const initialTag = params.get("tag") || "";
+        if (initialQuery) {
+          query = initialQuery;
+          input.value = initialQuery;
+        }
+        if (initialTag) {
+          activeTag = initialTag;
+          syncTagButtons();
+        }
+        if (query) runSearch(query);
+        else applyFilter();
+      }
+
+      document.addEventListener("astro:page-load", setupHomeFilter);
+    })();
+  </script>
 </Layout>

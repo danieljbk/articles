@@ -52,7 +52,7 @@ const isoDate = article.data.pubDate.toISOString().slice(0, 10);
           >
             {article.data.tags.map(tag => (
               <a
-                href={`/tags/${tag}`}
+                href={`/?tag=${tag}`}
                 class="rounded-md border border-border bg-secondary px-2 py-0.5 font-mono text-xs text-muted-foreground hover:text-foreground"
               >
                 {tag}
