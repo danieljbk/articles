@@ -3,6 +3,7 @@ import type { GetStaticPaths } from "astro";
 import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
+import ShareButton from "@/components/ShareButton.astro";
 import { toUrlSlug } from "@/utils/slug";
 
 type Props = { article: CollectionEntry<"articles"> };
@@ -30,17 +31,24 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
   timeZone: "UTC",
 });
 const isoDate = article.data.pubDate.toISOString().slice(0, 10);
+
+// Canonical public URL. Built from `site` rather than read from the browser
+// so a link copied during a local preview still points at articles.kwon.ai.
+const shareUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 ---
 
 <Layout title={article.data.title} description={article.data.description}>
   <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-12" data-pagefind-body>
     <header class="mb-10">
-      <time
-        datetime={isoDate}
-        class="font-mono text-sm text-muted-foreground"
-      >
-        {dateFormatter.format(article.data.pubDate)}
-      </time>
+      <div class="flex items-center justify-between gap-3">
+        <time
+          datetime={isoDate}
+          class="font-mono text-sm text-muted-foreground"
+        >
+          {dateFormatter.format(article.data.pubDate)}
+        </time>
+        <ShareButton url={shareUrl} />
+      </div>
       <h1
         class="mt-2 text-3xl font-semibold tracking-tight md:text-4xl"
       >

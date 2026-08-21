@@ -227,6 +227,12 @@
   border-radius: 0.5rem;
 }
 
+/* Share button: confirmation state, matching the code-block copy button. */
+.share-button[data-copied="true"] {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--foreground));
+}
+
 /* ---------------------------------------------------------------------
  * Long-form reading layout.
  *

@@ -1,0 +1,75 @@
+---
+/**
+ * Copy-link button for an article.
+ *
+ * Takes the canonical URL as a prop rather than reading location at runtime,
+ * so the copied link is always the public articles.kwon.ai address even when
+ * the page is being viewed on localhost during a preview.
+ *
+ * Public articles only — a private article's URL is a localhost path and
+ * means nothing to anyone else. A private article that gets published moves
+ * into the public collection and picks this up with no extra work.
+ */
+interface Props {
+  /** Absolute canonical URL to place on the clipboard. */
+  url: string;
+}
+
+const { url } = Astro.props;
+---
+
+<button
+  type="button"
+  data-share-url={url}
+  aria-label="Copy link to this article"
+  class="share-button inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-secondary px-2 py-0.5 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+>
+  <svg
+    aria-hidden="true"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="h-3 w-3"
+  >
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+  </svg>
+  <span data-share-label>Copy link</span>
+</button>
+
+<script>
+  // Mirrors the code-block copy button in Layout.astro: idempotent guard,
+  // "Copied" for 1.5s, and re-attached on astro:page-load so it survives
+  // client-side navigation under ClientRouter. The label changes only on a
+  // resolved write, so the button never claims a copy that did not happen.
+  function decorateShareButtons() {
+    document
+      .querySelectorAll<HTMLButtonElement>(
+        ".share-button:not([data-share-attached])"
+      )
+      .forEach(button => {
+        const url = button.dataset.shareUrl;
+        const label = button.querySelector<HTMLElement>("[data-share-label]");
+        if (!url || !label) return;
+
+        button.addEventListener("click", () => {
+          navigator.clipboard.writeText(url).then(() => {
+            label.textContent = "Copied";
+            button.dataset.copied = "true";
+            setTimeout(() => {
+              label.textContent = "Copy link";
+              delete button.dataset.copied;
+            }, 1500);
+          });
+        });
+
+        button.setAttribute("data-share-attached", "true");
+      });
+  }
+
+  decorateShareButtons();
+  document.addEventListener("astro:page-load", decorateShareButtons);
+</script>
