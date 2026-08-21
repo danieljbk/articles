@@ -17,7 +17,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const { article } = Astro.props as Props;
-const { Content } = await render(article);
+const { Content, headings } = await render(article);
+
+// Long pieces get a contents list. Sections only (h2); anything shorter
+// than five sections navigates fine by scrolling.
+const sections = headings.filter(h => h.depth === 2);
+const showToc = sections.length >= 5;
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -64,6 +69,28 @@ const isoDate = article.data.pubDate.toISOString().slice(0, 10);
         )
       }
     </header>
+
+    {
+      showToc && (
+        <nav aria-label="Contents" class="mb-12 border-y border-border py-5">
+          <p class="mb-3 font-mono text-xs tracking-wide text-muted-foreground">
+            CONTENTS
+          </p>
+          <ol class="space-y-1.5">
+            {sections.map(s => (
+              <li>
+                <a
+                  href={`#${s.slug}`}
+                  class="text-[0.95rem] text-muted-foreground underline decoration-transparent underline-offset-4 transition-colors hover:text-foreground hover:decoration-border"
+                >
+                  {s.text}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
 
     <article class="prose article-prose max-w-none">
       <Content />

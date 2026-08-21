@@ -227,6 +227,101 @@
   border-radius: 0.5rem;
 }
 
+/* ---------------------------------------------------------------------
+ * Long-form reading layout.
+ *
+ * Tailwind Typography's defaults were built for short posts. At this
+ * column width they give ~90 characters per line (comfortable reading is
+ * 60-75) and assign a different margin to every element type, so a long
+ * article becomes a wall of same-shaped grey blocks with irregular gaps
+ * and no landmarks. These rules do three things: fix the measure, flatten
+ * the vertical spacing onto one scale, and separate the heading levels
+ * enough that the eye can classify a block without reading it.
+ * ------------------------------------------------------------------ */
+
+.article-prose {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+/* Stop paragraphs ending on a single orphaned word, and make multi-line
+   headings break into even halves instead of one long line plus a stub. */
+.article-prose :where(p, li) { text-wrap: pretty; }
+.article-prose :where(h2, h3, h4) { text-wrap: balance; }
+
+/* Text runs at a readable measure; media breaks out to the full column. */
+.article-prose > * {
+  max-width: 68ch;
+  margin-inline: auto;
+}
+.article-prose > :is(figure, table, pre, hr, blockquote),
+.article-prose > p:has(> img) {
+  max-width: 100%;
+}
+
+/* One spacing scale for body copy and lists. */
+.article-prose :where(p) { margin-block: 1.15em; }
+.article-prose :where(ul, ol) { margin-block: 1.15em; }
+.article-prose :where(li) { margin-block: 0.35em; }
+.article-prose :where(li > p) { margin-block: 0.35em; }
+
+/* Heading hierarchy: section, subsection, label.
+   Each binds tightly to the text beneath it and is preceded by clear space,
+   so headings read as openings rather than as free-floating fragments. */
+.article-prose :where(h2) {
+  font-size: 1.55em;
+  line-height: 1.25;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.7em;
+  padding-top: 1.6em;
+  border-top: 1px solid hsl(var(--border));
+}
+.article-prose > :where(h2):not(:first-child) { margin-top: 3em; }
+
+.article-prose :where(h3) {
+  font-size: 1.22em;
+  line-height: 1.35;
+  font-weight: 600;
+  margin-top: 2.2em;
+  margin-bottom: 0.5em;
+}
+
+/* Labels. The short rule above each one gives the eye a repeating anchor
+   at a fixed left position — the thing run-in bold lead-ins destroy. */
+.article-prose :where(h4) {
+  font-size: 1em;
+  line-height: 1.45;
+  font-weight: 600;
+  margin-top: 1.7em;
+  margin-bottom: 0.4em;
+}
+.article-prose :where(h4)::before {
+  content: "";
+  display: block;
+  width: 1.75rem;
+  height: 2px;
+  margin-bottom: 0.7em;
+  background: hsl(var(--border));
+}
+
+/* An image and its caption are one block, not two. */
+.article-prose > p:has(> img) { margin-block: 2.6em 0; }
+.article-prose > p:has(> img) + p:has(> em:only-child) {
+  max-width: 100%;
+  margin-top: 0.7em;
+  margin-bottom: 2.6em;
+  font-size: 0.9em;
+  line-height: 1.6;
+  color: hsl(var(--muted-foreground));
+}
+
+.article-prose :where(blockquote) {
+  margin-block: 1.8em;
+  padding-block: 0.15em;
+}
+.article-prose :where(hr) { margin-block: 3em; }
+
 /* Copy button on every code block. Decorated client-side from Layout.astro. */
 .copy-button {
   position: absolute;
