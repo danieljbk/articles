@@ -70,38 +70,50 @@ are the reference implementations. The shape:
 
 1. **Open with the claim or the tension.** No conversational preamble, no
    restating the question back.
-2. **`## Where this came from`** — the originating question **block-quoted
-   verbatim**, with the explanation underneath. See below.
+2. **`## Where this came from`** — the originating question and proposal. In a
+   private article this is block-quoted verbatim; in a public one it is
+   rewritten for a reader, keeping his terminology. See below.
 3. **The body**, organized by the logic of the subject.
 4. **`## What this leaves open`** — the live frontier: what's unsettled, what
    the next question is. This is what makes it a record rather than a lecture.
 5. **`## Sources`** — links, with what each one supports.
 
-### Quote the question; don't summarize it
+### His words: verbatim in private, never raw in public
 
-The originating question goes in as a **block quote of what was actually
-said**, not a rewrite of it. His phrasing is his understanding — converting it
-swaps in an interpretation of what he meant for his statement of it, and later
-nobody can tell which is which.
+What Daniel types or dictates is addressed to **you**, not to an audience. It
+carries much more than the idea — his ideology, his emotional register, how
+confident he felt, thoughts he considers half-formed or wrong. Publishing that
+exposes him to strangers, and it cannot be taken back.
 
-Allowed: cleaning up dictation artifacts, cutting a passage, small edits for
-readability. Not allowed: recasting it in your own prose, tightening it into a
-thesis, or promoting it into a heading you composed.
+**In a private article, quote him verbatim.** His phrasing is his
+understanding; converting it swaps in an interpretation of what he meant for
+his statement of it. It also preserves his calibration — a tentative "maybe
+it's like the size of the solar system" stays tentative, so you never have to
+judge how firmly something was held and can't accidentally firm it up. And it
+stops you strawmanning him: an early draft fused "the black holes must be
+pretty big" with a separate "maybe it's like the size of the solar system" into
+one confident heading, then refuted a proposal he never made.
 
-Two reasons this is structural rather than stylistic:
+Allowed inside such a quote: cleaning dictation artifacts, cutting a passage,
+small readability edits. Not allowed: recasting into your own prose, tightening
+it into a thesis, or promoting it into a heading you composed.
 
-- **It preserves his calibration.** A tentative "maybe it's like the size of
-  the solar system" stays tentative. You never have to judge how firmly
-  something was held, and you can't accidentally firm it up.
-- **It stops you strawmanning him.** The first draft of the black hole article
-  fused "The black holes must be pretty big" with "Maybe it's like the size of
-  the solar system" into one confident heading, then refuted *that* — a
-  proposal he never made. The same paraphrase dropped "I don't really know what
-  they are", which was him naming his own gap.
+**In a public article, never paste raw conversation.** Keep his distinctive
+terminology for the *idea* — "a cylinder within a cylinder", "extend the same
+code three times", "worms with extensions" — because that is what makes it his
+thinking rather than a summary of it. Compose the surrounding prose for a
+reader. Drop everything that is about *him* rather than the subject: emotional
+register, ideology, stated confidence or doubt, admitted mistakes, self-
+appraisal, anything in a private register.
 
-This applies to Daniel's words in Daniel's own article — an author quoting
-himself for an audience of readers. Quoting some *other* person's messages back
-into a piece addressed to that person is a different thing, and is not done.
+> **This cancels auto-publish.** Public-by-default assumes the piece is about
+> the world only. A verbatim quote guarantees it contains personal material, so
+> the two rules contradict each other by construction. If a draft quotes him at
+> all, it does not auto-publish — rewrite the provenance in public register,
+> keep the piece private, or show him the exact quoted text and let him decide.
+
+When unsure whether a phrasing is his-idea or his-interior, treat it as his
+interior: leave it out, and say that you did.
 
 Two rules about how the surrounding explanation gets written:
 
