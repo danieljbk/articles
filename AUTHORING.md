@@ -70,19 +70,50 @@ are the reference implementations. The shape:
 
 1. **Open with the claim or the tension.** No conversational preamble, no
    restating the question back.
-2. **`## Where this came from`** — the originating question, and the proposal
-   or intuition that motivated it.
+2. **`## Where this came from`** — the originating question **block-quoted
+   verbatim**, with the explanation underneath. See below.
 3. **The body**, organized by the logic of the subject.
 4. **`## What this leaves open`** — the live frontier: what's unsettled, what
    the next question is. This is what makes it a record rather than a lecture.
 5. **`## Sources`** — links, with what each one supports.
 
-Two rules about how the proposal gets written:
+### Quote the question; don't summarize it
 
-- **State it positively and develop it.** Never phrase a claim as the negation
-  of a mistake, and never score the proposal against what turned out to be
-  true. Where the intuition was right, say what it was right about; where it
-  inverted, make the inversion the interesting part of the article.
+The originating question goes in as a **block quote of what was actually
+said**, not a rewrite of it. His phrasing is his understanding — converting it
+swaps in an interpretation of what he meant for his statement of it, and later
+nobody can tell which is which.
+
+Allowed: cleaning up dictation artifacts, cutting a passage, small edits for
+readability. Not allowed: recasting it in your own prose, tightening it into a
+thesis, or promoting it into a heading you composed.
+
+Two reasons this is structural rather than stylistic:
+
+- **It preserves his calibration.** A tentative "maybe it's like the size of
+  the solar system" stays tentative. You never have to judge how firmly
+  something was held, and you can't accidentally firm it up.
+- **It stops you strawmanning him.** The first draft of the black hole article
+  fused "The black holes must be pretty big" with "Maybe it's like the size of
+  the solar system" into one confident heading, then refuted *that* — a
+  proposal he never made. The same paraphrase dropped "I don't really know what
+  they are", which was him naming his own gap.
+
+This applies to Daniel's words in Daniel's own article — an author quoting
+himself for an audience of readers. Quoting some *other* person's messages back
+into a piece addressed to that person is a different thing, and is not done.
+
+Two rules about how the surrounding explanation gets written:
+
+- **Organize around the substance; never soften the verdict.** Don't make
+  corrections the skeleton of a section and don't grade his thinking — but when
+  something is wrong, say so plainly in the first sentence that addresses it,
+  and quantify the error where that is checkable ("overshoots by a factor of
+  around 40 million" beats "off by orders of magnitude"). Then split the
+  conclusion from the reasoning; the reasoning is usually what survives.
+  **Never manufacture partial credit** — an adjacent true fact is not a
+  half-win, and a tidy "right about X, inverted about Y" reads as flattery
+  unless the halves are genuinely comparable.
 - **Voice is explanatory second person, where "you" is any reader.** "The room
   you are sitting in" is fine. "Your guess", "you asked", "as you mentioned"
   are not — they presume a conversation the reader wasn't in.
