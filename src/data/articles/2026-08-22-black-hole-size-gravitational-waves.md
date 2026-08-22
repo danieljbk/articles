@@ -17,15 +17,11 @@ The gap between those two facts is the whole subject of this article. The signal
 
 ## Where this came from
 
-The question, in the words it was first asked:
+The starting question was one of scale: how large is the black hole at the center of the Milky Way, expressed in units that mean something — a number of Suns, or measured against the solar system.
 
-> How large is the black hole at the center of the Milky Way? Put it in a scale I can understand, such as a number of suns or compared to the scale of the solar system.
->
-> I'm asking this because I'm learning about gravitational waves, and apparently a gravitational wave was detected when two big black holes merged somewhere in the universe. And I'm wondering how the hell there can be gravitational waves from all the way over there? The black holes must be pretty big. And then I'm wondering how big should the black holes be? Maybe it's like the size of the solar system, because that would be pretty huge black holes.
->
-> I'm trying to intuitively understand how it's possible that gravitational waves — I don't really know what they are — could come from so far away and affect things here.
+Behind it sat a harder one. A gravitational wave had been detected from two black holes merging elsewhere in the universe, and a billion light-years is far enough that whatever happened out there should not be able to touch anything here. Something about that source has to be extreme enough to account for it. The natural guess is that the black holes were enormous — perhaps the size of the solar system, which would make them very large objects indeed.
 
-Three things are packed in there, and they come apart cleanly. There is a request for a number in units that mean something. There is an admitted gap — not knowing what a gravitational wave *is*, which section 5 addresses from the ground up. And there is the part doing the real work: a disturbance a billion light-years away should not be able to touch anything here, so something about the source has to be extreme enough to explain it.
+That guess, and the reasoning that produces it, is where the article starts.
 
 ### Checking the solar-system figure
 

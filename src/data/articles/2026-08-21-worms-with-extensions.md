@@ -15,31 +15,19 @@ This article lays out the claim, the evidence, the mechanisms by which the plan 
 
 ## Where this came from
 
-This article works through a proposal that arrived from outside biology, reasoned out from watching whales feed. It started here:
+This article works through a proposal that arrived from outside biology, reasoned out from watching whales feed — specifically the way a rorqual rises toward a swarm of krill, opens its mouth just far enough to engulf the volume of water the krill occupy, and closes it with precision. Watched closely, the animal stops looking like a mammal and starts looking like a worm.
 
-> I have a growing fascination with sea mammals, and specifically whales. They seem sentient, they seem intelligent, and the way they hunt — particularly blue whales feeding on krill — is astonishing. They silently rise toward the herd, their mouths opening just enough to engulf the volume of water containing the krill, then close with precision. The sheer, horrifying sight of their mouths opening to 45 degrees reminds me so much of a worm. Recently, I've been developing a growing suspicion that everything is just worms with extensions. I'm afraid I may have once been a worm, and that mammals evolved from worms to become what they are today.
+The question underneath was never really about whales. It was: what is a human, and what is life?
 
-Set out more fully after a first pass:
+The proposal, in the terms it was originally put:
 
-> I did not mean worm necessarily — I meant that the ancestor would look like a worm to me. I meant a cylinder within a cylinder, intaking particles, basically just gathering the particles that the system needs to continue living. It's just a cylinder within a cylinder, moving across space and intaking stuff. These days, this stuff happens to be concentrated within other living creatures, so you eat the other living creatures. It's just such a horrid landscape and a horrifying world that I live in.
->
-> I am consistently wondering what I am, what humans are, and what life is. With these new thoughts around whales and other creatures, and what we are at our simplest forms, it just seems like the complex structures and behaviors that we do are just a product of evolution. Evolution, meaning the addition of complexity to simple creatures in response to whatever happened in the world. And so layers keep being added, genes keep being extended — it seems like new changes become made to a pre-existing creature.
->
-> It's similar to how crystals are formed underground, but the crystals that form on top of the earth, like buildings and stuff, are just a product of all the other complex stuff that happens and are not necessarily meaningful. It is just the universe and its material being converted from one form to another, but just in a more layered manner.
->
-> A related recent discovery I made with my limbs is that it seems the limbs are just a duplication of one section, and my legs and arms, they just seem like if I were to extend the same code three times, and then the same with the fingers, the fingers also mirror my arms. I can see the pattern in which you would be able to form the limb in the way that it looks.
->
-> I can see how some genetic changes over the years can easily change the shape or the structure slightly and slightly in the way that it would look like today. I can see how the limb would have originated from a worm-like ancestor. All the bones, all the hair, and all the structures of the creature would have evolved from the simple worm-like ancestor that has the potential to have these certain materials on its body. Different animals under different conditions evolved to specialize in specific areas of that, which benefited them for survival.
->
-> Also, the 45 degrees — I meant 90 degrees. I had mistakenly miscalculated the angle.
->
-> Watching the whale engulf a body of water is a metaphorical representation of reality, where we consume material, filter what is necessary for us, spit out the rest, and then process that necessary material into other things in a complex process.
->
-> I am aware of the whales with teeth and their language being complex. That's what I was researching before this conversation, and why I was fascinated by these whales. At first, it was their intelligence that caught my attention — I simply looked at their eyes and could tell they were observing me and scanning me and other humans while in the video. I could see they were calculating something, mostly processing whether we were a threat, what we were doing, whatever. But they were clearly conscious, and the way they hunt also showed clear intelligence.
->
-> With my worm theory, it is pretty clear that the eye is taking in information, and so is the sonar, which is taking in information. It is just the worm having evolved to take in information and optimally find the resources that it needs.
+- **A cylinder within a cylinder.** Something that moves through space, taking in the particles the system needs in order to keep running. "Worm" names that shape rather than a group of animals — the claim is that the ancestral form, if it could be seen, would look like a worm to an observer. A whale's lunge is that same process made briefly visible: take in material, keep what is useful, expel the rest.
+- **Evolution as complexity added to something already running.** Layers keep being added and genes keep being extended, with each change made to a creature that already exists, in response to whatever was happening in the world at the time.
+- **Limbs as one section duplicated.** Arms and legs look like the same code extended more than once, and the fingers repeat the pattern of the arms. Part of the claim is that the pattern is *visible* — you can look at your own limb and see how it could be built.
+- **Every material descends from an ancestor that had the potential for it.** Bone, hair, every structure — elaborated rather than newly invented, with different lineages pushing different parts further according to what helped them survive.
+- **Sense organs as the intake principle applied to information.** An eye takes in information; so does sonar. Neither departs from the cylinder — both exist so it can locate what it needs.
 
-Everything below tests that against what is currently known. The rest of this section is a map of where each part gets taken up; the proposal itself is the quoted text above, and nothing in the article should be read as restating it.
+Everything below tests that against what is currently known.
 
 ### Where each part is taken up
 
