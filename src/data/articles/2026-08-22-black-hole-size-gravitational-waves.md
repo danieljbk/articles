@@ -27,13 +27,13 @@ The proposal that followed:
 
 If a signal crossed a billion light-years and remained measurable, the source has to be extreme on a scale that matches the distance. Stellar scale would not be enough. Something spanning the solar system would be.
 
-The reasoning underneath that is sound, and it is the reasoning that works for nearly everything else that arrives from far away. Intensity drops off with distance; a signal still detectable at extreme range implies a source of extreme strength. For light, for sound, for essentially anything in ordinary experience, the inference holds.
+**About the objects that produced this signal, that is wrong, and not narrowly.** They were roughly 210 and 170 kilometers across. Measuring the solar system out to Neptune's orbit — about 9 billion kilometers — the guess overshoots by a factor of around 40 million.
 
-It turns out to be right in one direction and inverted in the other, and both halves lead somewhere worth going.
+The reasoning is worth separating from the conclusion, because the reasoning is the part that survives. Intensity falls off with distance, so a signal still detectable at extreme range implies an extreme source. For light, for sound, for nearly anything in ordinary experience, that inference holds — and it holds here too. The source *was* extreme.
 
-Right: **solar-system-sized black holes exist.** That guess describes a real and well-studied class of object. Section 12 is about them. They simply are not the ones this detector heard.
+The error is in which quantity was extreme. Not size. **Compactness** — which runs the opposite direction, because the objects had to be *small* for the event to be loud enough to cross a billion light-years at all. That inversion is the load-bearing idea in the rest of this article.
 
-Inverted: the source of the detected signal *was* extreme, exactly as the reasoning demands — but the extreme quantity was **compactness**, not size. The objects were small, and their smallness is the direct cause of the signal's strength. That is the part that runs against intuition, and it is the load-bearing idea in everything below.
+Solar-system-sized black holes do exist, and section 12 is about them. That is a separate fact rather than a partial rescue of the guess: they are not what this detector heard, and nothing in the detection points toward them.
 
 ## The short answers
 
@@ -159,13 +159,13 @@ The pair behind the first confident detection sat near the optimum for the instr
 
 ## The solar-system-scale black holes
 
-The opening guess describes something real, and this is where it belongs.
+Section 1 set this aside as a separate fact. Here it is.
 
 At the centers of the largest elliptical galaxies sit black holes of tens of billions of solar masses, with event horizons several times wider than Neptune's orbit. Genuinely solar-system-scale objects. When two of those merge — which happens when their host galaxies collide — it is the most energetic event the universe is capable of producing.
 
 Finding one involves no laser at all. It means measuring the arrival times of pulsars across the galaxy for fifteen or twenty years and watching for a correlated wobble in when their pulses land, as the passing wave stretches and squeezes the space between them and us. A detector the size of the Milky Way, listening for a note that takes a decade to complete a single cycle.
 
-So the intuition that reached for solar-system scale was tracking a real object. It attached it to the wrong event — and the reason those are different events is the compactness argument in section 6.
+So solar-system scale does describe a real class of black hole. But arriving at it from the distance argument was a coincidence, not a derivation: these objects are not large *because* their signals travel far. They are large because they spent billions of years growing, and their mergers are detectable for the same compactness reason as everything else here — just played at a frequency a million times lower.
 
 ## What this leaves open
 
