@@ -7,7 +7,7 @@
 #
 #   bun run open black-hole-size-gravitational-waves
 #   bun run open 2026-08-21-black-hole-size-gravitational-waves.md   # date prefix ok
-#   bun run open ../articles-private/articles/2026-08-21-foo.md      # full path ok
+#   bun run open ../articles-private/completed/2026-08-21-foo.md    # full path ok
 #   bun run open                                                     # article index
 #   bun run open --stop                                              # shut the server down
 #
@@ -25,7 +25,7 @@ LOG="$STATE_DIR/dev-server.log"
 PIDFILE="$STATE_DIR/dev-server.pid"
 
 PUBLIC_DIR="$ROOT/src/data/articles"
-PRIVATE_DIR="$ROOT/../articles-private/articles"
+PRIVATE_ROOT="$ROOT/../articles-private"
 
 die() { printf '%s\n' "$*" >&2; exit 1; }
 
@@ -66,12 +66,24 @@ find_in() {
   return 1
 }
 
+# Private articles are split into completed/ and drafts/; the status is part
+# of the URL, so it has to come from wherever the file actually sits.
+private_status=""
+for st in completed drafts; do
+  if find_in "$PRIVATE_ROOT/$st" >/dev/null; then private_status="$st"; break; fi
+done
+
 if [[ -z "$slug" ]]; then
   path="/private"
   label="article index"
-elif find_in "$PRIVATE_DIR" >/dev/null; then
-  path="/private/$slug"
-  label="private: $slug"
+elif [[ -n "$private_status" ]]; then
+  path="/private/$private_status/$slug"
+  label="private/$private_status: $slug"
+  # A slug can exist in both places — the archive copy and its published
+  # counterpart. The private one wins, since that is the one being reviewed.
+  if find_in "$PUBLIC_DIR" >/dev/null; then
+    also_public="$HOST/$slug"
+  fi
 elif find_in "$PUBLIC_DIR" >/dev/null; then
   path="/$slug"
   label="published: $slug"
@@ -80,7 +92,7 @@ else
     echo "No article matching '$slug'."
     echo
     echo "Closest names:"
-    ls "$PRIVATE_DIR" "$PUBLIC_DIR" 2>/dev/null \
+    ls "$PRIVATE_ROOT/completed" "$PRIVATE_ROOT/drafts" "$PUBLIC_DIR" 2>/dev/null \
       | grep -i -- "$(printf '%s' "$slug" | cut -c1-12)" | head -10 \
       || echo "  (no near matches)"
   } >&2
@@ -125,3 +137,4 @@ fi
 open "$url"
 echo "Opened $label"
 echo "  $url"
+[[ -n "${also_public:-}" ]] && echo "  (also published: $also_public)"

@@ -3,20 +3,20 @@ import type { GetStaticPaths } from "astro";
 import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
-import { toUrlSlug } from "@/utils/slug";
+import { splitPrivateId } from "@/utils/slug";
 
-type Props = { article: CollectionEntry<"private"> };
+type Props = { article: CollectionEntry<"private">; status: string };
 
 export const getStaticPaths: GetStaticPaths = async () => {
   if (process.env.INCLUDE_PRIVATE !== "1") return [];
   const articles = await getCollection("private", ({ data }) => !data.draft);
-  return articles.map(article => ({
-    params: { slug: toUrlSlug(article.id) },
-    props: { article },
-  }));
+  return articles.map(article => {
+    const { status, slug } = splitPrivateId(article.id);
+    return { params: { slug: `${status}/${slug}` }, props: { article, status } };
+  });
 };
 
-const { article } = Astro.props as Props;
+const { article, status } = Astro.props as Props;
 const { Content, headings } = await render(article);
 
 // Long pieces get a contents list. Sections only (h2); anything shorter
@@ -47,6 +47,11 @@ const isoDate = article.data.pubDate.toISOString().slice(0, 10);
           class="rounded-md border border-border bg-secondary px-2 py-0.5 font-mono text-xs uppercase tracking-wide text-muted-foreground"
         >
           private
+        </span>
+        <span
+          class="rounded-md border border-border bg-secondary px-2 py-0.5 font-mono text-xs uppercase tracking-wide text-muted-foreground"
+        >
+          {status}
         </span>
       </div>
       <h1

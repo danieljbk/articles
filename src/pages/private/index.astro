@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
-import { toUrlSlug } from "@/utils/slug";
+import { splitPrivateId } from "@/utils/slug";
 
 const isLocal = process.env.INCLUDE_PRIVATE === "1";
 
@@ -10,6 +10,19 @@ const articles = isLocal
       (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
     )
   : [];
+
+// Completed pieces are the ones worth re-reading, so they lead. Drafts are
+// working passes kept for the record.
+const groups = (["completed", "drafts"] as const).map(status => ({
+  status,
+  blurb:
+    status === "completed"
+      ? "Finished pieces, kept to be re-read. These carry the original wording verbatim."
+      : "Working passes and superseded material.",
+  items: articles
+    .map(article => ({ article, ...splitPrivateId(article.id) }))
+    .filter(entry => entry.status === status),
+}));
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -35,11 +48,12 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
       </div>
       <p class="mt-3 max-w-md text-balance text-muted-foreground">
         Articles in <code class="rounded bg-secondary px-1 font-mono text-xs"
-          >../articles-private/articles/</code
-        >. Visible only when the site is run locally with
-        <code class="rounded bg-secondary px-1 font-mono text-xs"
-          >bun run dev:private</code
-        >.
+          >../articles-private/</code
+        >, split into <code class="rounded bg-secondary px-1 font-mono text-xs"
+          >completed/</code
+        > and <code class="rounded bg-secondary px-1 font-mono text-xs"
+          >drafts/</code
+        >. Visible only when the site is run locally.
       </p>
     </header>
 
@@ -55,31 +69,46 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
       ) : articles.length === 0 ? (
         <p class="text-muted-foreground">No private articles yet.</p>
       ) : (
-        <ul class="divide-y divide-border border-y border-border">
-          {articles.map(article => (
-            <li>
-              <a
-                href={`/private/${toUrlSlug(article.id)}`}
-                class="group flex flex-col gap-1.5 py-5 transition-colors hover:bg-secondary/40 sm:-mx-4 sm:px-4"
-              >
-                <div class="flex items-baseline justify-between gap-4">
-                  <span class="font-medium tracking-tight group-hover:text-foreground">
-                    {article.data.title}
-                  </span>
-                  <time
-                    datetime={article.data.pubDate.toISOString().slice(0, 10)}
-                    class="shrink-0 font-mono text-xs text-muted-foreground"
-                  >
-                    {dateFormatter.format(article.data.pubDate)}
-                  </time>
-                </div>
-                <p class="line-clamp-2 text-sm text-muted-foreground">
-                  {article.data.description}
-                </p>
-              </a>
-            </li>
-          ))}
-        </ul>
+        groups
+          .filter(group => group.items.length > 0)
+          .map(group => (
+            <section class="mb-14">
+              <div class="mb-4 flex items-baseline gap-3">
+                <h2 class="font-mono text-sm uppercase tracking-wide text-foreground">
+                  {group.status}
+                </h2>
+                <span class="font-mono text-xs text-muted-foreground">
+                  {group.items.length}
+                </span>
+              </div>
+              <p class="mb-5 text-sm text-muted-foreground">{group.blurb}</p>
+              <ul class="divide-y divide-border border-y border-border">
+                {group.items.map(({ article, status, slug }) => (
+                  <li>
+                    <a
+                      href={`/private/${status}/${slug}`}
+                      class="group flex flex-col gap-1.5 py-5 transition-colors hover:bg-secondary/40 sm:-mx-4 sm:px-4"
+                    >
+                      <div class="flex items-baseline justify-between gap-4">
+                        <span class="font-medium tracking-tight group-hover:text-foreground">
+                          {article.data.title}
+                        </span>
+                        <time
+                          datetime={article.data.pubDate.toISOString().slice(0, 10)}
+                          class="shrink-0 font-mono text-xs text-muted-foreground"
+                        >
+                          {dateFormatter.format(article.data.pubDate)}
+                        </time>
+                      </div>
+                      <p class="line-clamp-2 text-sm text-muted-foreground">
+                        {article.data.description}
+                      </p>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
       )
     }
   </main>

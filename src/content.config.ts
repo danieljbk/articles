@@ -15,15 +15,17 @@ const articles = defineCollection({
   schema: articleSchema,
 });
 
-// Private articles live in the SIBLING `articles-private` repo at
-// `../articles-private/articles/`. They're rendered locally via
+// Private articles live in the SIBLING `articles-private` repo, split into
+// `drafts/` (working passes, superseded material) and `completed/` (finished
+// pieces kept to be re-read). The status is the first path segment of the
+// entry id, so one collection covers both. Rendered locally via
 // `bun run dev:private` (sets INCLUDE_PRIVATE=1). Production builds on
 // Cloudflare Pages have no sibling repo and no INCLUDE_PRIVATE flag, so
 // nothing private ever ships.
 const privateArticles = defineCollection({
   loader: glob({
-    pattern: "**/*.{md,mdx}",
-    base: "../articles-private/articles",
+    pattern: "{drafts,completed}/**/*.{md,mdx}",
+    base: "../articles-private",
   }),
   schema: articleSchema,
 });

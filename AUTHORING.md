@@ -6,7 +6,8 @@ How to write content for this system. Aimed at a future Claude (or human) who ha
 
 - Articles are Markdown (`.md`) files with YAML frontmatter.
 - **Public is the default.** An article about the world goes straight to **`articles/src/data/articles/`** and gets published — no staging, no asking. See [Where an article goes](#where-an-article-goes).
-- Anything touching Daniel, his work, his machines, or other people goes to **`articles-private/articles/`** instead.
+- Anything touching Daniel, his work, his machines, or other people goes to **`articles-private/completed/`** instead.
+- **Every piece that started from something he said also gets an archive copy** in `completed/` carrying his words verbatim. See [His words](#his-words-verbatim-in-private-never-raw-in-public).
 - Preview any article with **`bun run open <slug>`** — it starts the dev server and opens the page. See [Previewing an article](#previewing-an-article).
 - **Sections are numbered automatically** — never write numbers into headings. See [Section numbering](#section-numbering).
 - **Never write CSS, `<style>`, or layout HTML in articles.** The Astro app already styles every Markdown construct using shadcn design tokens. Writing CSS in articles means you didn't read this file.
@@ -19,11 +20,13 @@ articles/                              ← THIS repo (public, deployed to articl
     └── YYYY-MM-DD-short-slug.md       ← public articles
 
 articles-private/                      ← sibling repo (private)
-└── articles/
-    └── YYYY-MM-DD-short-slug.md       ← private articles, default landing zone
+├── completed/
+│   └── YYYY-MM-DD-short-slug.md       ← finished pieces, kept to re-read
+└── drafts/
+    └── YYYY-MM-DD-short-slug.md       ← working passes, superseded material
 ```
 
-The Astro app reads from both via content collections. Public articles render at `/<slug>`, private ones (only when `INCLUDE_PRIVATE=1`) render at `/private/<slug>`.
+The Astro app reads from both via content collections. Public articles render at `/<slug>`, private ones (only when `INCLUDE_PRIVATE=1`) render at `/private/<status>/<slug>`.
 
 ## Where an article goes
 
@@ -34,7 +37,7 @@ math, how some public system works, a technical explainer) goes straight into
 `src/data/articles/` and gets committed and pushed. Don't stage it privately
 first and don't ask.
 
-**Route it to `articles-private/articles/` instead if it contains any of:**
+**Route it to `articles-private/completed/` instead if it contains any of:**
 
 | # | Category | Examples |
 |---|---|---|
@@ -106,11 +109,12 @@ reader. Drop everything that is about *him* rather than the subject: emotional
 register, ideology, stated confidence or doubt, admitted mistakes, self-
 appraisal, anything in a private register.
 
-> **This cancels auto-publish.** Public-by-default assumes the piece is about
-> the world only. A verbatim quote guarantees it contains personal material, so
-> the two rules contradict each other by construction. If a draft quotes him at
-> all, it does not auto-publish — rewrite the provenance in public register,
-> keep the piece private, or show him the exact quoted text and let him decide.
+> **Write both copies.** This is the normal workflow, not an exception. The
+> public article carries the provenance in public register. The *same article*
+> also goes to `articles-private/completed/` with section 1 carrying his words
+> verbatim, headed by a one-line note saying it is the archive copy and linking
+> the published counterpart. Reading his own words later is how he reconstructs
+> where he was coming from; the sanitized version can't do that job.
 
 When unsure whether a phrasing is his-idea or his-interior, treat it as his
 interior: leave it out, and say that you did.
@@ -174,7 +178,7 @@ The slug is forgiving — all four of these reach the same page:
 bun run open black-hole-size-gravitational-waves
 bun run open 2026-08-21-black-hole-size-gravitational-waves
 bun run open 2026-08-21-black-hole-size-gravitational-waves.md
-bun run open ../articles-private/articles/2026-08-21-black-hole-size-gravitational-waves.md
+bun run open ../articles-private/completed/2026-08-22-black-hole-size-gravitational-waves.md
 ```
 
 | Command | Result |
@@ -185,8 +189,11 @@ bun run open ../articles-private/articles/2026-08-21-black-hole-size-gravitation
 | `PORT=4322 bun run open <slug>` | Uses a different port |
 
 **It works out private-vs-public itself** by finding the source file: something
-in `../articles-private/articles/` opens at `/private/<slug>`, something in
-`src/data/articles/` opens at `/<slug>`. The same command therefore keeps
+in `../articles-private/completed/` opens at `/private/completed/<slug>`,
+something in `drafts/` at `/private/drafts/<slug>`, and something in
+`src/data/articles/` at `/<slug>`. When a slug exists both as an archive copy
+and as a published article, the private one opens and the published URL is
+printed alongside it. The same command therefore keeps
 working after a publish moves the file. An unknown slug fails with a list of
 near matches rather than a 404 in the browser.
 
