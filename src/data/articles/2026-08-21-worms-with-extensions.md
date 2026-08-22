@@ -15,51 +15,49 @@ This article lays out the claim, the evidence, the mechanisms by which the plan 
 
 ## Where this came from
 
-This article was written to work through a proposal that came from outside biology, arrived at by watching whales feed and reasoning about what was on screen.
+This article works through a proposal that arrived from outside biology, reasoned out from watching whales feed. It started here:
 
-The question behind it was never really about whales. It was: what is a human, and what is life? The whales were where the question got traction, for two reasons. The first is that they appear to be conscious. A whale that turns toward a person and holds there reads as assessing — scanning, calculating, working out whether the thing in front of it is a threat. The second is the way a rorqual feeds: rising toward a swarm of krill, opening its mouth just far enough to take in the volume of water the swarm occupies, and closing it with precision. Watching that, the animal stops looking like a mammal and starts looking like a worm.
+> I have a growing fascination with sea mammals, and specifically whales. They seem sentient, they seem intelligent, and the way they hunt — particularly blue whales feeding on krill — is astonishing. They silently rise toward the herd, their mouths opening just enough to engulf the volume of water containing the krill, then close with precision. The sheer, horrifying sight of their mouths opening to 45 degrees reminds me so much of a worm. Recently, I've been developing a growing suspicion that everything is just worms with extensions. I'm afraid I may have once been a worm, and that mammals evolved from worms to become what they are today.
 
-The proposal that came out of it, developed:
+Set out more fully after a first pass:
 
-#### The basic animal is a cylinder inside a cylinder
+> I did not mean worm necessarily — I meant that the ancestor would look like a worm to me. I meant a cylinder within a cylinder, intaking particles, basically just gathering the particles that the system needs to continue living. It's just a cylinder within a cylinder, moving across space and intaking stuff. These days, this stuff happens to be concentrated within other living creatures, so you eat the other living creatures. It's just such a horrid landscape and a horrifying world that I live in.
+>
+> I am consistently wondering what I am, what humans are, and what life is. With these new thoughts around whales and other creatures, and what we are at our simplest forms, it just seems like the complex structures and behaviors that we do are just a product of evolution. Evolution, meaning the addition of complexity to simple creatures in response to whatever happened in the world. And so layers keep being added, genes keep being extended — it seems like new changes become made to a pre-existing creature.
+>
+> It's similar to how crystals are formed underground, but the crystals that form on top of the earth, like buildings and stuff, are just a product of all the other complex stuff that happens and are not necessarily meaningful. It is just the universe and its material being converted from one form to another, but just in a more layered manner.
+>
+> A related recent discovery I made with my limbs is that it seems the limbs are just a duplication of one section, and my legs and arms, they just seem like if I were to extend the same code three times, and then the same with the fingers, the fingers also mirror my arms. I can see the pattern in which you would be able to form the limb in the way that it looks.
+>
+> I can see how some genetic changes over the years can easily change the shape or the structure slightly and slightly in the way that it would look like today. I can see how the limb would have originated from a worm-like ancestor. All the bones, all the hair, and all the structures of the creature would have evolved from the simple worm-like ancestor that has the potential to have these certain materials on its body. Different animals under different conditions evolved to specialize in specific areas of that, which benefited them for survival.
+>
+> Also, the 45 degrees — I meant 90 degrees. I had mistakenly miscalculated the angle.
+>
+> Watching the whale engulf a body of water is a metaphorical representation of reality, where we consume material, filter what is necessary for us, spit out the rest, and then process that necessary material into other things in a complex process.
+>
+> I am aware of the whales with teeth and their language being complex. That's what I was researching before this conversation, and why I was fascinated by these whales. At first, it was their intelligence that caught my attention — I simply looked at their eyes and could tell they were observing me and scanning me and other humans while in the video. I could see they were calculating something, mostly processing whether we were a threat, what we were doing, whatever. But they were clearly conscious, and the way they hunt also showed clear intelligence.
+>
+> With my worm theory, it is pretty clear that the eye is taking in information, and so is the sonar, which is taking in information. It is just the worm having evolved to take in information and optimally find the resources that it needs.
 
-Something that moves through space and takes in the particles the system needs in order to keep running. That is the whole of the fundamental object — not a simplification of an animal, but what an animal is before anything is added to it.
+Everything below tests that against what is currently known. The rest of this section is a map of where each part gets taken up; the proposal itself is the quoted text above, and nothing in the article should be read as restating it.
 
-"Worm" in this proposal names a shape, not a group of animals. The claim is that the ancestral form, if it could be seen, would look like a worm to an observer.
+### Where each part is taken up
 
-#### A whale's lunge is that general process made briefly visible
+**What the cylinder is, and which animals count as one** — section 2. The claim that "worm" names a shape rather than a group of animals is the first thing that has to be pinned down, because the whole proposal depends on it.
 
-Take in material, keep what is useful, expel the rest, and put the useful part through a longer chain of processing. Every organism is doing this continuously. The whale does it at a scale and speed that lets a person watch it happen.
+**The limb duplication** — sections 4 and 5. This turns out to be the strongest of the observations: duplication is literally what happened, at three separate levels, and one of them is the whole genome.
 
-#### Hunting requires no separate principle
+**Layers added to something already running** — section 6. Correct as a strong bias, with a specific boundary on where it stops holding.
 
-Living things need concentrated resources. Resources are, at this point in history, concentrated inside other living things — so other living things are what gets taken. Predation is not a different kind of act from the intake every organism performs; it is that act aimed at the densest available source. This is where the model turns bleak, and the bleakness belongs to the position rather than sitting beside it: a world in which everything that stays organised does so by taking apart something else that was organised is a horrifying place to find oneself living.
+**Sensing as intake applied to information** — section 7. The light-detecting machinery predates the animals that use it, and the eye has been rebuilt independently more than once.
 
-#### Evolution is complexity added to something that already exists
+**The whale, worked through in full** — section 8. Lunge feeding, the anatomy that serves it, and why the gape reads as ancient.
 
-Not design from a blank sheet, but modification of a creature already running. Layers accumulate, genes get extended, and each change is made to whatever was already there, in response to whatever happened to be going on in the world at the time.
+**What kind of object has to keep running for any of this to work** — section 9.
 
-#### Limbs are one section duplicated
+**What is genuinely unsettled** — section 10.
 
-Arms and legs look like the same instruction extended more than once, and the fingers repeat the pattern of the limb they hang from. Part of this claim is epistemic: the pattern is *visible*. Looking at one's own arm, it is possible to see how the thing could be built — and to see how small changes to that construction, accumulated over a long time, would produce the range of limbs animals actually have.
-
-#### Every material in an animal descends from a simple ancestor that had the potential for it
-
-Bone, hair, every structure — none of it needed a new invention, only the elaboration of a capacity already present. Different lineages, under different conditions, pushed different parts of that capacity further, according to what helped them survive.
-
-#### Sense organs are the intake principle applied to information
-
-An eye takes in information; sonar takes in information. Neither is a departure from the cylinder. Both exist so that the cylinder can locate the material it needs and get to it efficiently.
-
-#### Living things are a process, and the structures around us are its products
-
-Crystals form underground by one process; the structures that appear on the surface — buildings and everything like them — are formed by this one. In both cases it is the universe's material being converted from one form into another, here in a more layered way. That the layering is elaborate does not necessarily make the products meaningful.
-
-#### Where each of these is taken up below
-
-What the cylinder is and which animals count as one: section 1. What the limb claim turns out to mean mechanically, and at how many levels the duplication is real: sections 3 and 4. The layering claim, and the one place it needs amending: section 5. Sensing as intake: section 6. The whale worked through in full: section 7. What kind of object a cylinder like this has to be in order to keep running: section 8. What remains genuinely unsettled: section 9.
-
-## 1. What the claim actually says
+## What the claim actually says
 
 ### "Worm" is not a group of animals
 
@@ -87,7 +85,7 @@ Read without prejudice, a human satisfies every clause. So does a blue whale. Wh
 
 The group defined by these features is **Bilateria**, and it accounts for roughly **99% of living animal species** across about 32 phyla.
 
-The exceptions are a short list: **sponges, comb jellies, cnidarians** (jellyfish, corals, anemones), and **placozoans**. None of them has a front and a back in the sense used above, and none is patterned by the positional gene system described in section 3.
+The exceptions are a short list: **sponges, comb jellies, cnidarians** (jellyfish, corals, anemones), and **placozoans**. None of them has a front and a back in the sense used above, and none is patterned by the positional gene system described in section 4.
 
 The gut is a messier boundary than it looks. Sponges and placozoans have no gut at all, and a jellyfish's single opening does serve as both mouth and anus. Comb jellies, though, turn out to have a real through-gut: live imaging published in 2016 tracked food passing all the way through and waste leaving by two functioning anal pores, overturning a long-standing textbook claim that they had a blind sac. So a through-gut is not by itself what marks out the group in question, and it may well be older than that group. Bilateral symmetry and the head-to-tail gene system are what do the marking.
 
@@ -99,9 +97,9 @@ So the shape of the tree is: animals split near the root, one branch became comb
 
 *A comb jelly — outside the body plan in question: no head-to-tail axis, and none of the positional genes that build one. It does have a working through-gut, confirmed only in 2016. On current evidence this lineage branched off before every other animal. — Uwe Kils, ed. Arne Nordmann, CC BY-SA 3.0*
 
-## 2. Enough genetics to read the evidence
+## Enough genetics to read the evidence
 
-The rest of this article depends on understanding what a gene does. This section builds that from nothing. Anyone already comfortable with transcription factors can skip to section 3.
+The rest of this article depends on understanding what a gene does. This section builds that from nothing. Anyone already comfortable with transcription factors can skip to section 4.
 
 ### DNA is a sequence, and that is all it is
 
@@ -135,7 +133,7 @@ This is what statements like *"gene X determines hindlimb identity"* actually me
 
 Once this is in place, the rest of the evidence is readable.
 
-## 3. The positional switches, and why they are the evidence
+## The positional switches, and why they are the evidence
 
 Shape similarity between animals is weak evidence — unrelated lineages converge on similar shapes constantly. The strong evidence that all bilaterians run one body plan is that the **control software was never rewritten**.
 
@@ -163,7 +161,7 @@ An animal is not tube-shaped by coincidence of engineering. It is tube-shaped be
 
 The body plan is conserved because the thing that specifies it is conserved. And the thing that specifies it is conserved because everything built afterward depends on it.
 
-## 4. The four ways a body plan gets modified
+## The four ways a body plan gets modified
 
 If the core is frozen, all evolutionary change has to happen somewhere else. There are four recurring moves, and between them they account for most of what makes one animal look different from another. This is the general mechanism, and it is more useful than any individual example of it.
 
@@ -211,7 +209,7 @@ The same class of mechanism, at a different scale, produces the repeated blocks 
 
 *Digits appear at the peaks of a chemical pattern. Shorten the spacing and more of them fit across the same tissue. Reducing the distal Hox dose in mice is the direction that has been demonstrated.*
 
-## 5. Where change is cheap, and where it is not
+## Where change is cheap, and where it is not
 
 The four moves explain *how* modification happens. A separate question is *where* on an organism it happens — and the answer is consistent enough to be a rule.
 
@@ -253,7 +251,7 @@ The accurate rule is not *layers get added*. It is: **the periphery is where cha
 
 *A blind cave tetra. Eye loss has evolved independently in many cave lineages, alongside enhancement of the senses that still work. Subtraction is as ordinary a move as addition. — Seb Morič, CC BY-SA 4.0*
 
-## 6. The tube's instruments
+## The tube's instruments
 
 Sense organs fit this framework without needing a separate account. An eye and a sonar system are the same functional object: a mechanism for detecting where useful material is, so the tube can go to it. Both take in a signal that has interacted with the world and reconstruct the world from it. One uses light that was already there; the other emits its own sound and reads the return.
 
@@ -283,7 +281,7 @@ One boundary on that claim is worth stating, because the wider version of it was
 
 *A sperm whale. Most of that head is not brain but acoustic apparatus — the organ that generates and aims its clicks. Vision and echolocation solve the same problem in different media. — Gabriel Barathieu, CC BY-SA 2.0*
 
-## 7. A worked example: the rorqual whale
+## A worked example: the rorqual whale
 
 Rorquals — blue, fin, humpback, minke — demonstrate every part of this framework at once, and at a scale that makes the mechanics visible.
 
@@ -303,7 +301,7 @@ The rorqual's lower jaw is **unfused** — there is no bony joint at the chin, o
 
 Inside that fibrous joint sits a sensory organ, described only in 2012, built from the vascular and nervous tissue of the **ancestral front tooth socket** — a tooth position that, after teeth were abandoned entirely, was repurposed into a measuring instrument. It carries mechanoreceptors that track jaw rotation and throat expansion in real time, mechanically linked to the expanding throat grooves, and it supplies the signal the brain needs to time the start, middle, and end of the lunge. Right whales and grey whales, which feed by other methods, do not have it.
 
-This is move one and move two of section 4, visible in a single structure: an existing part, freed from its original job, redeployed as something else.
+This is move one and move two of section 5, visible in a single structure: an existing part, freed from its original job, redeployed as something else.
 
 ![A single translucent Antarctic krill photographed against black](/images/biology/krill.jpg)
 
@@ -333,7 +331,7 @@ The convergence is strong enough to have been reached from outside the lineage. 
 
 Whale ancestors were four-limbed land mammals. They returned to the water, and early whales still carried small external hind legs. Modern whales have no external hind limbs at all — only a reduced pelvis with no limb attached to it.
 
-Those pelvic bones are not simply leftovers, though. They anchor the muscles that control the penis, and their size and shape track the intensity of sexual selection across species, which is probably why they were never lost outright. The limb went; the bone was kept and put to another use — move two of section 4, running one more time.
+Those pelvic bones are not simply leftovers, though. They anchor the muscles that control the penis, and their size and shape track the intensity of sexual selection across species, which is probably why they were never lost outright. The limb went; the bone was kept and put to another use — move two of section 5, running one more time.
 
 The limbs were an extension. The extension was removable. The tube was not.
 
@@ -341,7 +339,7 @@ The limbs were an extension. The extension was removable. The tube was not.
 
 **Basilosaurus*, an early whale. It still carried small external hind legs. Modern whales have none — only a reduced pelvis, which was retained for an unrelated job rather than simply left over. — J. W. Gidley, 1913, public domain*
 
-## 8. What the tube is doing
+## What the tube is doing
 
 One point of physics clarifies why *a tube that takes in material* is the right primitive object rather than an arbitrary starting point.
 
@@ -353,7 +351,7 @@ This is why intake is not one activity an organism performs among others. It is 
 
 Predation follows from this without needing a separate principle. An organism must acquire concentrated energy and material. Where those are concentrated in the surrounding chemistry, organisms take them from the chemistry; where they are concentrated inside other organisms, organisms take them from other organisms. Predation is not a distinct kind of process. It is the general process, applied to whichever reservoir happens to be richest.
 
-## 9. What is genuinely unsettled
+## What is genuinely unsettled
 
 Four open questions bear directly on the claims above. Presenting the framework without them would overstate it.
 
