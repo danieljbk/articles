@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "dev:private": "INCLUDE_PRIVATE=1 astro dev",
+    "open": "bash scripts/open-article.sh",
     "start": "astro dev",
     "build": "astro check && astro build && pagefind --site dist",
     "build:private": "INCLUDE_PRIVATE=1 astro check && INCLUDE_PRIVATE=1 astro build && pagefind --site dist",

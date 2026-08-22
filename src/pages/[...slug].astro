@@ -83,13 +83,13 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
             CONTENTS
           </p>
           <ol class="space-y-1.5">
-            {sections.map(s => (
+            {sections.map((s, i) => (
               <li>
                 <a
                   href={`#${s.slug}`}
                   class="text-[0.95rem] text-muted-foreground underline decoration-transparent underline-offset-4 transition-colors hover:text-foreground hover:decoration-border"
                 >
-                  {s.text}
+                  <span class="tabular-nums">{i + 1}.</span> {s.text}
                 </a>
               </li>
             ))}

@@ -68,6 +68,31 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
           </div>
         )
       }
+
+      <div id="sort-bar" class="flex flex-wrap items-center gap-1.5">
+        <span class="mr-0.5 font-mono text-xs text-muted-foreground">sort</span>
+        <button
+          type="button"
+          data-sort="newest"
+          class="sort-pill is-active inline-flex items-center rounded-md border border-border bg-foreground px-2.5 py-1 font-mono text-xs text-background transition-colors"
+        >
+          newest
+        </button>
+        <button
+          type="button"
+          data-sort="oldest"
+          class="sort-pill inline-flex items-center rounded-md border border-border bg-secondary/50 px-2.5 py-1 font-mono text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          oldest
+        </button>
+        <button
+          type="button"
+          data-sort="title"
+          class="sort-pill inline-flex items-center rounded-md border border-border bg-secondary/50 px-2.5 py-1 font-mono text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          a–z
+        </button>
+      </div>
     </div>
 
     {
@@ -83,6 +108,8 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
               <li
                 data-slug={toUrlSlug(article.id)}
                 data-tags={article.data.tags.join(",")}
+                data-date={article.data.pubDate.toISOString().slice(0, 10)}
+                data-title={article.data.title.toLowerCase()}
               >
                 <a
                   href={`/${toUrlSlug(article.id)}`}
@@ -147,16 +174,43 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
       function setupHomeFilter() {
         const input = document.querySelector("#search-input");
         const tagBar = document.querySelector("#tag-bar");
+        const sortBar = document.querySelector("#sort-bar");
         const list = document.querySelector("#article-list");
         const emptyState = document.querySelector("#empty-state");
         if (!input || !list) return;
 
         let query = "";
         let activeTag = "";
+        let sortMode = "newest";
         let searchSlugs = null;
         let searchToken = 0;
 
         const items = Array.from(list.querySelectorAll("li"));
+
+        // Sorting reorders the rows; filtering hides them. The two are
+        // independent, so either can change without recomputing the other.
+        function syncSortButtons() {
+          if (!sortBar) return;
+          sortBar.querySelectorAll(".sort-pill").forEach(btn => {
+            const isActive = (btn.dataset.sort || "newest") === sortMode;
+            btn.classList.toggle("is-active", isActive);
+            btn.classList.toggle("bg-foreground", isActive);
+            btn.classList.toggle("text-background", isActive);
+            btn.classList.toggle("bg-secondary/50", !isActive);
+            btn.classList.toggle("text-muted-foreground", !isActive);
+            btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+          });
+        }
+
+        function applySort() {
+          const by = {
+            newest: (a, b) => (b.dataset.date || "").localeCompare(a.dataset.date || ""),
+            oldest: (a, b) => (a.dataset.date || "").localeCompare(b.dataset.date || ""),
+            title: (a, b) => (a.dataset.title || "").localeCompare(b.dataset.title || ""),
+          }[sortMode] || (() => 0);
+          // appendChild moves the existing nodes, so listeners and state survive.
+          for (const li of [...items].sort(by)) list.appendChild(li);
+        }
 
         function syncTagButtons() {
           if (!tagBar) return;
@@ -225,6 +279,8 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
           else url.searchParams.delete("q");
           if (activeTag) url.searchParams.set("tag", activeTag);
           else url.searchParams.delete("tag");
+          if (sortMode !== "newest") url.searchParams.set("sort", sortMode);
+          else url.searchParams.delete("sort");
           history.replaceState({}, "", url);
         }
 
@@ -246,6 +302,17 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
           });
         }
 
+        if (sortBar) {
+          sortBar.addEventListener("click", e => {
+            const button = e.target.closest(".sort-pill");
+            if (!button) return;
+            sortMode = button.dataset.sort || "newest";
+            syncSortButtons();
+            pushUrlState();
+            applySort();
+          });
+        }
+
         const params = new URLSearchParams(window.location.search);
         const initialQuery = params.get("q") || "";
         const initialTag = params.get("tag") || "";
@@ -256,6 +323,12 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
         if (initialTag) {
           activeTag = initialTag;
           syncTagButtons();
+        }
+        const initialSort = params.get("sort") || "";
+        if (["oldest", "title"].includes(initialSort)) {
+          sortMode = initialSort;
+          syncSortButtons();
+          applySort();
         }
         if (query) runSearch(query);
         else applyFilter();
