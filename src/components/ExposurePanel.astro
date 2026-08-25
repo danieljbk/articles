@@ -1,14 +1,18 @@
 ---
 /**
- * Exposure assessment panel for a private article.
+ * Exposure assessment for a private article.
  *
- * Sits above the article, styled apart from prose. Reading an article and
- * deciding whether to publish it are separate acts, and the second happens
- * rarely — so this has to be scannable, not readable. Each threat is named,
- * categorised, and rated on its own line; nothing here is a paragraph.
+ * Sits above the article and reads as a document header, not a widget. Two
+ * design rules govern it:
  *
- * Private routes only. The public collection's schema rejects `exposure`, so
- * this can never render on a published page.
+ *   1. The verdict leads. An earlier version listed every threat first and put
+ *      the conclusion last, so you had to read the evidence to learn the
+ *      answer — the inverse of how this is actually used. The decision is the
+ *      headline; threats are the reasoning behind it.
+ *   2. Unconditional verdicts are stated, not templated. Rendering "ALWAYS →
+ *      never publish" forced a plain judgement through a conditional shape.
+ *
+ * Monochrome except severity, which is the one place a glance has to land.
  */
 interface Threat {
   category: string;
@@ -16,12 +20,10 @@ interface Threat {
   severity: "low" | "moderate" | "high";
   detail: string;
 }
-
 interface Verdict {
   rules: { if: string; then: string }[];
   otherwise: string;
 }
-
 interface Props {
   exposure: { threats: Threat[]; verdict: Verdict };
 }
@@ -29,65 +31,89 @@ interface Props {
 const { exposure } = Astro.props;
 const { threats, verdict } = exposure;
 
-// Overall rating is derived from the threats rather than stored, so it can
-// never drift out of step with the list underneath it.
 const rank = { low: 1, moderate: 2, high: 3 } as const;
-const worst = threats.reduce((acc, t) => Math.max(acc, rank[t.severity]), 0);
+const worst = threats.reduce((m, t) => Math.max(m, rank[t.severity]), 0);
 const overall = (["none", "low", "moderate", "high"] as const)[worst];
 const elevated = worst >= 3;
 
-const severityClass = (s: Threat["severity"]) =>
-  s === "high"
-    ? "border-destructive/60 text-destructive"
-    : "border-border text-muted-foreground";
+const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const conditional = verdict.rules.length > 0;
 ---
 
 <aside
   aria-label="Exposure assessment"
   data-print-hide
   class:list={[
-    "mb-12 rounded-lg border-2 bg-secondary/40 px-5 py-4",
-    elevated ? "border-destructive/60" : "border-border",
+    "mb-14 border-l-2 pl-5",
+    elevated ? "border-destructive/70" : "border-border",
   ]}
 >
-  <div class="flex items-center justify-between gap-3 border-b border-border pb-3">
-    <p class="font-mono text-xs tracking-wide text-muted-foreground">
-      IF THIS IS PUBLISHED
+  <div class="flex items-baseline gap-2.5">
+    <p class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
+      If published
     </p>
     <span
       class:list={[
-        "rounded-md border px-2 py-0.5 font-mono text-xs uppercase tracking-wide",
-        elevated ? "border-destructive/60 text-destructive" : "border-border text-muted-foreground",
+        "font-mono text-[0.7rem] uppercase tracking-[0.14em]",
+        elevated ? "text-destructive" : "text-muted-foreground/70",
       ]}
     >
-      {overall}
+      &middot; {overall} risk
     </span>
   </div>
 
+  {/* The answer, first. */}
+  {
+    conditional ? (
+      <dl class="mt-3 space-y-1.5">
+        {verdict.rules.map(r => (
+          <div class="text-[1.05rem] leading-snug">
+            <dt class="inline font-mono text-[0.7rem] uppercase tracking-wider text-muted-foreground">
+              If&nbsp;
+            </dt>
+            <dd class="inline text-muted-foreground">
+              {r.if} — <span class="font-medium text-foreground">{r.then}</span>
+            </dd>
+          </div>
+        ))}
+        <div class="text-[1.05rem] leading-snug">
+          <dt class="inline font-mono text-[0.7rem] uppercase tracking-wider text-muted-foreground">
+            Otherwise&nbsp;
+          </dt>
+          <dd class="inline font-medium text-foreground">{verdict.otherwise}</dd>
+        </div>
+      </dl>
+    ) : (
+      <p class="mt-2 text-[1.35rem] font-semibold leading-tight tracking-tight text-foreground">
+        {sentence(verdict.otherwise)}.
+      </p>
+    )
+  }
+
+  {/* The reasoning, second and quieter. */}
   {
     threats.length === 0 ? (
-      <p class="pt-3 text-[0.95rem] text-muted-foreground">
-        No threats identified.
-      </p>
+      <p class="mt-4 text-sm text-muted-foreground">No threats identified.</p>
     ) : (
-      <ol class="divide-y divide-border">
+      <ol class="mt-5 space-y-3.5">
         {threats.map(t => (
-          <li class="py-3">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="rounded-md border border-border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide text-muted-foreground">
+          <li>
+            <p class="text-[0.9rem] leading-snug">
+              <span class="font-mono text-[0.7rem] uppercase tracking-wider text-muted-foreground">
                 {t.category}
               </span>
+              <span class="mx-1.5 text-muted-foreground/40">/</span>
               <span class="font-medium text-foreground">{t.threat}</span>
               <span
                 class:list={[
-                  "ml-auto rounded-md border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide",
-                  severityClass(t.severity),
+                  "ml-1.5 font-mono text-[0.7rem] uppercase tracking-wider",
+                  t.severity === "high" ? "text-destructive" : "text-muted-foreground/70",
                 ]}
               >
                 {t.severity}
               </span>
-            </div>
-            <p class="mt-1 text-[0.9rem] leading-relaxed text-muted-foreground">
+            </p>
+            <p class="mt-0.5 text-[0.875rem] leading-relaxed text-muted-foreground">
               {t.detail}
             </p>
           </li>
@@ -95,31 +121,4 @@ const severityClass = (s: Threat["severity"]) =>
       </ol>
     )
   }
-
-  <div class="mt-1 border-t border-border pt-3">
-    <p class="mb-2 font-mono text-[0.7rem] tracking-wide text-muted-foreground">
-      VERDICT
-    </p>
-    <dl class="space-y-1.5">
-      {
-        verdict.rules.map(r => (
-          <div class="flex gap-2 text-[0.95rem] leading-relaxed">
-            <dt class="shrink-0 font-mono text-[0.7rem] uppercase tracking-wide text-muted-foreground pt-1">
-              if
-            </dt>
-            <dd class="text-foreground">
-              {r.if} <span class="font-mono text-muted-foreground">&rarr;</span>{" "}
-              <span class="font-medium">{r.then}</span>
-            </dd>
-          </div>
-        ))
-      }
-      <div class="flex gap-2 text-[0.95rem] leading-relaxed">
-        <dt class="shrink-0 font-mono text-[0.7rem] uppercase tracking-wide text-muted-foreground pt-1">
-          {verdict.rules.length > 0 ? "else" : "always"}
-        </dt>
-        <dd class="font-medium text-foreground">{verdict.otherwise}</dd>
-      </div>
-    </dl>
-  </div>
 </aside>
