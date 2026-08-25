@@ -24,6 +24,8 @@ The first: a white hole is just a black hole in reverse time, and since Einstein
 
 The second: our universe might be sitting in the middle of the Hawking radiation of a really, really big black hole. Hawking radiation is random, so it would produce a **random and evenly distributed cloud of matter** — a fair description of how the early universe looked, and so possibly what began it.
 
+The fourth: time is the fourth dimension and we are creatures trapped inside it, so a higher-dimensional being would stand *above* time — seeing all of it at once and existing permanently. That would explain how the universe manages to have no start and no end, and matter may itself be of a higher-dimensional nature, unlike our memory-forming consciousness.
+
 The third: that smoothness is the reversed direction's natural end state. Matter moving apart eventually spreads until it is spread evenly, while matter that attracts eventually crumples into a ball. Our beginning is where the reversed reading finishes, which would make the Big Bang's evenness an equilibrium rather than a fine-tuned accident.
 
 ### The position, stated in full
@@ -47,6 +49,8 @@ Worth setting out at its strongest before anything is done to it, because the pa
 8. **The antiparticle case.** The pattern already shows up in matter itself. Antiparticles exist because reversing time makes particles behave in the anti way — the same particles, acting oppositely.
 
 9. **The smoothness.** In the reversed direction matter moves apart until it is spread evenly, which is what the early universe looked like; in ours everything attracts and eventually crumples together. The Big Bang's evenness is therefore the reversed reading's end state rather than a fine-tuned accident.
+
+10. **Standing above time.** We are third-dimensional creatures limited inside our own dimensions, unable to do anything about time. A higher-dimensional creature exists above time and therefore permanently — which is how the universe can have no start and no end. Matter may be of a higher-dimensional nature, rather than the three-dimensional nature of memory-forming consciousness.
 
 **The load-bearing commitment.** Nothing in the contents of the universe privileges one reading over the other. Every apparent asymmetry is an artifact of which reading is being performed, and reverses when the reading switches. Everything above rests on this.
 
@@ -382,9 +386,65 @@ Barbour, Koslowski and Mercati studied the Newtonian N-body problem at zero tota
 
 That uniform state is not an improbable fluctuation. It is a dynamical waypoint. Which is exactly the status the proposal wants for the Big Bang's smoothness — obtained with attraction alone, and with no reversal required.
 
-## All three proposals were about the arrow of time
+## The fourth proposal: standing above time
 
-Strip away the specifics and the three proposals are one proposal. Each tries to source the difference between past and future from the physics itself — from the time-symmetry of the field equations, from the randomness of thermal radiation, or from a force reversing sign. And it is not there. Symmetric laws cannot produce an asymmetry, and randomness cannot produce the most special initial condition in the universe.
+### We are already four-dimensional
+
+The premise needs one correction, and it makes the picture stronger rather than weaker.
+
+In relativity we are not three-dimensional creatures carried through a fourth dimension. We are four-dimensional objects outright. A person is a worldtube — a shape extended through time as genuinely as through space — and what anyone calls "themselves right now" is a three-dimensional slice across it. The whole shape is there. What is confined to the slice is perception, not existence.
+
+So the limitation is real. It is just not a shortage of dimensions.
+
+### Extra dimensions buy no freedom in time
+
+This is the step that fails, and it fails on the structure of spacetime rather than on anything exotic.
+
+The reason nobody can move around in time is not a missing dimension. It is the **minus sign**. Spacetime's geometry treats time with the opposite sign from the three spatial directions, and that one difference is what produces light cones and separates timelike paths from spacelike ones. Moving sideways through time would mean following a spacelike path — travelling faster than light.
+
+That constraint has nothing to do with how many *spatial* dimensions anyone has. A creature with ten spatial dimensions is bound by the same light cones and moves through time exactly as helplessly as we do. Adding room to the space part of spacetime buys nothing at all in the time part.
+
+What would buy it is a second *time* dimension, and that has been examined. The results are discouraging. With two timelike directions there is a closed timelike curve joining any two points whatsoever, so causality collapses completely — and worse, a light cone with its origin removed no longer falls into two separate pieces, meaning there is no future/past distinction left to have. Extra time dimensions also bring ghost fields of negative norm, negative probabilities, and an ill-posed initial value problem. Itzhak Bars has built a two-time physics in which a (d+2)-dimensional description projects holographically down to ordinary one-time physics, but the extra time is gauged away in every observable sector — which is precisely not a vantage point above time.
+
+### There is no established outside to stand in
+
+The Flatland picture assumes our spacetime sits inside a larger space that a higher being could look down from. General relativity requires no such thing, and this is not a technicality.
+
+Gauss proved that the curvature of a surface can be determined from measurements made entirely inside it, with no reference to any surrounding space — the *Theorema Egregium*. Riemann generalised intrinsic curvature to any number of dimensions, and Einstein built gravity on that generalisation. Spacetime curves **intrinsically**, not into anything. A two-dimensional being on a sphere can establish that the sphere is curved without knowing three-dimensional space exists.
+
+There is no observational evidence that our spacetime is embedded in a higher-dimensional one, and the theory does not need it to be. The balcony this proposal wants to stand on is not something physics supplies.
+
+### "Permanently" is a temporal word
+
+Worth separating out. If a being genuinely stands outside time, then saying it exists *permanently* applies a temporal predicate to something atemporal. Permanent means "at all times", and for such a being there are no times. It would not exist for a very long while. It would exist timelessly, which is a different and stranger claim.
+
+### Whether the universe has a start
+
+Genuinely open, and worth reporting rather than settling.
+
+The block-universe view does make "what brought the universe into existence" a possibly malformed question. If the whole four-dimensional object simply *is*, there is no moment at which it was produced, and asking what preceded the earliest moment may be like asking what lies north of the north pole. That is a respectable position, and the Hartle–Hawking no-boundary proposal formalises a version of it: a past that is finite and yet has no edge, the way a sphere's surface is finite without a rim.
+
+Pulling the other way is the Borde–Guth–Vilenkin theorem, which shows that any spacetime whose average expansion has been positive is geodesically incomplete toward the past. It assumes nothing about energy conditions, which is what makes it hard to evade, and on it an inflating universe cannot be past-eternal and must have a prior boundary of some kind. It is not the last word — recent work presents inflationary solutions claimed to be smooth and geodesically complete into the past. The question is live.
+
+What a higher-dimensional vantage does not do is settle it. If the block has a boundary in one time direction then it has one, and standing outside changes nothing about whether it does. A viewpoint is not a modification of the thing viewed.
+
+### Matter, consciousness, and which one is confined
+
+The last piece contains something real and locates its cause in the wrong place.
+
+Matter is four-dimensional, exactly as proposed. A particle is a worldline, an atom a worldtube; the full existence of any material thing is its entire shape in spacetime rather than the momentary cross-section we meet.
+
+But brains are four-dimensional on precisely the same terms. There is no dimensional gap between matter and the consciousness it supports — both are worldtubes.
+
+The asymmetry being sensed is real all the same. Matter's worldline is present in its entirety while awareness is confined to a travelling slice. The cause is the one this article keeps arriving at: at every slice a brain holds records correlating with the smooth end of the block and none correlating with the other. Confinement to the slice follows from the record structure, which follows from the entropy gradient. Thermodynamic, not dimensional.
+
+There is, though, a real physical model in which different things get different numbers of dimensions. In Randall–Sundrum braneworlds our universe is a brane sitting in a higher-dimensional bulk, Standard Model matter and forces are confined to the brane, and **gravity** propagates through the full bulk. So the split exists in serious physics — with gravity as the higher-dimensional participant and matter as the confined one, which is the reverse of the arrangement proposed here.
+
+## Every proposal here was about the arrow of time
+
+Strip away the specifics and every proposal here is one proposal. Each tries to source the difference between past and future from somewhere other than the contents of our universe — from the time-symmetry of the field equations, from the randomness of thermal radiation, from a force reversing sign, or from a vantage point above the whole thing.
+
+Four routes, one wall. A four-dimensional being looking down at our spacetime would see one smooth end and one lumpy end, and black holes forming toward the lumpy one. The asymmetry is in what is being looked at, not in the looking, and no change of vantage alters it. And it is not there. Symmetric laws cannot produce an asymmetry, and randomness cannot produce the most special initial condition in the universe.
 
 The arrow of time lives in the boundary condition. The universe began in an extraordinarily low-entropy state, and everything that distinguishes the past from the future — why eggs break and never unbreak, why black holes form and white holes do not, why the universe grew lumpy rather than smooth — is that one fact being spent down.
 
@@ -426,3 +486,8 @@ There is a genuine irony at the end of this. The one event in the history of the
 - [The Matter-Antimatter Asymmetry of the Universe (arXiv:hep-ph/0207323)](https://arxiv.org/pdf/hep-ph/0207323) and [Matter over Antimatter: The Sakharov Conditions After 50 Years](https://www.lorentzcenter.nl/matter-over-antimatter-the-sakharov-conditions-after-50-years.html) — the three conditions for baryogenesis and why Standard Model CP violation is insufficient
 - [Dark Energy: Mystery of the Millennium (arXiv:astro-ph/0603114)](https://arxiv.org/pdf/astro-ph/0603114) and [Dark Energy Antigravity — Perivolaropoulos](https://ned.ipac.caltech.edu/level5/March01/Dark/Dark.html) — why ρ + 3p rather than ρ sources gravitational acceleration, and how negative pressure produces repulsion
 - [Identification of a Gravitational Arrow of Time (arXiv:1409.0917)](https://arxiv.org/pdf/1409.0917) and [Arrows of time in unconfined systems (arXiv:1602.08019)](https://arxiv.org/pdf/1602.08019) — complexity as the governing quantity, and arrows arising without special initial conditions
+- [Gauss's Theorema Egregium](https://www.kroneckerwallis.com/gausss-theorema-egregium-geometry-of-surfaces/) and [Riemann's non-Euclidean geometry](https://www.kroneckerwallis.com/bernhard-riemann-non-euclidean-geometry-that-enabled-relativity/) — curvature as intrinsic, requiring no higher-dimensional embedding
+- [Multiple time dimensions](https://en.wikipedia.org/wiki/Multiple_time_dimensions) and [Physics With Two Time Dimensions (arXiv:1001.2485)](https://arxiv.org/pdf/1001.2485) — closed timelike curves everywhere, ghosts, and the loss of any future/past split
+- [A Two-Time Universe? — USC Dornsife](https://dornsife.usc.edu/news/stories/a-two-time-universe/) — Bars's two-time physics and the gauging away of the extra time
+- [Brane-World Gravity — Living Reviews in Relativity](https://link.springer.com/article/10.12942/lrr-2010-5) — matter confined to the brane while gravity propagates in the bulk
+- [Inflationary Spacetimes Are Incomplete in Past Directions — Borde, Guth & Vilenkin](https://www.researchgate.net/publication/10773496_Inflationary_Spacetimes_Are_Incomplete_in_Past_Directions) and [Geodesic Completeness in General Cosmological Scenarios (arXiv:2604.20809)](https://arxiv.org/pdf/2604.20809) — the past-incompleteness result and recent challenges to it
