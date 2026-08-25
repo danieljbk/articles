@@ -73,13 +73,43 @@ So the simultaneity claim holds precisely where the object is idealized enough t
 
 ## The observer who scrolls
 
-There is one more problem with the scrolling picture, and it is the deepest one: there is no such observer. Not "none has been found" — the position is not available to occupy.
+The natural completion of the scrolling picture is that the observers reverse too. Beings living in the other direction do not remember things the way we do — their memorization process runs backwards along with everything else. Nothing is privileged about our side; we simply happen to be on it.
 
-Which direction counts as the past is not a free parameter an observer brings in from outside. It is fixed by the thermodynamics they are made of. Memory works by recording, and recording increases entropy, so a mind can only accumulate memories in the direction entropy grows. Any observer placed anywhere in the block, oriented however you like, will identify the low-entropy end as their past — because that is the direction their own memories point.
+The part about mechanisms is correct. Reverse the block and every process in it reverses, memory included. But that does not deliver observers who experience the other direction, for a reason that has nothing to do with mechanisms.
 
-So two observers "scrolling opposite ways" would not disagree about which end the Big Bang is on. They would both point at the smooth end and call it earlier, because being an observer at all requires it. The scroll direction is a labeling choice. Which end is smooth is not.
+A memory is not a process. It is a **correlation** — a physical record in one place that matches an event elsewhere in time. And a correlation is a fact about the block's contents, not about the direction anyone reads them. In our spacetime, brain states at any moment correlate with events on the low-entropy side and with nothing on the high-entropy side. Flipping the reading direction does not move that correlation; it stays exactly where it was.
 
-The scrolling observer is a genuinely useful fiction: it makes visible that the laws have no preferred direction. But the conclusion it is being asked to support — that both readings are equally real — is exactly what the contents of our particular block deny.
+So reversing a memory mechanism does not produce a mechanism that remembers the other way. It produces a mechanism that **forgets** — records dissolving rather than forming, correlations still anchored to the same end of the block. Forgetting toward one end is not remembering toward the other.
+
+### The time-reverse of our universe, lived in, is our universe
+
+This is the result that settles it, and it takes only a few lines to check.
+
+Take the entire four-dimensional solution describing our universe and flip the sign of time. In the new labeling, entropy decreases as the coordinate advances, and every black hole reads as a white hole — matter streaming out of horizons nothing can enter. That is a perfectly legal solution, and it looks like exactly the mirror world the picture calls for.
+
+Now put an observer in it. Their arrow is set by the entropy gradient, and in the flipped solution that gradient points toward *decreasing* coordinate time. So they live the flipped solution in the direction we would label backwards — which is our original solution, unchanged. And in that direction, matter falls into horizons and cannot get back out.
+
+They see black holes. The same ones we see, doing the same thing ours do.
+
+The flip is a relabeling of the paper the solution is written on. It changes no observation, because it carries the observers' arrow along with everything else. Reversal cannot manufacture a vantage point from which our black holes look like white holes, because reversal takes the observers with it.
+
+### The two ends are not alike
+
+There is a blunter version of the same point.
+
+If the direction of time were only a matter of which way the block is read, the two ends of our universe would have to look the same. They do not. One end is smooth, hot, dense, and simple enough to describe in a paragraph. The other is cold, lumpy, and full of black holes. That asymmetry sits in the contents. No choice of reading direction creates it and none removes it.
+
+So there are not two sides with people on each. There is a gradient with one low end, and everything capable of observing anything sits somewhere along it, facing the same way.
+
+## Where beings in the other direction are taken seriously
+
+The idea is not fringe, and it has been pursued by people who knew exactly what they were doing. It just needs a different shape of universe than ours appears to be.
+
+**Gold's reversing universe.** Thomas Gold proposed that if cosmic expansion halts and reverses, the thermodynamic arrow flips at the turnaround, so the contracting phase runs backwards relative to us. This is the closest thing in the literature to the claim that our black holes are somebody's white holes, and it was argued over seriously. It was refuted — by Penrose, and by Zeldovich and Novikov. The core failure: a recontracting universe does not retrace its smooth beginning in reverse. It collapses into a lumpy, black-hole-riddled state, so entropy climbs straight through the turnaround instead of flipping. Tolman had already undercut the premise that entropy tracks the size of the universe at all.
+
+**Two arrows from a middle.** Sean Carroll and Jennifer Chen proposed a spacetime shaped like an hourglass, with our Big Bang at the narrow neck as the point of lowest entropy and entropy increasing outward in *both* directions. Julian Barbour, Tim Koslowski and Flavio Mercati arrived at a structurally similar picture from gravitational dynamics: their "Janus point" is a configuration of minimum size from which two oppositely directed arrows emerge. In both, observers can exist on both sides, each experiencing time as running away from the middle, each regarding the other as reversed.
+
+That is genuinely people living in the other direction, and it is live physics rather than a thought experiment. It still does not produce white holes. Those observers sit on the far side of an entropy minimum, in their own stretch of spacetime, with their own arrow — and along that arrow, matter falls in. They have black holes too. Two branches, two arrows, black holes in both.
 
 ## What "the equations allow it" actually buys
 
@@ -173,6 +203,7 @@ There is a genuine irony at the end of this. The one event in the history of the
 ## What this leaves open
 
 - **Why the initial condition was low-entropy at all.** This is unsolved, and it is the actual frontier both questions were circling. Inflation explains how a small smooth patch becomes a large smooth universe, but Penrose and others argue it presupposes rather than explains the low-entropy starting point, since inflation itself requires special initial conditions to begin. There is no consensus.
+- **Whether the record asymmetry is fully explained.** The argument that an observer's memories must point toward the low-entropy end rests on the Past Hypothesis — the posit that the universe began in a very low-entropy macrostate — combined with assumptions about the initial probability distribution. David Albert and Barry Loewer's development of this is the standard account, and it is not universally accepted. If it is wrong, the question of which directions can host observers reopens.
 - **Being inside a black hole, rather than downstream of one.** Nikodem Popławski's work proposes that torsion — a twisting of spacetime sourced by the spin of matter — halts gravitational collapse before a singularity forms and produces a bounce, so that the interior of every black hole is a new expanding universe. This is a live idea and it is close to the second proposal in spirit, but the mechanism is different in a way that matters: the matter comes from the *collapse*, arriving hot and dense, not from the radiation, arriving cold and dispersed.
 - **The end of one universe as the beginning of the next.** Penrose's Conformal Cyclic Cosmology takes the far future — every black hole evaporated, nothing left but massless radiation — and identifies it, after a rescaling of size, with the Big Bang of a new aeon. This is the closest serious version of "Hawking radiation becomes a universe." It remains a minority position; how to fix the rescaling uniquely is an unsolved problem, and its claimed observational signatures are contested.
 - **White holes at the Planck scale.** Carlo Rovelli, Francesca Vidotto and collaborators argue that quantum gravity may let a black hole tunnel into a white hole at the end of evaporation, and that the resulting remnants — stabilized at around the Planck mass, below which loop quantum gravity permits no hole at all — could constitute part of dark matter. If that is right, white holes exist after all, just nothing like the macroscopic ones the classical equations describe.
@@ -192,3 +223,7 @@ There is a genuine irony at the end of this. The one event in the history of the
 - [Gravitational Collapse with Torsion and Universe in a Black Hole (arXiv:2307.12190)](https://arxiv.org/abs/2307.12190) — Popławski's torsion bounce
 - [The Physics of Conformal Cyclic Cosmology (arXiv:2503.24263)](https://arxiv.org/abs/2503.24263) and [Toward fixing a framework for conformal cyclic cosmology](https://link.springer.com/article/10.1007/s10714-023-03142-3) — CCC and its unresolved conformal-factor problem
 - [White-hole dark matter and the origin of past low-entropy — Vidotto (arXiv:1804.04147)](https://arxiv.org/pdf/1804.04147) and [Planck stars, White Holes, Remnants (arXiv:2407.09584)](https://arxiv.org/html/2407.09584v2) — black-to-white-hole tunneling and Planck-mass remnants as dark matter
+- [Janus Points and Arrows of Time — Barbour, Koslowski & Mercati (arXiv:1604.03956)](https://arxiv.org/abs/1604.03956) — two oppositely directed arrows emerging from a configuration of minimum size
+- [2 Futures Can Explain Time's Mysterious Past — Scientific American](https://www.scientificamerican.com/article/2-futures-can-explain-time-s-mysterious-past/) — the Carroll–Chen hourglass, with entropy increasing outward in both directions and observers possible on both sides
+- [Thermodynamic Asymmetry in Time — Stanford Encyclopedia of Philosophy](https://plato.stanford.edu/entries/time-thermo/) — Gold's reversing universe, its refutation by Penrose, Zeldovich and Novikov, and Tolman's earlier objection to the premise
+- [Time and Chance — Albert, and the record asymmetry literature](https://ndpr.nd.edu/reviews/time-and-chance/) — why records and memories are anchored to the low-entropy end rather than to a direction of reading
