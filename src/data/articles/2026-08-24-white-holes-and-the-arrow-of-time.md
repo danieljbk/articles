@@ -36,6 +36,50 @@ The mirror image is the white hole. Where a black hole horizon is a surface you 
 
 For a spinning black hole the reversal takes one extra step: the time-reverse of a rotating black hole is a white hole rotating the other way. The symmetry holds, it just carries the spin along with it.
 
+## What reversal changes, and what it leaves alone
+
+Worth being precise about this early, because a great deal downstream depends on it.
+
+When you reverse time, **the laws do not change.** That is not a side remark — it is the entire content of time-reversal invariance, and it is the reason the reversed motion counts as a valid solution at all. If the laws flipped under reversal, the reversed process would be obeying *different* laws and would not be a solution of the original ones. "Reverse time and the reversed behaviour is legal" and "reverse time and the laws flip" cannot both hold. The first is the one that does.
+
+What reverses is the **trajectory**, not the rulebook. Velocities flip, because velocity is a first derivative of position with respect to time. Accelerations do not, because acceleration is a second derivative and the two sign flips cancel. Forces enter the equations as accelerations, so forces are untouched.
+
+### The test that settles it
+
+Film an apple falling from a tree, then run the film backwards.
+
+Forward: the apple starts at rest, picks up speed downward, hits the ground. Backwards: the apple leaves the ground moving fast, **slows down** as it rises, and comes to rest at the branch.
+
+Now ask what a repulsive Earth would do to that apple. It would push it away — speeding it up as it climbed. The reversed film shows the exact opposite: the apple decelerating the whole way up, as though something were pulling it back down. Something is. The reversed film is a film of a *thrown* apple, and a thrown apple is under ordinary attractive gravity.
+
+Orbits make the point with nothing left to interpret. Reverse a film of the Earth going around the Sun and you see the Earth going around the other way — still in orbit, still bound, still held by an inward pull. If reversal turned gravity into repulsion, the reversed Earth would fly off immediately. It does not. Every orbit in the solar system runs backwards as an orbit.
+
+The intuition that misfires here identifies **moving apart** with **being repelled**. Those are different. Moving apart is a statement about velocity; being repelled is a statement about acceleration. A thrown ball moves apart from the Earth the entire time the Earth is attracting it. Reversal flips the first and leaves the second alone.
+
+As for why different behaviour does not imply a different law: falling and throwing are already the *same* law, differing only in the velocity they start with. Reversal changes the starting velocity. That is a change of state, not of rulebook.
+
+### Why a flipped-law reading is self-defeating
+
+There is a decisive reason to prefer this beyond the mechanics.
+
+"Reverse time and the reversed motion is a valid way for matter to move" means the reversed motion satisfies **our** equations. That is what validity is, and it is the entire basis for saying Einstein's equations contain white hole solutions.
+
+If the laws flipped under reversal, the reversed motion would satisfy some *other* set of equations and would not be a solution of ours — which would mean white holes are not solutions of Einstein's equations at all. The flipped-law reading removes the conclusion it was brought in to support.
+
+Only one of the two can be held, and the one that yields white holes is the one where the laws stay put.
+
+Each row below is a place where the intuition reaches for something to flip and nothing does:
+
+| Under time reversal | What happens |
+|---|---|
+| The force of gravity | Unchanged. Still attractive, exactly as strong. |
+| Velocities | Reversed. |
+| Which end of the block records point to | Unchanged — correlations are structure, not process. |
+| Which end is smooth and dense | Unchanged. A fact about the contents. |
+| Charge and parity | *These* are what flip. |
+
+That last row is where the intuition is right, and it is the deepest of them. T on its own is not a symmetry of the weak interaction; the exact symmetry is CPT. So making a reversed process genuinely legal does require flipping something — but what flips is charge and parity, turning particles into antiparticles. Not the gravitational force law, and not the direction in which anything is experienced.
+
 ## Scrolling the history in both directions
 
 The strongest form of the reverse-time claim is not about two objects coexisting somewhere. It is this: take the whole four-dimensional spacetime as a finished block, and let something outside it read the block in either direction. Read one way, matter falls in and never returns — a black hole. Read the other way, matter emerges and can never get back in — a white hole. One object. The label depends on which way you scan.
@@ -112,6 +156,8 @@ If the direction of time were only a matter of which way the block is read, the 
 So there are not two sides with people on each. There is a gradient with one low end, and everything capable of observing anything sits somewhere along it, facing the same way.
 
 ## Where beings in the other direction are taken seriously
+
+Separating the experiences of the two directions is not an unreasonable move, and it is worth saying plainly what it would take rather than leaving it as a flat refusal. It requires an entropy minimum with matter on **both** sides of it. Our universe appears to have its minimum at one end, which leaves only one side to stand on. Put the minimum in the middle instead and there are genuinely two populations, each with its own experienced arrow, each regarding the other as reversed — and that is a serious proposal rather than a thought experiment.
 
 The idea is not fringe, and it has been pursued by people who knew exactly what they were doing. It just needs a different shape of universe than ours appears to be.
 
@@ -247,9 +293,47 @@ The Big Bang was not like that. It did not happen at a location and expand into 
 
 If we sat inside an expanding shell of radiation from a central source, the sky would show it: a systematic gradient, a strong preferred direction. What the sky actually shows, once our own motion through the microwave background is subtracted, is uniformity to about ten parts per million. There is no center to be found because there is no center.
 
-## Both questions were about the arrow of time
+## The third proposal: repulsion as the reason for a smooth start
 
-Strip away the specifics and the two proposals are one proposal. Each tries to source the difference between past and future from the physics itself — from the time-symmetry of the field equations, or from the randomness of thermal radiation. And it is not there. Symmetric laws cannot produce an asymmetry, and randomness cannot produce the most special initial condition in the universe.
+The two halves of this article combine into something sharper than either. Section 13 established that a smooth spread of matter is the *low*-entropy state once gravity is in play, which makes the Big Bang's smoothness the most fine-tuned fact about our universe rather than its most natural one. The proposal is that reversal dissolves that puzzle: in the reversed reading gravity repels rather than attracts, and matter that repels pushes itself apart until it is spread evenly. Smoothness stops being a fine-tuned starting condition and becomes an equilibrium — the state the reversed dynamics relaxes into on its own. Our beginning is the reverse universe's end.
+
+For a repulsive force the reasoning is correct. Repulsion does drive matter toward an even spread, and that spread is a genuine attractor rather than a coincidence.
+
+Time reversal does not produce a repulsive force. Per section 3, forces are accelerations and accelerations survive the flip untouched; only velocities reverse. Gravity attracts just as hard in either reading.
+
+The concrete version: **the time-reverse of falling is throwing, not repelling.** Film a dropped ball, run it backwards, and you see a ball moving away from the Earth while *slowing down* — pulled downward the entire way. That is a thrown ball. Nothing in the reversed film shows repulsion.
+
+The same holds at cosmic scale. Reverse a collapsing universe and you get an expanding one decelerating under its own gravity, not a universe in which gravity pushes. So the reversed reading of our history is not a repelling universe relaxing toward smoothness — it is a *contracting* universe whose matter un-clumps, every particle moving in precisely the coordinated way needed to undo structure. That is not an equilibrium being approached. It is the original fine-tuning wearing a different label.
+
+### Repulsive gravity does exist, though
+
+Cosmic expansion is exactly the right thing to raise here, and it leads somewhere better than a counterpoint.
+
+Repulsive gravity is real and we are living in it. In general relativity what sources gravitational attraction is not density alone but ρ + 3p — energy density plus three times pressure. Dark energy carries pressure close to −ρc², which makes that combination negative: one attractive energy against three repulsive pressures, netting repulsion. It is roughly two-thirds of the universe's energy budget, and it is why cosmic expansion stopped decelerating and began speeding up.
+
+And it does precisely what the proposal says repulsion should do. Under accelerating expansion the far future is de Sitter space — everything unbound driven beyond every horizon, leaving a universe empty, cold, and perfectly smooth.
+
+### Why that still does not give a Big Bang
+
+Both ends of our universe are smooth, and their entropies differ by about thirty-four orders of magnitude. The early universe carried roughly 10⁸⁹ units against a ceiling near 10¹²³. The de Sitter future sits essentially at that ceiling; the cosmic event horizon alone accounts for about 10¹²².
+
+Smoothness by itself does not fix entropy. **Density does.** Smooth *and dense* is a low-entropy state, because an enormous amount of clumping is available and none of it has been spent. Smooth *and empty* is a high-entropy state, because there is nothing left to clump. The Big Bang was the first kind; the de Sitter future is the second.
+
+So repulsion delivers smoothness of the spent variety, not the loaded variety. Run the empty smooth state backwards and you do not recover a hot dense beginning — you recover a de Sitter space, which is where you began.
+
+One correction in passing: with dark energy in the picture our universe does not end by crumpling into a ball either. Bound structures stay bound and collapse locally, but everything unbound recedes forever. The far future is isolated islands drifting apart, not a single sphere. Crumpling was the standard expectation until the supernova measurements of 1998.
+
+### The target is right, and it is being pursued
+
+What the proposal reaches for — making the smooth state dynamically natural rather than fine-tuned — is a serious research programme, and it does not need repulsion to get there.
+
+Barbour, Koslowski and Mercati studied the Newtonian N-body problem at zero total energy and angular momentum: plain attractive gravity, with no box around it. Their claim is that no special initial conditions have to be imposed on a time-symmetric law for its solutions to display an arrow of time. In an unconfined system there is no equilibrium to relax into at all, so the usual entropy reasoning does not even apply. The quantity governing the dynamics is complexity, a measure of clustering, and it has a minimum — a uniform configuration the system simply passes through, with clustering growing in both directions away from it.
+
+That uniform state is not an improbable fluctuation. It is a dynamical waypoint. Which is exactly the status the proposal wants for the Big Bang's smoothness — obtained with attraction alone, and with no reversal required.
+
+## All three proposals were about the arrow of time
+
+Strip away the specifics and the three proposals are one proposal. Each tries to source the difference between past and future from the physics itself — from the time-symmetry of the field equations, from the randomness of thermal radiation, or from a force reversing sign. And it is not there. Symmetric laws cannot produce an asymmetry, and randomness cannot produce the most special initial condition in the universe.
 
 The arrow of time lives in the boundary condition. The universe began in an extraordinarily low-entropy state, and everything that distinguishes the past from the future — why eggs break and never unbreak, why black holes form and white holes do not, why the universe grew lumpy rather than smooth — is that one fact being spent down.
 
@@ -289,3 +373,5 @@ There is a genuine irony at the end of this. The one event in the history of the
 - [CPT symmetry](https://en.wikipedia.org/wiki/CPT_symmetry) and [The genesis of the CPT theorem](https://link.springer.com/article/10.1140/epjh/s13129-022-00037-w) — why C accompanies T, and why CPT rather than any of its parts is the exact symmetry
 - [One-electron universe](https://en.wikipedia.org/wiki/One-electron_universe) and [Feynman's 1965 Nobel Lecture](https://www.nobelprize.org/prizes/physics/1965/feynman/lecture/) — Wheeler's proposal and the electron/positron counting objection
 - [The Matter-Antimatter Asymmetry of the Universe (arXiv:hep-ph/0207323)](https://arxiv.org/pdf/hep-ph/0207323) and [Matter over Antimatter: The Sakharov Conditions After 50 Years](https://www.lorentzcenter.nl/matter-over-antimatter-the-sakharov-conditions-after-50-years.html) — the three conditions for baryogenesis and why Standard Model CP violation is insufficient
+- [Dark Energy: Mystery of the Millennium (arXiv:astro-ph/0603114)](https://arxiv.org/pdf/astro-ph/0603114) and [Dark Energy Antigravity — Perivolaropoulos](https://ned.ipac.caltech.edu/level5/March01/Dark/Dark.html) — why ρ + 3p rather than ρ sources gravitational acceleration, and how negative pressure produces repulsion
+- [Identification of a Gravitational Arrow of Time (arXiv:1409.0917)](https://arxiv.org/pdf/1409.0917) and [Arrows of time in unconfined systems (arXiv:1602.08019)](https://arxiv.org/pdf/1602.08019) — complexity as the governing quantity, and arrows arising without special initial conditions
