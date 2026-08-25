@@ -71,7 +71,7 @@ Same physics as the doorknob. The only difference is how much charge got separat
 
 Here is the part that reorganizes the picture, and it is the bridge to the whole second question.
 
-In a copper wire carrying an ordinary household current, the electrons do not race along. They drift — with a bias imposed on their otherwise random jostling — at well under a tenth of a millimeter per second. A given electron takes hours to travel the length of your arm.
+In a copper wire carrying an ordinary household current, the electrons do not race along. They drift — with a bias imposed on their otherwise random jostling — at a fraction of a millimeter per second. Depending on the load, a given electron needs somewhere between roughly fifteen minutes and eight hours to travel the length of your arm.
 
 Yet the light comes on the instant you flip the switch.
 
