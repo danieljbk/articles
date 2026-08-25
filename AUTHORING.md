@@ -227,17 +227,32 @@ in `.astro/dev-server.pid` and its output goes to `.astro/dev-server.log` (both
 gitignored). `bun run open --stop` kills the server and its child process. The
 script itself is `scripts/open-article.sh`.
 
-## Frontmatter (required)
+## Frontmatter
 
 ```yaml
 ---
 title: "Article title"
-description: "One-line summary, shown on the index and as the meta description."
-pubDate: 2026-05-05
+description: "The originating question — not a summary of the answer."
+pubDate: 2026-08-25
+session: 2026-08-25-short-theme
+related:
+  - some-other-slug
 tags:
   - macos
   - networking
 draft: false
+exposure:
+  threats:
+    - category: legal
+      threat: Short name for the threat
+      severity: moderate
+      detail: >-
+        One or two sentences: who could use this, in what concrete scenario.
+  verdict:
+    rules:
+      - if: some condition about your own intent or plans
+        then: do not publish
+    otherwise: publish
 ---
 ```
 
@@ -246,11 +261,49 @@ Schema enforced by `src/content.config.ts`:
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `title` | string | yes | Used in `<title>`, on the index, in OG tags |
-| `description` | string | yes | One sentence; appears under the title and in meta tags |
-| `pubDate` | date (`YYYY-MM-DD`) | yes | Sorts the index. UTC-formatted on render so the day stays stable across timezones |
+| `description` | string | yes | **Write it as the originating question**, so the index reads as a list of explored questions |
+| `pubDate` | date | yes | Take it and the filename prefix from `date +%F` at write time, never from context — context goes stale across midnight |
+| `session` | string | no | `YYYY-MM-DD-short-theme`. Groups articles by the conversation they came from. Set it on every new article; the private index groups by it |
+| `related` | string[] | no | URL slugs (no date prefix) of articles on the same subject from *other* sessions. Declare one direction only — the reverse is computed |
+| `section` | enum | no | `technology` (default), `science`, or `league`. League sorts below everything on the public index |
+| `vault` | bool | no | `true` marks content that must never be publishable. The public schema narrows this to `false`, so a vault article reaching the public collection fails the build |
+| `exposure` | object | no | The threat assessment. Private-only — the public schema rejects it outright |
 | `updatedDate` | date | no | Optional revision date |
 | `tags` | string[] | no | Defaults to `[]`. Lowercase, hyphenated |
 | `draft` | bool | no | Defaults to `false`. `true` hides from index and routes |
+
+### The exposure block
+
+Every private article carries one. It renders as a panel above the article, so
+Daniel sees it when the page opens and decides from there — reading an article
+and deciding whether to publish it are separate acts.
+
+`threats` is a list; each entry has four fields.
+
+| Field | Values | Notes |
+|---|---|---|
+| `category` | `legal`, `platform`, `security`, `privacy`, `physical`, `reputation`, `pattern` | Fixed vocabulary so it stays greppable across the corpus |
+| `threat` | string | A short name, not a sentence. It is scanned, not read |
+| `severity` | `low`, `moderate`, `high` | High means concrete legal, financial, account, or physical exposure |
+| `detail` | string | One or two sentences naming a concrete actor and scenario, never an abstract risk |
+
+An empty `threats: []` means *assessed and clean*, which the panel renders
+distinctly from *not yet assessed*. The overall rating shown in the corner is
+derived from the worst threat, never stored.
+
+`verdict` is a decision procedure, not an opinion. `rules` is a list of
+`if`/`then` pairs; `otherwise` is required, because there is always an answer.
+Never write "author's call" or "depends" — if the deciding condition is
+something only Daniel knows, that condition *is* the `if`.
+
+**Calibrate severity by what the consequence costs in time, not by how alarming
+the method sounds.** A platform ban is recoverable; a lawsuit costs months. And
+note that `pattern` and `reputation` threats are corpus-level — they grow as
+more articles accumulate, so they are tracked in the
+`publishing-security-review` article rather than settled once.
+
+**Publishing strips the exposure block.** A public article must never carry its
+own threat model.
 
 **Slug convention:** filename `YYYY-MM-DD-short-slug.md`. The date prefix sorts files chronologically on disk; the URL slug strips the date (so `articles.kwon.ai/short-slug`).
 
