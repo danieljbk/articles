@@ -1,0 +1,69 @@
+---
+/**
+ * Item — an inline League item reference: official icon + name, sized to the
+ * surrounding text and safe to drop anywhere in prose or a table cell.
+ *
+ * Icons are the official Data Dragon item art, stored locally in
+ * `public/images/items/<slug>.png` (not hotlinked). To add an item: download
+ * its icon to that folder and add a `slug: "Display Name"` line to ITEMS below.
+ *
+ * Usage in .mdx: `import Item from "@components/Item.astro";` then
+ * `<Item id="infinity-edge" />`, or `<Item id="infinity-edge" label="IE" />`
+ * to override the printed text while keeping the icon.
+ */
+interface Props {
+  id: string;
+  label?: string;
+}
+
+const ITEMS: Record<string, string> = {
+  "infinity-edge": "Infinity Edge",
+  "runaans-hurricane": "Runaan's Hurricane",
+  "kraken-slayer": "Kraken Slayer",
+  "blade-of-the-ruined-king": "Blade of the Ruined King",
+  "wits-end": "Wit's End",
+  "guinsoos-rageblade": "Guinsoo's Rageblade",
+  "nashors-tooth": "Nashor's Tooth",
+  "berserkers-greaves": "Berserker's Greaves",
+};
+
+const { id, label } = Astro.props;
+const name = ITEMS[id];
+if (!name) {
+  console.warn(
+    `[Item] unknown id "${id}" — add it to src/components/Item.astro and drop its icon in public/images/items/`,
+  );
+}
+const text = label ?? name ?? id;
+const src = `/images/items/${id}.png`;
+---
+
+{
+  name ? (
+    <span class="item">
+      <img class="item-icon" src={src} alt="" width="20" height="20" loading="lazy" />
+      <span class="item-name">{text}</span>
+    </span>
+  ) : (
+    <span class="item-name">{text}</span>
+  )
+}
+
+<style>
+  .item {
+    white-space: nowrap;
+  }
+  .item-icon {
+    display: inline-block;
+    height: 1.15em;
+    width: 1.15em;
+    margin: 0 0.3em 0 0;
+    border-radius: 3px;
+    border: 1px solid hsl(var(--border));
+    vertical-align: -0.22em;
+    object-fit: contain;
+  }
+  .item-name {
+    font-weight: 500;
+  }
+</style>

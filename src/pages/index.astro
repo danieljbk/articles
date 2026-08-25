@@ -3,8 +3,16 @@ import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import { toUrlSlug } from "@/utils/slug";
 
+// League pieces are readable by anyone who wants them but must not sit at the
+// same weight as the technology and science work, so they sort below
+// everything else regardless of date. Within each band, newest first.
 const articles = (await getCollection("articles", ({ data }) => !data.draft))
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+  .sort((a, b) => {
+    const demote = (s: string) => (s === "league" ? 1 : 0);
+    const bandDiff = demote(a.data.section) - demote(b.data.section);
+    if (bandDiff !== 0) return bandDiff;
+    return b.data.pubDate.getTime() - a.data.pubDate.getTime();
+  });
 
 const tagCounts = new Map<string, number>();
 for (const article of articles) {
@@ -110,6 +118,7 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                 data-tags={article.data.tags.join(",")}
                 data-date={article.data.pubDate.toISOString().slice(0, 10)}
                 data-title={article.data.title.toLowerCase()}
+                data-section={article.data.section}
               >
                 <a
                   href={`/${toUrlSlug(article.id)}`}
@@ -119,12 +128,19 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                     <span class="font-medium tracking-tight group-hover:text-foreground">
                       {article.data.title}
                     </span>
-                    <time
-                      datetime={article.data.pubDate.toISOString().slice(0, 10)}
-                      class="shrink-0 font-mono text-xs text-muted-foreground"
-                    >
-                      {dateFormatter.format(article.data.pubDate)}
-                    </time>
+                    <span class="flex shrink-0 items-baseline gap-2">
+                      {article.data.section === "league" && (
+                        <span class="rounded-md border border-border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide text-muted-foreground">
+                          league
+                        </span>
+                      )}
+                      <time
+                        datetime={article.data.pubDate.toISOString().slice(0, 10)}
+                        class="font-mono text-xs text-muted-foreground"
+                      >
+                        {dateFormatter.format(article.data.pubDate)}
+                      </time>
+                    </span>
                   </div>
                   <p class="line-clamp-2 text-sm text-muted-foreground">
                     {article.data.description}

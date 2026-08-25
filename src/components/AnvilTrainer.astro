@@ -1,0 +1,234 @@
+---
+/**
+ * AnvilTrainer — a stat-anvil intuition trainer for Ashe in ARAM: Mayhem.
+ *
+ * Start as base level-18 Ashe. Each round offers three stat bundles priced at
+ * the SAME gold budget (so it is always a real tradeoff, never an obvious one),
+ * and you pick the one that adds the most DPS. Your choice accumulates onto the
+ * build, so the optimal answer shifts as the build develops — which is the whole
+ * point: it trains the "feed the scarce factor" instinct from the article.
+ *
+ * Uses the article's damage model (single target, 80 armor, no ×1.05).
+ * Self-contained vanilla JS via `is:inline`; monochrome; single instance per page.
+ */
+---
+
+<div class="anvil" id="anvil">
+  <div class="av-head">
+    <div class="av-title">Anvil trainer — pick the stat that adds the most DPS</div>
+    <div class="av-note">Base level-18 Ashe vs an 80-armor target. Each round's three anvils cost the same gold, so the winner depends only on which factor is scarce in your current build.</div>
+  </div>
+
+  <div class="av-build">
+    <span>AD <b id="av-ad">—</b></span>
+    <span>attack speed <b id="av-x">—</b></span>
+    <span>crit <b id="av-c">—</b></span>
+    <span>crit dmg <b id="av-cd">—</b></span>
+    <span class="av-dps">DPS <b id="av-dps">—</b></span>
+  </div>
+
+  <div class="av-round">
+    <div class="av-prompt" id="av-prompt">Round 1 — which anvil adds the most DPS?</div>
+    <div class="av-opts" id="av-opts"></div>
+  </div>
+
+  <div class="av-reveal" id="av-reveal" hidden>
+    <div class="av-verdict" id="av-verdict"></div>
+    <div class="av-why" id="av-why"></div>
+    <button class="av-btn av-next" id="av-next" type="button">Next anvil →</button>
+  </div>
+
+  <div class="av-foot">
+    <span class="av-score" id="av-score">Optimal picks: 0 / 0</span>
+    <button class="av-reset" id="av-reset" type="button">Reset</button>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var root = document.getElementById("anvil");
+    if (!root) return;
+    var $ = function (id) { return document.getElementById(id); };
+
+    var ARMOR = 80, BASE_AS = 0.658;
+    function dps(s) {
+      var rate = Math.min(5, BASE_AS * (1 + s.x / 100));
+      var F = 1 + Math.min(s.c, 100) / 100 * (s.cd / 100 - 1);
+      var P = 100 / (100 + ARMOR);
+      return rate * (s.ad * F * P);
+    }
+    function clone(s) { return { ad: s.ad, x: s.x, c: s.c, cd: s.cd }; }
+    function applyTo(s, o) {
+      var t = clone(s);
+      if (o.ad) t.ad += o.ad;
+      if (o.x) t.x += o.x;
+      if (o.c) t.c = Math.min(100, t.c + o.c);
+      if (o.cd) t.cd += o.cd;
+      return t;
+    }
+    function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+    var WHY = {
+      ad: "Attack damage was the scarce factor — your rate and multiplier were already ahead of it.",
+      as: "Attack speed won — your per-hit was already large, so more swings multiplied it hardest.",
+      crit: "Crit chance won — on Ashe it is a guaranteed multiplier, and yours was low enough to be scarce.",
+      cd: "Crit damage won — near 100% crit chance it is the only multiplier you have left to grow."
+    };
+
+    var sheet, round, score, answered, current;
+
+    function makeRound() {
+      var budgets = [350, 450, 600, 800];
+      var best = null;
+      for (var tries = 0; tries < 60; tries++) {
+        var B = budgets[Math.floor(Math.random() * budgets.length)];
+        var opts = [
+          { type: "ad", label: "+" + Math.round(B / 35) + " attack damage", ad: Math.round(B / 35) },
+          { type: "as", label: "+" + Math.round(B / 25) + "% attack speed", x: Math.round(B / 25) }
+        ];
+        if (sheet.c < 100) opts.push({ type: "crit", label: "+" + Math.round(B / 40) + "% crit chance", c: Math.round(B / 40) });
+        else opts.push({ type: "cd", label: "+" + Math.round(B / 45) + "% crit damage", cd: Math.round(B / 45) });
+
+        var base = dps(sheet);
+        opts.forEach(function (o) { o.delta = dps(applyTo(sheet, o)) - base; });
+        var sorted = opts.slice().sort(function (a, b) { return b.delta - a.delta; });
+        best = { B: B, opts: opts, maxType: sorted[0].type, maxDelta: sorted[0].delta };
+        // difficulty gate: top two must be close (winner < 1.35x runner-up) and positive
+        if (sorted[0].delta > 0 && sorted[1].delta > 0 && sorted[0].delta / sorted[1].delta < 1.35) break;
+      }
+      best.opts = shuffle(best.opts);
+      return best;
+    }
+
+    function renderBuild() {
+      $("av-ad").textContent = Math.round(sheet.ad * 10) / 10;
+      $("av-x").textContent = sheet.x + "%";
+      $("av-c").textContent = Math.min(100, sheet.c) + "%";
+      $("av-cd").textContent = sheet.cd + "%";
+      $("av-dps").textContent = Math.round(dps(sheet)).toLocaleString();
+    }
+
+    function renderRound() {
+      answered = false;
+      current = makeRound();
+      $("av-prompt").textContent = "Round " + round + " — which anvil adds the most DPS?";
+      var box = $("av-opts");
+      box.innerHTML = "";
+      current.opts.forEach(function (o, i) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "av-btn av-opt";
+        b.textContent = o.label;
+        b.addEventListener("click", function () { pick(i); });
+        box.appendChild(b);
+      });
+      $("av-reveal").hidden = true;
+      renderBuild();
+    }
+
+    function pick(i) {
+      if (answered) return;
+      answered = true;
+      var chosen = current.opts[i];
+      var maxDelta = current.maxDelta;
+      var optimal = Math.abs(chosen.delta - maxDelta) < 0.01;
+      var btns = $("av-opts").querySelectorAll(".av-opt");
+      current.opts.forEach(function (o, k) {
+        var tag = document.createElement("span");
+        tag.className = "av-tag";
+        tag.textContent = " +" + Math.round(o.delta) + " DPS";
+        if (Math.abs(o.delta - maxDelta) < 0.01) btns[k].classList.add("av-best");
+        if (k === i && !optimal) btns[k].classList.add("av-picked");
+        btns[k].appendChild(tag);
+        btns[k].disabled = true;
+      });
+      if (optimal) score++;
+      round++;
+      $("av-verdict").textContent = optimal
+        ? "Optimal. " + (chosen.type === current.maxType ? "" : "")
+        : "Not the max — you left " + Math.round(maxDelta - chosen.delta) + " DPS on the table.";
+      $("av-verdict").className = "av-verdict " + (optimal ? "ok" : "miss");
+      $("av-why").textContent = WHY[current.maxType];
+      $("av-score").textContent = "Optimal picks: " + score + " / " + (round - 1);
+      // accumulate the chosen anvil onto the build
+      sheet = applyTo(sheet, chosen);
+      renderBuild();
+      $("av-reveal").hidden = false;
+    }
+
+    function reset() {
+      sheet = { ad: 118.5, x: 51, c: 0, cd: 200 };
+      round = 1; score = 0;
+      $("av-score").textContent = "Optimal picks: 0 / 0";
+      renderRound();
+    }
+
+    $("av-next").addEventListener("click", renderRound);
+    $("av-reset").addEventListener("click", reset);
+    reset();
+  })();
+</script>
+
+<style>
+  .anvil {
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    background: hsl(var(--card));
+    margin: 2rem 0;
+    overflow: hidden;
+    font-size: 0.95rem;
+  }
+  .av-head { padding: 0.9rem 1.1rem; border-bottom: 1px solid hsl(var(--border)); }
+  .av-title { font-weight: 600; letter-spacing: -0.01em; }
+  .av-note { color: hsl(var(--muted-foreground)); font-size: 0.8rem; margin-top: 0.15rem; line-height: 1.4; }
+  .av-build {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem;
+    padding: 0.7rem 1.1rem; border-bottom: 1px solid hsl(var(--border));
+    background: hsl(var(--secondary));
+    font-size: 0.82rem; color: hsl(var(--muted-foreground));
+  }
+  .av-build b { color: hsl(var(--foreground)); font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .av-build .av-dps b { font-size: 1.05em; }
+  .av-round { padding: 1.1rem; }
+  .av-prompt { font-weight: 500; margin-bottom: 0.8rem; }
+  .av-opts { display: grid; gap: 0.5rem; }
+  @media (min-width: 560px) { .av-opts { grid-template-columns: 1fr 1fr 1fr; } }
+  .av-btn {
+    font: inherit; cursor: pointer;
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-sm);
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    padding: 0.7rem 0.8rem;
+    transition: border-color 0.12s, background 0.12s;
+  }
+  .av-opt { text-align: center; }
+  .av-opt:hover:not(:disabled) { border-color: hsl(var(--foreground)); }
+  .av-opt:disabled { cursor: default; opacity: 1; }
+  .av-tag { display: block; margin-top: 0.3rem; font-family: var(--font-mono); font-size: 0.8rem; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+  .av-best { border-color: hsl(var(--foreground)); border-width: 2px; font-weight: 500; }
+  .av-best .av-tag { color: hsl(var(--foreground)); }
+  .av-picked { border-style: dashed; }
+  .av-reveal { padding: 0 1.1rem 1.1rem; }
+  .av-verdict { font-weight: 600; margin-bottom: 0.25rem; }
+  .av-verdict.ok { color: hsl(var(--foreground)); }
+  .av-verdict.miss { color: hsl(var(--muted-foreground)); }
+  .av-why { color: hsl(var(--muted-foreground)); font-size: 0.86rem; line-height: 1.45; margin-bottom: 0.8rem; }
+  .av-next {
+    background: hsl(var(--foreground)); color: hsl(var(--background));
+    border-color: hsl(var(--foreground)); font-weight: 500;
+  }
+  .av-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.7rem 1.1rem; border-top: 1px solid hsl(var(--border));
+    font-size: 0.82rem; color: hsl(var(--muted-foreground));
+  }
+  .av-score { font-variant-numeric: tabular-nums; }
+  .av-reset {
+    font: inherit; font-size: 0.8rem; cursor: pointer;
+    border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm);
+    background: hsl(var(--background)); color: hsl(var(--muted-foreground));
+    padding: 0.25rem 0.7rem;
+  }
+  .av-reset:hover { color: hsl(var(--foreground)); border-color: hsl(var(--foreground)); }
+</style>

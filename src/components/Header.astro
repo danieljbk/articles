@@ -7,6 +7,13 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
 ];
+
+// The archive lives at /private, which is where almost everything is. Gated on
+// the same flag as the private routes themselves, so it cannot reach
+// production — Cloudflare never sets INCLUDE_PRIVATE, so the link is absent
+// there exactly as the pages are. Styled as a badge rather than a nav item to
+// mark it as the local-only affordance.
+const includePrivate = process.env.INCLUDE_PRIVATE === "1";
 ---
 
 <header class="border-b border-border">
@@ -32,6 +39,19 @@ const links = [
             {link.label}
           </a>
         ))
+      }
+      {
+        includePrivate && (
+          <a
+            href="/private"
+            class:list={[
+              "rounded-md border border-border bg-secondary px-2 py-0.5 font-mono text-xs uppercase tracking-wide hover:text-foreground",
+              isActive("/private") ? "text-foreground" : "text-muted-foreground",
+            ]}
+          >
+            private
+          </a>
+        )
       }
     </nav>
   </div>

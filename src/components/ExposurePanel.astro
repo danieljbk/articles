@@ -1,0 +1,124 @@
+---
+/**
+ * Exposure assessment panel for a private article.
+ *
+ * Sits above the article, styled apart from prose. Reading an article and
+ * deciding whether to publish it are separate acts, and the second happens
+ * rarely — so this has to be scannable, not readable. Each threat is named,
+ * categorised, and rated on its own line; nothing here is a paragraph.
+ *
+ * Private routes only. The public collection's schema rejects `exposure`, so
+ * this can never render on a published page.
+ */
+interface Threat {
+  category: string;
+  threat: string;
+  severity: "low" | "moderate" | "high";
+  detail: string;
+}
+
+interface Verdict {
+  rules: { if: string; then: string }[];
+  otherwise: string;
+}
+
+interface Props {
+  exposure: { threats: Threat[]; verdict: Verdict };
+}
+
+const { exposure } = Astro.props;
+const { threats, verdict } = exposure;
+
+// Overall rating is derived from the threats rather than stored, so it can
+// never drift out of step with the list underneath it.
+const rank = { low: 1, moderate: 2, high: 3 } as const;
+const worst = threats.reduce((acc, t) => Math.max(acc, rank[t.severity]), 0);
+const overall = (["none", "low", "moderate", "high"] as const)[worst];
+const elevated = worst >= 3;
+
+const severityClass = (s: Threat["severity"]) =>
+  s === "high"
+    ? "border-destructive/60 text-destructive"
+    : "border-border text-muted-foreground";
+---
+
+<aside
+  aria-label="Exposure assessment"
+  class:list={[
+    "mb-12 rounded-lg border-2 bg-secondary/40 px-5 py-4",
+    elevated ? "border-destructive/60" : "border-border",
+  ]}
+>
+  <div class="flex items-center justify-between gap-3 border-b border-border pb-3">
+    <p class="font-mono text-xs tracking-wide text-muted-foreground">
+      IF THIS IS PUBLISHED
+    </p>
+    <span
+      class:list={[
+        "rounded-md border px-2 py-0.5 font-mono text-xs uppercase tracking-wide",
+        elevated ? "border-destructive/60 text-destructive" : "border-border text-muted-foreground",
+      ]}
+    >
+      {overall}
+    </span>
+  </div>
+
+  {
+    threats.length === 0 ? (
+      <p class="pt-3 text-[0.95rem] text-muted-foreground">
+        No threats identified.
+      </p>
+    ) : (
+      <ol class="divide-y divide-border">
+        {threats.map(t => (
+          <li class="py-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="rounded-md border border-border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide text-muted-foreground">
+                {t.category}
+              </span>
+              <span class="font-medium text-foreground">{t.threat}</span>
+              <span
+                class:list={[
+                  "ml-auto rounded-md border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide",
+                  severityClass(t.severity),
+                ]}
+              >
+                {t.severity}
+              </span>
+            </div>
+            <p class="mt-1 text-[0.9rem] leading-relaxed text-muted-foreground">
+              {t.detail}
+            </p>
+          </li>
+        ))}
+      </ol>
+    )
+  }
+
+  <div class="mt-1 border-t border-border pt-3">
+    <p class="mb-2 font-mono text-[0.7rem] tracking-wide text-muted-foreground">
+      VERDICT
+    </p>
+    <dl class="space-y-1.5">
+      {
+        verdict.rules.map(r => (
+          <div class="flex gap-2 text-[0.95rem] leading-relaxed">
+            <dt class="shrink-0 font-mono text-[0.7rem] uppercase tracking-wide text-muted-foreground pt-1">
+              if
+            </dt>
+            <dd class="text-foreground">
+              {r.if} <span class="font-mono text-muted-foreground">&rarr;</span>{" "}
+              <span class="font-medium">{r.then}</span>
+            </dd>
+          </div>
+        ))
+      }
+      <div class="flex gap-2 text-[0.95rem] leading-relaxed">
+        <dt class="shrink-0 font-mono text-[0.7rem] uppercase tracking-wide text-muted-foreground pt-1">
+          {verdict.rules.length > 0 ? "else" : "always"}
+        </dt>
+        <dd class="font-medium text-foreground">{verdict.otherwise}</dd>
+      </div>
+    </dl>
+  </div>
+</aside>

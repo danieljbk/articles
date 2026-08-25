@@ -5,9 +5,8 @@ How to write content for this system. Aimed at a future Claude (or human) who ha
 ## TL;DR
 
 - Articles are Markdown (`.md`) files with YAML frontmatter.
-- **Public is the default.** An article about the world goes straight to **`articles/src/data/articles/`** and gets published — no staging, no asking. See [Where an article goes](#where-an-article-goes).
-- Anything touching Daniel, his work, his machines, or other people goes to **`articles-private/completed/`** instead.
-- **Every piece that started from something he said also gets an archive copy** in `completed/` carrying his words verbatim. See [His words](#his-words-verbatim-in-private-never-raw-in-public).
+- **Private is the default — everything.** Every article goes to **`articles-private/completed/`**, git-tracked and pushed to a private repo, rendered locally. Nothing is published unless Daniel asks for that specific piece. See [Where an article goes](#where-an-article-goes).
+- **Quote him verbatim.** Articles are private, so his own words belong in them. See [His words](#his-words).
 - Preview any article with **`bun run open <slug>`** — it starts the dev server and opens the page. See [Previewing an article](#previewing-an-article).
 - **Sections are numbered automatically** — never write numbers into headings. See [Section numbering](#section-numbering).
 - **Never write CSS, `<style>`, or layout HTML in articles.** The Astro app already styles every Markdown construct using shadcn design tokens. Writing CSS in articles means you didn't read this file.
@@ -15,29 +14,63 @@ How to write content for this system. Aimed at a future Claude (or human) who ha
 ## Where articles live
 
 ```
-articles/                              ← THIS repo (public, deployed to articles.kwon.ai)
+articles/                              ← THIS repo (the Astro app; deploys to articles.kwon.ai)
 └── src/data/articles/
-    └── YYYY-MM-DD-short-slug.md       ← public articles
+    └── YYYY-MM-DD-short-slug.md       ← ONLY pieces Daniel asked to share
 
-articles-private/                      ← sibling repo (private)
+articles-private/                      ← sibling repo (private) — where articles live
 ├── completed/
-│   └── YYYY-MM-DD-short-slug.md       ← finished pieces, kept to re-read
+│   └── YYYY-MM-DD-short-slug.md       ← every finished piece
 └── drafts/
     └── YYYY-MM-DD-short-slug.md       ← working passes, superseded material
 ```
 
-The Astro app reads from both via content collections. Public articles render at `/<slug>`, private ones (only when `INCLUDE_PRIVATE=1`) render at `/private/<status>/<slug>`.
+The Astro app reads from both via content collections. Private articles (only when `INCLUDE_PRIVATE=1`) render at `/private/<status>/<slug>`; anything in the public collection renders at `/<slug>` and is world-visible once pushed.
 
 ## Where an article goes
 
-**Default to public.** The blog is meant to be a browsable record of everything
-that has been worked through — a database of explored spaces. It only works as
-that if things actually land in it, so an article about *the world* (science,
-math, how some public system works, a technical explainer) goes straight into
-`src/data/articles/` and gets committed and pushed. Don't stage it privately
-first and don't ask.
+**Every article gets an attack-surface assessment before it goes anywhere, and
+Claude makes the call.** Clean pieces are published to
+`articles/src/data/articles/` and pushed. Anything carrying attack surface goes
+to `articles-private/completed/` and stays there. The assessment is reported to
+Daniel either way — that reporting is the point of the system, not a formality.
 
-**Route it to `articles-private/completed/` instead if it contains any of:**
+The assessment is a threat model, not a topic check. It states what the piece
+discloses, who could use it and how, a severity, a verdict, and anything
+stripped to make publication possible. Severity runs **none** / **low** /
+**moderate** / **high**, where high means concrete legal, financial, account,
+or physical exposure.
+
+**Report before publishing anything that isn't obviously clean.** Science and
+world-explanation can publish and report in the same breath. Everything else
+gets the report first, because a report on a live article is a post-mortem.
+
+Every assessment is appended to the `publishing-security-review` article in
+`articles-private/completed/`.
+
+### Why the subject of an article isn't the test
+
+The previous version of this system tested each article's *subject* and
+published anything that was about the world rather than about Daniel. That test
+is wrong, and it is worth understanding why, because it looks correct.
+
+A single article about black hole mergers discloses nothing personal, and
+publishing it costs nothing — curiosity about astrophysics is not an attack
+surface. The subject test fails somewhere more specific: an article documenting
+research into a *particular technology* is a dated, public record that its
+author knew about that technology. If they later build anything in that space,
+the article is discoverable evidence of prior knowledge, and someone in a
+dispute with them can point at it.
+
+That is why the floor is private rather than the routing being cleverer. The
+question when sharing a piece is not "is the topic personal" but "what does
+this give someone who wants to come after me." Science is generally clean.
+Anything adjacent to what might get built is not.
+
+### The content test, for sharing
+
+The old routing checklist still exists, but it now answers a different
+question: *if Daniel asks to share this piece, what has to come out first?*
 
 | # | Category | Examples |
 |---|---|---|
@@ -47,19 +80,15 @@ first and don't ask.
 | 4 | Other people | named friends or family, private conversations, interpersonal analysis |
 | 5 | Real identifiers | addresses, policy or account numbers, case numbers |
 | 6 | Superseded working drafts | a first pass kept for the record after the finished piece exists |
+| 7 | Dated evidence of what he investigated | a piece documenting research into a specific technology or technique, which becomes discoverable proof of prior knowledge if he later builds in that space |
 
-Uncertain counts as private — and say so in one line rather than deciding
-silently.
+Strip or generalize whatever it catches, and say in one line what came out.
+Uncertain counts as unshareable.
 
-> **The originating question is publishable; the personal circumstance behind it
-> is not.** An article recording "the question came from learning about
-> gravitational waves" is exactly what belongs here. One recording "the question
-> came up while dealing with *[private situation]*" is not — generalize the
-> framing or drop it.
-
-Promoting an article that *already sits* in the private repo is a separate
-decision and belongs to Daniel. Ask. The automatic route is for pieces being
-written now.
+> **The originating question is shareable; the personal circumstance behind it
+> is not.** "The question came from learning about gravitational waves" is
+> fine. "The question came up while dealing with *[private situation]*" is not
+> — generalize the framing or drop it.
 
 ## Article format
 
@@ -68,7 +97,7 @@ to be able to come back years later and reconstruct where he was coming from,
 what he proposed, and where it went — while the piece still reads as something
 he can hand to anyone.
 
-The published `worms-with-extensions` and `black-hole-size-gravitational-waves`
+The `worms-with-extensions` and `black-hole-size-gravitational-waves` articles
 are the reference implementations. The shape:
 
 1. **Open with the claim or the tension.** No conversational preamble, no
@@ -81,43 +110,31 @@ are the reference implementations. The shape:
    the next question is. This is what makes it a record rather than a lecture.
 5. **`## Sources`** — links, with what each one supports.
 
-### His words: verbatim in private, never raw in public
+### His words
 
-What Daniel types or dictates is addressed to **you**, not to an audience. It
-carries much more than the idea — his ideology, his emotional register, how
-confident he felt, thoughts he considers half-formed or wrong. Publishing that
-exposes him to strangers, and it cannot be taken back.
+**Quote him verbatim.** Articles are private, so the faithful record is the
+default and there is no sanitized counterpart to maintain.
 
-**In a private article, quote him verbatim.** His phrasing is his
-understanding; converting it swaps in an interpretation of what he meant for
-his statement of it. It also preserves his calibration — a tentative "maybe
-it's like the size of the solar system" stays tentative, so you never have to
-judge how firmly something was held and can't accidentally firm it up. And it
-stops you strawmanning him: an early draft fused "the black holes must be
-pretty big" with a separate "maybe it's like the size of the solar system" into
-one confident heading, then refuted a proposal he never made.
+His phrasing is his understanding; converting it swaps in an interpretation of
+what he meant for his statement of it. It also preserves his calibration — a
+tentative "maybe it's like the size of the solar system" stays tentative, so
+you never have to judge how firmly something was held and can't accidentally
+firm it up. And it stops you strawmanning him: an early draft fused "the black
+holes must be pretty big" with a separate "maybe it's like the size of the
+solar system" into one confident heading, then refuted a proposal he never
+made.
 
-Allowed inside such a quote: cleaning dictation artifacts, cutting a passage,
-small readability edits. Not allowed: recasting into your own prose, tightening
-it into a thesis, or promoting it into a heading you composed.
+Allowed inside a quote: cleaning dictation artifacts, cutting a passage, small
+readability edits. Not allowed: recasting into your own prose, tightening it
+into a thesis, or promoting it into a heading you composed.
 
-**In a public article, never paste raw conversation.** Keep his distinctive
-terminology for the *idea* — "a cylinder within a cylinder", "extend the same
-code three times", "worms with extensions" — because that is what makes it his
-thinking rather than a summary of it. Compose the surrounding prose for a
-reader. Drop everything that is about *him* rather than the subject: emotional
-register, ideology, stated confidence or doubt, admitted mistakes, self-
-appraisal, anything in a private register.
-
-> **Write both copies.** This is the normal workflow, not an exception. The
-> public article carries the provenance in public register. The *same article*
-> also goes to `articles-private/completed/` with section 1 carrying his words
-> verbatim, headed by a one-line note saying it is the archive copy and linking
-> the published counterpart. Reading his own words later is how he reconstructs
-> where he was coming from; the sanitized version can't do that job.
-
-When unsure whether a phrasing is his-idea or his-interior, treat it as his
-interior: leave it out, and say that you did.
+**The public register applies only when he asks to share a piece.** Then, and
+only then: never paste raw conversation. Keep his distinctive terminology for
+the *idea* — "a cylinder within a cylinder", "worms with extensions" — because
+that is what makes it his thinking rather than a summary of it, but compose the
+surrounding prose for a reader and drop everything that is about *him* rather
+than the subject: emotional register, ideology, stated confidence or doubt,
+admitted mistakes, self-appraisal.
 
 Two rules about how the surrounding explanation gets written:
 
@@ -391,7 +408,7 @@ Props:
 
 **Design invariants — do not break these:** the chart is monochrome by design. The data line is `--foreground`; grid, axes, and ticks recede into `--border` / `--muted-foreground`; there is **no hue**. Multiple series are told apart by direct labels and solid-vs-dashed strokes, never color. It themes light/dark automatically because every mark references the shadcn tokens. If you find yourself wanting a colored series, stop — that is not this system.
 
-> **Config note.** The `@components` alias is defined in `astro.config.mjs` (`vite.resolve.alias`). It exists so an MDX article's import survives the private→public move (the file changes directories on publish; the alias doesn't). Don't replace it with a relative path.
+> **Config note.** The `@components` alias is defined in `astro.config.mjs` (`vite.resolve.alias`). It exists so an MDX article's import survives a private→shared move (the file changes directories; the alias doesn't). Don't replace it with a relative path.
 
 ### `Item` — inline League item reference (icon + name)
 

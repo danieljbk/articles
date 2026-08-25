@@ -1,0 +1,77 @@
+---
+/**
+ * Navigation between linked articles, at the foot of a private article.
+ *
+ * Content that is linked should be physically linked — a connection you have
+ * to remember is not a connection. Three groups, kept apart because they mean
+ * different things: same conversation, same subject, and the same piece in the
+ * other collection.
+ *
+ * Renders nothing when an article stands alone.
+ */
+import type { Linked } from "@/utils/links";
+
+interface Props {
+  counterpart: Linked[];
+  sameSession: Linked[];
+  relatedTo: Linked[];
+  session?: string;
+}
+
+const { counterpart, sameSession, relatedTo, session } = Astro.props;
+
+const groups = [
+  {
+    label: "SAME PIECE, OTHER COLLECTION",
+    note: undefined as string | undefined,
+    items: counterpart,
+  },
+  {
+    label: "FROM THE SAME SESSION",
+    note: session,
+    items: sameSession,
+  },
+  { label: "ON THE SAME SUBJECT", note: undefined, items: relatedTo },
+].filter(g => g.items.length > 0);
+---
+
+{
+  groups.length > 0 && (
+    <nav aria-label="Connected articles" class="mt-16 border-t border-border pt-8">
+      {groups.map(group => (
+        <section class="mb-8 last:mb-0">
+          <div class="mb-3 flex items-baseline gap-2">
+            <p class="font-mono text-xs tracking-wide text-muted-foreground">
+              {group.label}
+            </p>
+            {group.note && (
+              <span class="font-mono text-[0.7rem] text-muted-foreground/70">
+                {group.note}
+              </span>
+            )}
+          </div>
+          <ul class="divide-y divide-border border-y border-border">
+            {group.items.map(item => (
+              <li>
+                <a
+                  href={item.href}
+                  class="group flex flex-col gap-1 py-3.5 transition-colors hover:bg-secondary/40 sm:-mx-4 sm:px-4"
+                >
+                  <div class="flex items-baseline justify-between gap-3">
+                    <span class="font-medium tracking-tight">{item.title}</span>
+                    <span class="shrink-0 rounded-md border border-border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide text-muted-foreground">
+                      {item.scope === "published" ? "public" : item.status}
+                    </span>
+                  </div>
+                  <p class="line-clamp-1 text-sm text-muted-foreground">
+                    {item.description}
+                  </p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </nav>
+  )
+}

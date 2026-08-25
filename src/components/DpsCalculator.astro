@@ -1,0 +1,298 @@
+---
+/**
+ * DpsCalculator — an interactive single-target DPS calculator for Ashe,
+ * using the exact model from the article (no ARAM ×1.05 multiplier, which the
+ * wiki does not list for her). Read your live stat sheet into the sliders, then
+ * compare two candidate purchases: it runs the article's procedure and tells
+ * you which buys more DPS right now.
+ *
+ * Self-contained: vanilla client JS via `is:inline`, no framework. Monochrome,
+ * themed through the shadcn tokens. Single instance per page (uses ids).
+ */
+---
+
+<div class="dpscalc" id="dpscalc">
+  <div class="dc-head">
+    <div class="dc-title">Ashe DPS — single target</div>
+    <div class="dc-note">Level-18 base attack speed 0.658, 50 magic resist assumed for on-hit. Numbers are relative — use them to compare, not as a combat log.</div>
+  </div>
+
+  <div class="dc-body">
+    <div class="dc-inputs">
+      <div class="dc-ctl">
+        <label for="dc-ad">Total attack damage <b id="dc-ad-v">165</b></label>
+        <input type="range" id="dc-ad" min="100" max="350" step="0.5" value="165" />
+      </div>
+      <div class="dc-ctl">
+        <label for="dc-x">Bonus attack speed <b id="dc-x-v">180%</b></label>
+        <input type="range" id="dc-x" min="0" max="500" step="1" value="180" />
+      </div>
+      <div class="dc-ctl">
+        <label for="dc-c">Crit chance <b id="dc-c-v">60%</b></label>
+        <input type="range" id="dc-c" min="0" max="100" step="1" value="60" />
+      </div>
+      <div class="dc-ctl">
+        <label for="dc-cd">Crit damage <b id="dc-cd-v">200%</b></label>
+        <input type="range" id="dc-cd" min="200" max="260" step="5" value="200" />
+      </div>
+      <div class="dc-ctl">
+        <label for="dc-armor">Enemy armor <b id="dc-armor-v">80</b></label>
+        <input type="range" id="dc-armor" min="0" max="250" step="5" value="80" />
+      </div>
+      <div class="dc-ctl">
+        <label for="dc-pen">Your armor penetration <b id="dc-pen-v">0%</b></label>
+        <input type="range" id="dc-pen" min="0" max="45" step="5" value="0" />
+      </div>
+      <div class="dc-ctl">
+        <label for="dc-onhit">Flat magic on-hit <b id="dc-onhit-v">0</b></label>
+        <input type="range" id="dc-onhit" min="0" max="90" step="5" value="0" />
+      </div>
+    </div>
+
+    <div class="dc-out">
+      <div class="dc-row"><span>Attacks / sec</span><span class="dc-v" id="dc-rate">—</span></div>
+      <div class="dc-row"><span>Crit factor F</span><span class="dc-v" id="dc-f">—</span></div>
+      <div class="dc-row"><span>Per-hit (post-mitigation)</span><span class="dc-v" id="dc-hit">—</span></div>
+      <div class="dc-row dc-big"><span>Damage / sec</span><span class="dc-v" id="dc-dps">—</span></div>
+
+      <div class="dc-cmp-label">Compare two purchases</div>
+      <div class="dc-selects">
+        <select id="dc-opt-a" aria-label="Purchase A"></select>
+        <select id="dc-opt-b" aria-label="Purchase B"></select>
+      </div>
+      <div class="dc-cmp">
+        <div class="dc-opt" id="dc-card-a">
+          <div class="dc-opt-name" id="dc-name-a">A</div>
+          <div class="dc-opt-dps" id="dc-dps-a">—</div>
+          <div class="dc-opt-delta" id="dc-delta-a"></div>
+        </div>
+        <div class="dc-opt" id="dc-card-b">
+          <div class="dc-opt-name" id="dc-name-b">B</div>
+          <div class="dc-opt-dps" id="dc-dps-b">—</div>
+          <div class="dc-opt-delta" id="dc-delta-b"></div>
+        </div>
+      </div>
+      <div class="dc-verdict" id="dc-verdict">—</div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var root = document.getElementById("dpscalc");
+    if (!root) return;
+    var $ = function (id) { return document.getElementById(id); };
+
+    var BASE_AS = 0.658, CAP = 5.0;
+    function mitig(r) { return r >= 0 ? 100 / (100 + r) : 2 - 100 / (100 - r); }
+    function dps(s) {
+      var rate = Math.min(CAP, BASE_AS * (1 + s.x / 100) * (s.rateMult || 1));
+      var F = 1 + Math.min(s.c, 100) / 100 * (s.cd / 100 - 1);
+      var P = mitig(s.armor * (1 - (s.pen || 0) / 100)), M = mitig(50);
+      var main = s.ad * F * P, oh = (s.onhit || 0) * M, dw = s.dwield ? 0.40 * s.ad * F * P : 0;
+      return { rate: rate, F: F, hit: main + oh + dw, dps: rate * (main + oh + dw) };
+    }
+
+    var BUYS = [
+      { id: "none", name: "— nothing —", apply: function () {} },
+      { id: "as65", name: "+65% attack speed", apply: function (s) { s.x += 65; } },
+      { id: "ad55", name: "+55 attack damage", apply: function (s) { s.ad += 55; } },
+      { id: "crit25", name: "+25% crit chance", apply: function (s) { s.c = Math.min(100, s.c + 25); } },
+      { id: "cd30", name: "+30% crit damage (IE)", apply: function (s) { s.cd += 30; } },
+      { id: "dwield", name: "Dual Wield augment", apply: function (s) { s.rateMult = (s.rateMult || 1) * 1.10; s.dwield = true; } }
+    ];
+    function buyById(id) { for (var i = 0; i < BUYS.length; i++) if (BUYS[i].id === id) return BUYS[i]; return BUYS[0]; }
+
+    function read() {
+      return {
+        ad: +$("dc-ad").value, x: +$("dc-x").value, c: +$("dc-c").value,
+        cd: +$("dc-cd").value, armor: +$("dc-armor").value, pen: +$("dc-pen").value,
+        onhit: +$("dc-onhit").value, rateMult: 1, dwield: false
+      };
+    }
+    function clone(s) { var o = {}; for (var k in s) o[k] = s[k]; return o; }
+    function fmt(n) { return Math.round(n).toLocaleString(); }
+
+    function initSelects() {
+      var opts = BUYS.map(function (b) { return '<option value="' + b.id + '">' + b.name + "</option>"; }).join("");
+      $("dc-opt-a").innerHTML = opts; $("dc-opt-b").innerHTML = opts;
+      $("dc-opt-a").value = "as65"; $("dc-opt-b").value = "ad55";
+    }
+
+    function update() {
+      var s = read();
+      $("dc-ad-v").textContent = s.ad; $("dc-x-v").textContent = s.x + "%";
+      $("dc-c-v").textContent = s.c + "%"; $("dc-cd-v").textContent = s.cd + "%";
+      $("dc-armor-v").textContent = s.armor; $("dc-pen-v").textContent = s.pen + "%";
+      $("dc-onhit-v").textContent = s.onhit;
+
+      var base = dps(s);
+      $("dc-rate").textContent = base.rate.toFixed(2);
+      $("dc-f").textContent = "×" + base.F.toFixed(2);
+      $("dc-hit").textContent = fmt(base.hit);
+      $("dc-dps").textContent = fmt(base.dps);
+
+      var ba = buyById($("dc-opt-a").value), bb = buyById($("dc-opt-b").value);
+      var sa = clone(s); ba.apply(sa); var da = dps(sa).dps;
+      var sb = clone(s); bb.apply(sb); var db = dps(sb).dps;
+      $("dc-name-a").textContent = ba.name; $("dc-name-b").textContent = bb.name;
+      $("dc-dps-a").textContent = fmt(da); $("dc-dps-b").textContent = fmt(db);
+      var pa = base.dps > 0 ? (da / base.dps - 1) * 100 : 0;
+      var pb = base.dps > 0 ? (db / base.dps - 1) * 100 : 0;
+      $("dc-delta-a").textContent = (pa >= 0 ? "+" : "") + pa.toFixed(1) + "% vs now";
+      $("dc-delta-b").textContent = (pb >= 0 ? "+" : "") + pb.toFixed(1) + "% vs now";
+
+      var ca = $("dc-card-a"), cb = $("dc-card-b");
+      ca.classList.remove("win"); cb.classList.remove("win");
+      var v = $("dc-verdict");
+      if (Math.abs(da - db) < 0.5) { v.textContent = "Dead heat — both buys give the same DPS right now."; }
+      else if (da > db) { ca.classList.add("win"); v.textContent = ba.name + " wins by " + fmt(da - db) + " DPS (" + ((da / db - 1) * 100).toFixed(1) + "% more)."; }
+      else { cb.classList.add("win"); v.textContent = bb.name + " wins by " + fmt(db - da) + " DPS (" + ((db / da - 1) * 100).toFixed(1) + "% more)."; }
+    }
+
+    ["dc-ad", "dc-x", "dc-c", "dc-cd", "dc-armor", "dc-pen", "dc-onhit", "dc-opt-a", "dc-opt-b"].forEach(function (id) {
+      var el = $(id); if (el) el.addEventListener("input", update);
+    });
+    initSelects();
+    update();
+  })();
+</script>
+
+<style>
+  .dpscalc {
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    background: hsl(var(--card));
+    margin: 2rem 0;
+    overflow: hidden;
+    font-size: 0.95rem;
+  }
+  .dc-head {
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  .dc-title {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .dc-note {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.8rem;
+    margin-top: 0.15rem;
+    line-height: 1.4;
+  }
+  .dc-body {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .dc-body { grid-template-columns: 1.05fr 1fr; }
+    .dc-inputs { border-right: 1px solid hsl(var(--border)); }
+  }
+  .dc-inputs { padding: 1.1rem; }
+  .dc-ctl { margin-bottom: 0.9rem; }
+  .dc-ctl:last-child { margin-bottom: 0; }
+  .dc-ctl label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.83rem;
+    color: hsl(var(--muted-foreground));
+    margin-bottom: 0.3rem;
+  }
+  .dc-ctl label b {
+    font-family: var(--font-mono);
+    color: hsl(var(--foreground));
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .dc-inputs input[type="range"] {
+    width: 100%;
+    accent-color: hsl(var(--foreground));
+    height: 1.1rem;
+    cursor: pointer;
+  }
+  .dc-out { padding: 1.1rem; background: hsl(var(--secondary)); }
+  .dc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid hsl(var(--border));
+    color: hsl(var(--muted-foreground));
+    font-size: 0.88rem;
+  }
+  .dc-v {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: hsl(var(--foreground));
+    font-weight: 500;
+    font-size: 1rem;
+  }
+  .dc-big { border-bottom: 0; padding-top: 0.7rem; }
+  .dc-big .dc-v { font-size: 1.5rem; }
+  .dc-cmp-label {
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: hsl(var(--muted-foreground));
+  }
+  .dc-selects {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .dc-selects select {
+    width: 100%;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-sm);
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 0.83rem;
+    font-family: inherit;
+  }
+  .dc-cmp {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+  .dc-opt {
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 0.7rem;
+  }
+  .dc-opt.win {
+    border-color: hsl(var(--foreground));
+    background: hsl(var(--background));
+  }
+  .dc-opt-name { font-size: 0.72rem; color: hsl(var(--muted-foreground)); line-height: 1.3; }
+  .dc-opt-dps {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+    margin: 0.15rem 0;
+  }
+  .dc-opt.win .dc-opt-name::after {
+    content: " ▲ more";
+    color: hsl(var(--foreground));
+    font-weight: 600;
+  }
+  .dc-opt-delta { font-size: 0.76rem; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+  .dc-verdict {
+    margin-top: 0.8rem;
+    font-size: 0.86rem;
+    color: hsl(var(--foreground));
+    font-weight: 500;
+    text-align: center;
+    padding: 0.55rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-sm);
+    background: hsl(var(--background));
+  }
+</style>

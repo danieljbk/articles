@@ -1,0 +1,312 @@
+---
+/**
+ * LineChart — a monochrome, theme-aware line/function plot for articles.
+ *
+ * Design intent: the data line is the only loud thing. It uses --foreground;
+ * grid, axes, and ticks recede into --border / --muted-foreground. There is no
+ * hue — identity between multiple series comes from direct labels and
+ * solid-vs-dashed strokes, never color. Themes swap automatically because every
+ * mark references the shadcn tokens defined in global.css.
+ *
+ * All geometry is computed here from data-space props; the caller passes points
+ * in real units (e.g. attack-speed %, gold) plus the axis domain and ticks.
+ *
+ * Used in .mdx articles: `import LineChart from "../../..."` then
+ * `<LineChart ... />`. Documented in AUTHORING.md.
+ */
+interface Point {
+  x: number;
+  y: number;
+}
+interface Series {
+  points: Point[];
+  /** direct label drawn at the series' last point */
+  label?: string;
+  dashed?: boolean;
+  /** render in --muted-foreground instead of --foreground */
+  muted?: boolean;
+  /** nudge the end label vertically (px) to avoid collisions */
+  labelDy?: number;
+}
+interface Marker {
+  x: number;
+  y: number;
+  label: string;
+  anchor?: "start" | "middle" | "end";
+  dx?: number;
+  dy?: number;
+}
+interface RefLine {
+  y?: number;
+  x?: number;
+  label?: string;
+}
+interface Props {
+  title: string; // accessibility label; not drawn
+  series: Series[];
+  xDomain: [number, number];
+  yDomain: [number, number];
+  xTicks: number[];
+  yTicks: number[];
+  xLabel?: string;
+  yLabel?: string;
+  xSuffix?: string;
+  ySuffix?: string;
+  markers?: Marker[];
+  refLines?: RefLine[];
+  caption?: string;
+  height?: number;
+}
+
+const {
+  title,
+  series,
+  xDomain,
+  yDomain,
+  xTicks,
+  yTicks,
+  xLabel,
+  yLabel,
+  xSuffix = "",
+  ySuffix = "",
+  markers = [],
+  refLines = [],
+  caption,
+  height = 360,
+} = Astro.props;
+
+const W = 720;
+const H = height;
+const mL = 62;
+const mR = 46;
+const mT = 26;
+const mB = 46;
+const plotW = W - mL - mR;
+const plotH = H - mT - mB;
+
+const [x0, x1] = xDomain;
+const [y0, y1] = yDomain;
+const sx = (v: number) => mL + ((v - x0) / (x1 - x0)) * plotW;
+const sy = (v: number) => mT + (1 - (v - y0) / (y1 - y0)) * plotH;
+
+const fmt = (v: number, suf: string) => {
+  const r = Math.round(v * 100) / 100;
+  return `${Number.isInteger(r) ? r : r}${suf}`;
+};
+const pts = (p: Point[]) => p.map((q) => `${sx(q.x)},${sy(q.y)}`).join(" ");
+const uid = "lc-" + Math.random().toString(36).slice(2, 8);
+---
+
+<figure class="linechart" role="group">
+  <svg
+    viewBox={`0 0 ${W} ${H}`}
+    class="lc-svg"
+    role="img"
+    aria-label={title}
+    preserveAspectRatio="xMidYMid meet"
+  >
+    <title>{title}</title>
+
+    {/* horizontal gridlines + y tick labels */}
+    {
+      yTicks.map((t) => (
+        <g>
+          <line class="lc-grid" x1={mL} y1={sy(t)} x2={W - mR} y2={sy(t)} />
+          <text class="lc-tick" x={mL - 10} y={sy(t) + 4} text-anchor="end">
+            {fmt(t, ySuffix)}
+          </text>
+        </g>
+      ))
+    }
+
+    {/* x tick labels + baseline */}
+    <line class="lc-axis" x1={mL} y1={sy(y0)} x2={W - mR} y2={sy(y0)} />
+    {
+      xTicks.map((t) => (
+        <text
+          class="lc-tick"
+          x={sx(t)}
+          y={H - mB + 22}
+          text-anchor="middle"
+        >
+          {fmt(t, xSuffix)}
+        </text>
+      ))
+    }
+
+    {/* reference lines (dashed, muted) */}
+    {
+      refLines.map((r) => {
+        if (r.y != null) {
+          return (
+            <g>
+              <line
+                class="lc-ref"
+                x1={mL}
+                y1={sy(r.y)}
+                x2={W - mR}
+                y2={sy(r.y)}
+              />
+              {r.label && (
+                <text
+                  class="lc-reflabel"
+                  x={W - mR}
+                  y={sy(r.y) - 7}
+                  text-anchor="end"
+                >
+                  {r.label}
+                </text>
+              )}
+            </g>
+          );
+        }
+        return (
+          <g>
+            <line class="lc-ref" x1={sx(r.x!)} y1={mT} x2={sx(r.x!)} y2={sy(y0)} />
+            {r.label && (
+              <text class="lc-reflabel" x={sx(r.x!) + 6} y={mT + 12}>
+                {r.label}
+              </text>
+            )}
+          </g>
+        );
+      })
+    }
+
+    {/* series */}
+    {
+      series.map((s) => {
+        const last = s.points[s.points.length - 1];
+        return (
+          <g>
+            <polyline
+              points={pts(s.points)}
+              class={`lc-line${s.muted ? " lc-line-muted" : ""}${s.dashed ? " lc-line-dashed" : ""}`}
+            />
+            {s.label && last && (
+              <text
+                class="lc-serieslabel"
+                x={sx(last.x) + 8}
+                y={sy(last.y) + 4 + (s.labelDy ?? 0)}
+              >
+                {s.label}
+              </text>
+            )}
+          </g>
+        );
+      })
+    }
+
+    {/* annotation markers: ring + dot + label */}
+    {
+      markers.map((m) => (
+        <g>
+          <circle class="lc-marker" cx={sx(m.x)} cy={sy(m.y)} r="4" />
+          <text
+            class="lc-markerlabel"
+            x={sx(m.x) + (m.dx ?? 8)}
+            y={sy(m.y) + (m.dy ?? -9)}
+            text-anchor={m.anchor ?? "start"}
+          >
+            {m.label}
+          </text>
+        </g>
+      ))
+    }
+
+    {/* axis titles */}
+    {
+      xLabel && (
+        <text class="lc-axistitle" x={mL + plotW / 2} y={H - 6} text-anchor="middle">
+          {xLabel}
+        </text>
+      )
+    }
+    {
+      yLabel && (
+        <text class="lc-axistitle" x={mL - 10} y={mT - 12} text-anchor="start">
+          {yLabel}
+        </text>
+      )
+    }
+  </svg>
+  {caption && <figcaption class="lc-caption" set:html={caption} />}
+</figure>
+
+<style>
+  .linechart {
+    margin: 2rem 0;
+  }
+  .lc-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    font-family: var(--font-mono);
+    overflow: visible;
+  }
+  .lc-grid {
+    stroke: hsl(var(--border));
+    stroke-width: 1;
+  }
+  .lc-axis {
+    stroke: hsl(var(--muted-foreground));
+    stroke-width: 1;
+    opacity: 0.55;
+  }
+  .lc-ref {
+    stroke: hsl(var(--muted-foreground));
+    stroke-width: 1.25;
+    stroke-dasharray: 4 4;
+    opacity: 0.75;
+  }
+  .lc-line {
+    fill: none;
+    stroke: hsl(var(--foreground));
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .lc-line-muted {
+    stroke: hsl(var(--muted-foreground));
+  }
+  .lc-line-dashed {
+    stroke-dasharray: 5 4;
+  }
+  .lc-marker {
+    fill: hsl(var(--foreground));
+    stroke: hsl(var(--background));
+    stroke-width: 2;
+  }
+  .lc-tick {
+    fill: hsl(var(--muted-foreground));
+    font-size: 12px;
+  }
+  .lc-reflabel,
+  .lc-serieslabel,
+  .lc-markerlabel {
+    fill: hsl(var(--foreground));
+    font-size: 12px;
+  }
+  .lc-reflabel {
+    fill: hsl(var(--muted-foreground));
+  }
+  .lc-markerlabel {
+    font-weight: 500;
+  }
+  .lc-axistitle {
+    fill: hsl(var(--muted-foreground));
+    font-size: 12px;
+    font-family: var(--font-sans);
+  }
+  .lc-caption {
+    margin-top: 0.85rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.85rem;
+    line-height: 1.5;
+    text-align: left;
+  }
+  .lc-caption :global(strong) {
+    color: hsl(var(--foreground));
+    font-weight: 600;
+  }
+</style>
