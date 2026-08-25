@@ -17,7 +17,7 @@ draft: false
 
 Rub your feet on a carpet and you move electrons. Touch a doorknob and they come back, all at once, through a channel of air you have just torn apart. The answer to *is it electrons* is yes.
 
-The second question does not survive contact with the first. Energy is not a substance. Nothing is made of it — matter included — and there is no ladder of energy levels along which one kind of thing turns into another kind of thing. Energy is a *number* you can compute about a system, and its entire importance is that the number does not change.
+The other question — whether everything, matter included, is really just *states of energy* — does not survive contact with the first. Energy is not a substance. Nothing is made of it — matter included — and there is no ladder of energy levels along which one kind of thing turns into another kind of thing. Energy is a *number* you can compute about a system, and its entire importance is that the number does not change.
 
 The instinct underneath the question is right, though, and it is one of the deepest things physics has found: there **is** a common substrate, and the different things in the world **are** different arrangements of it. The substrate just is not energy. It is fields.
 
