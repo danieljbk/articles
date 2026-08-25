@@ -392,7 +392,7 @@ That uniform state is not an improbable fluctuation. It is a dynamical waypoint.
 
 The premise needs one correction, and it makes the picture stronger rather than weaker.
 
-In relativity we are not three-dimensional creatures carried through a fourth dimension. We are four-dimensional objects outright. A person is a worldtube — a shape extended through time as genuinely as through space — and what anyone calls "themselves right now" is a three-dimensional slice across it. The whole shape is there. What is confined to the slice is perception, not existence.
+In relativity we are not three-dimensional creatures carried through a fourth dimension. We are four-dimensional objects outright. A person is a worldtube — a shape extended through time as genuinely as through space — and what anyone calls "themselves right now" is a three-dimensional slice across it. The whole shape is there. What is confined to the slice is perception, not existence — and existing is accordingly a spacetime-level affair rather than a moment-by-moment one. A thing's existence is its entire worldtube.
 
 So the limitation is real. It is just not a shortage of dimensions.
 
@@ -439,6 +439,55 @@ But brains are four-dimensional on precisely the same terms. There is no dimensi
 The asymmetry being sensed is real all the same. Matter's worldline is present in its entirety while awareness is confined to a travelling slice. The cause is the one this article keeps arriving at: at every slice a brain holds records correlating with the smooth end of the block and none correlating with the other. Confinement to the slice follows from the record structure, which follows from the entropy gradient. Thermodynamic, not dimensional.
 
 There is, though, a real physical model in which different things get different numbers of dimensions. In Randall–Sundrum braneworlds our universe is a brane sitting in a higher-dimensional bulk, Standard Model matter and forces are confined to the brane, and **gravity** propagates through the full bulk. So the split exists in serious physics — with gravity as the higher-dimensional participant and matter as the confined one, which is the reverse of the arrangement proposed here.
+
+## What a higher-dimensional perspective would actually be like
+
+Two rules generate nearly all of this, and they are worth having before the examples.
+
+**Rule one: you perceive one dimension fewer than you inhabit.** A creature living on a line sees points. A creature on a plane sees lines. We live in three spatial dimensions and see *surfaces* — the retina is a two-dimensional sheet, and every visual experience anyone has ever had is a two-dimensional projection. Nobody has ever seen a volume. We infer volumes by moving around, by having two eyes set slightly apart, by memory. A four-dimensional creature would see volumes as directly as we see surfaces.
+
+**Rule two: anything sealed in N dimensions is wide open from N + 1.** A line segment imprisons a creature on a line, and anyone with a second dimension simply steps over it. A drawn circle imprisons a creature on a plane, and we reach in from above without crossing the line at all. A locked safe imprisons us; a four-dimensional creature lifts the contents out without the safe ever being opened.
+
+### Climbing the ladder
+
+On a plane, a Flatlander sees other shapes as line segments. It cannot see inside a circle, cannot see its own insides, and to learn the shape of a square it has to travel around the square and assemble the answer from memory.
+
+Now let a sphere pass through the Flatlander's plane. What the Flatlander experiences is a point appearing out of nowhere, swelling into a circle, shrinking back to a point, and vanishing. Nothing in that resembles a sphere. The sphere was there the whole time, entire; the Flatlander only ever met its cross-sections, one at a time.
+
+Everything else follows by moving one rung up.
+
+| | Inhabits | Sees | Cannot see |
+|---|---|---|---|
+| Lineland | 1 direction | Points | Anything past its two neighbours |
+| Flatland | 2 directions | Lines | Inside any closed curve |
+| Us | 3 directions | Surfaces | Inside any closed container, our own bodies included |
+| One rung up | 4 directions | Volumes | Nothing of ours |
+
+So a four-dimensional creature could see every one of your organs at once, in full, with your skin nowhere in the way — and could touch your heart without breaking that skin, exactly as a surgeon from our world could operate on a Flatlander's stomach by reaching in from above, leaving the outline of their body unbroken.
+
+It could also pick up your left glove, rotate it through the fourth direction, and hand it back as a right glove. That sounds like a conjuring trick, and it is precisely the trick we perform on flat things constantly: a letter **b** printed on a page can never be slid across the page into a **d**, but lift it off, flip it, set it down, and a **d** is what you have. Left and right hands are the same object viewed from opposite sides of a dimension we do not possess.
+
+And a four-dimensional object passing through our space would look to us the way the sphere looked to the Flatlander — something appearing from nowhere as a point, swelling into a full solid shape, changing, shrinking, and vanishing.
+
+### The version where the extra dimension is time
+
+That ladder was built entirely out of *space*. The version this article is really about is different.
+
+Our spacetime is three of space and one of time. A being that treated time the way we treat a spatial direction would not see you as a body at all. It would see your whole life at once as a single object: a long tapering shape with an infant at one end and a corpse at the other and every intermediate moment present along its length. Your worldtube.
+
+It would not watch you age, because watching requires a sequence and it has none. It would examine your life the way we examine a sculpture — any part, in any order, the whole thing simply there. There would be no *now* for it, in the same way there is no privileged inch on a sculpture.
+
+That picture is coherent, and it is the honest visual form of the block universe. Where it stops being physics is the point made above: moving about in time that way requires a second *time* dimension, and second time dimensions bring closed timelike curves between every pair of points and abolish the distinction between future and past.
+
+### Five, six, and the honest limit
+
+Past this point imagination outruns physics, and it is better to say so than to supply a confident scheme.
+
+Mathematically a fifth dimension is nothing more exotic than a fifth independent direction — one that no combination of the other four can reach. By rule one, a five-dimensional being would see four-dimensional images. That is genuinely all that can be said with confidence.
+
+If you want the time-flavoured version, the usual imaginative move is that a fifth direction lets you travel between whole spacetimes: not merely your entire life at once, but every possible version of it laid side by side, with freedom to move among them. A sixth would be another such direction. That is imaginable, and it is not established physics — the widely circulated schemes assigning specific meanings to the fifth, sixth and seventh dimensions (possibility, choice, and so on) are invention rather than results, and are worth treating as such.
+
+What extra dimensions actually are in physics is more modest and more surprising. String theory's ten or eleven dimensions are nine or ten of *space* and exactly one of time, the extra spatial ones curled so small that nothing moves through them appreciably. Braneworld models allow one large extra spatial dimension, but only gravity reaches into it. Across all of it the count of time dimensions stays at one. Nobody in serious physics is proposing a being that steps outside time. They are proposing extra room in space.
 
 ## Every proposal here was about the arrow of time
 
