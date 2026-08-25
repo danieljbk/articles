@@ -1,0 +1,107 @@
+---
+/**
+ * Live corpus-wide exposure table, derived from article frontmatter.
+ *
+ * Deliberately not a hand-written table. The per-article panels are the source
+ * of truth; a second hand-maintained copy of the same verdicts would drift, and
+ * discovering that drift months later costs more than having no table at all.
+ * This reads the collection at build time, so it cannot disagree with the
+ * panels it summarises.
+ *
+ * Private routes only — it enumerates private titles.
+ */
+import { getCollection } from "astro:content";
+import { splitPrivateId } from "@/utils/slug";
+
+const rank = { low: 1, moderate: 2, high: 3 } as const;
+const names = ["none", "low", "moderate", "high"] as const;
+
+const rows = (await getCollection("private", ({ data }) => !data.draft))
+  .map(a => {
+    const { status, slug } = splitPrivateId(a.id);
+    const threats = a.data.exposure?.threats ?? [];
+    const worst = threats.reduce((m, t) => Math.max(m, rank[t.severity]), 0);
+    const v = a.data.exposure?.verdict;
+    return {
+      title: a.data.title,
+      href: `/private/${status}/${slug}`,
+      session: a.data.session ?? a.data.pubDate.toISOString().slice(0, 10),
+      severity: names[worst],
+      worst,
+      conditional: (v?.rules?.length ?? 0) > 0,
+      verdict: v?.otherwise ?? "not yet assessed",
+      assessed: Boolean(a.data.exposure),
+      vault: a.data.vault,
+    };
+  })
+  .sort((a, b) => b.worst - a.worst || a.session.localeCompare(b.session));
+
+const unassessed = rows.filter(r => !r.assessed).length;
+---
+
+<div class="not-prose my-8">
+  <div class="mb-3 flex items-baseline gap-3">
+    <p class="font-mono text-xs tracking-wide text-muted-foreground">
+      {rows.length} ARTICLES · DERIVED FROM FRONTMATTER
+    </p>
+    {
+      unassessed > 0 && (
+        <span class="font-mono text-xs text-destructive">
+          {unassessed} unassessed
+        </span>
+      )
+    }
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead>
+        <tr class="border-b border-border">
+          <th class="py-2 pr-3 font-mono text-[0.7rem] font-normal uppercase tracking-wide text-muted-foreground">Article</th>
+          <th class="py-2 pr-3 font-mono text-[0.7rem] font-normal uppercase tracking-wide text-muted-foreground">Severity</th>
+          <th class="py-2 font-mono text-[0.7rem] font-normal uppercase tracking-wide text-muted-foreground">Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map(r => (
+            <tr class="border-b border-border align-top">
+              <td class="py-2.5 pr-3">
+                <a href={r.href} class="font-medium underline decoration-border underline-offset-4 hover:decoration-foreground">
+                  {r.title}
+                </a>
+                <span class="mt-0.5 block font-mono text-[0.65rem] text-muted-foreground">
+                  {r.session}
+                </span>
+              </td>
+              <td class="py-2.5 pr-3 whitespace-nowrap">
+                <span
+                  class:list={[
+                    "rounded-md border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase",
+                    r.severity === "high"
+                      ? "border-destructive/60 text-destructive"
+                      : "border-border text-muted-foreground",
+                  ]}
+                >
+                  {r.severity}
+                </span>
+              </td>
+              <td class="py-2.5 text-muted-foreground">
+                {r.conditional && (
+                  <span class="mr-1 font-mono text-[0.65rem] uppercase text-muted-foreground/70">
+                    conditional ·
+                  </span>
+                )}
+                {r.verdict}
+                {r.vault && (
+                  <span class="ml-1 rounded-md border border-destructive/60 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase text-destructive">
+                    vault
+                  </span>
+                )}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
