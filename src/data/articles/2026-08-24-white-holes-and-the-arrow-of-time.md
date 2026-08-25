@@ -305,6 +305,29 @@ The concrete version: **the time-reverse of falling is throwing, not repelling.*
 
 The same holds at cosmic scale. Reverse a collapsing universe and you get an expanding one decelerating under its own gravity, not a universe in which gravity pushes. So the reversed reading of our history is not a repelling universe relaxing toward smoothness — it is a *contracting* universe whose matter un-clumps, every particle moving in precisely the coordinated way needed to undo structure. That is not an equilibrium being approached. It is the original fine-tuning wearing a different label.
 
+### If "repel" only means that things move apart
+
+There is a second reading, and it needs its own answer: not that gravity's sign flips, but simply that in the reversed direction matter *does* separate and *does* end up evenly spread.
+
+Read that way it is straightforwardly true. Our universe ran smooth to clumpy, so the reversed reading runs clumpy to smooth, with matter moving apart the whole way. Nothing to dispute.
+
+What the reading costs is the explanation.
+
+Genuine repulsion would explain an even spread because the even spread is an **attractor**: start almost anywhere, run the dynamics, arrive there. That robustness is what makes it explanatory. Perturb the starting configuration and you still finish smooth.
+
+Reversed attraction has no such property. Take the reversed universe and jiggle one particle's velocity slightly. It does not still finish smooth — it finishes clumpy, because gravity is still attractive and clumping is what attractive gravity does to nearly any configuration handed to it. The smooth outcome survives only for velocities tuned to undo one specific history exactly, and any perturbation destroys it.
+
+A shattered glass makes this concrete. In the reversed film the shards really do move together and really do end as an intact glass. Entirely true, and it explains nothing about why intact glasses exist — because reassembly is not a tendency of shards. It requires every shard, and every air molecule, carrying precisely the right velocity. "Moving together" describes the reversed film; it is not a force that makes glasses.
+
+Underneath sits a circularity. Why does matter spread evenly in the reversed reading? Because our universe began smooth and grew clumpy. The reversed direction's apparent tendency toward evenness is not an independent dynamical fact — it is our own history, read backwards. Using it to explain why that history started smooth is explaining the thing with itself.
+
+So the proposal meets a fork, and both branches are covered:
+
+- **Repulsion as a force.** Genuinely explanatory, because an even spread really is a robust attractor. But reversal does not deliver a force flip — the apple and the orbits settle that.
+- **Repulsion as description.** Reversal does deliver this, and it is true. But it is our own history read backwards, so it cannot explain that history.
+
+Either way the explanatory work goes undone. That is not a defeat of the instinct behind it: the link between dispersal and evenness is real, and the subsection below is where it actually cashes out. Dark energy is a genuine repulsion, it genuinely drives the universe toward smoothness, and it does so robustly.
+
 ### Repulsive gravity does exist, though
 
 Cosmic expansion is exactly the right thing to raise here, and it leads somewhere better than a counterpoint.
