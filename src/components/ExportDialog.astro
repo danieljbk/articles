@@ -1,0 +1,128 @@
+---
+/**
+ * Confirmation gate shown before an article is exported to PDF.
+ *
+ * Exporting is the moment of disclosure — the document gets sent to a person —
+ * so the article's exposure assessment is surfaced here rather than in the PDF
+ * itself. The panel is hidden when printing precisely because handing someone
+ * the article plus its own threat model would be worse than publishing it.
+ *
+ * Uses a native <dialog> opened with showModal(): it blocks the page, traps
+ * focus, and cannot be dismissed by clicking away. A gate that can be
+ * dismissed by accident is not a gate.
+ */
+interface Threat {
+  category: string;
+  threat: string;
+  severity: "low" | "moderate" | "high";
+  detail: string;
+}
+interface Props {
+  exposure?: { threats: Threat[]; verdict: { rules: { if: string; then: string }[]; otherwise: string } };
+  title: string;
+}
+const { exposure, title } = Astro.props;
+const threats = exposure?.threats ?? [];
+const rank = { low: 1, moderate: 2, high: 3 } as const;
+const worst = threats.reduce((m, t) => Math.max(m, rank[t.severity]), 0);
+const overall = (["none", "low", "moderate", "high"] as const)[worst];
+const elevated = worst >= 3;
+---
+
+<dialog
+  id="export-dialog"
+  data-print-hide
+  class="m-auto w-[min(38rem,92vw)] rounded-lg border border-border bg-background p-0 text-foreground backdrop:bg-black/50"
+>
+  <form method="dialog" class="flex flex-col">
+    <div class="flex items-center justify-between gap-3 border-b border-border px-5 py-3">
+      <p class="font-mono text-xs tracking-wide text-muted-foreground">
+        BEFORE YOU SEND THIS
+      </p>
+      <span
+        class:list={[
+          "rounded-md border px-2 py-0.5 font-mono text-xs uppercase tracking-wide",
+          elevated ? "border-destructive/60 text-destructive" : "border-border text-muted-foreground",
+        ]}
+      >
+        {overall}
+      </span>
+    </div>
+
+    <div class="px-5 py-4">
+      <p class="mb-3 text-sm text-muted-foreground">
+        Exporting <span class="font-medium text-foreground">{title}</span> as a
+        document. Whoever receives it can keep it and pass it on.
+      </p>
+
+      {
+        threats.length === 0 ? (
+          <p class="text-[0.95rem]">No threats identified.</p>
+        ) : (
+          <ol class="divide-y divide-border border-y border-border">
+            {threats.map(t => (
+              <li class="py-2.5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="rounded-md border border-border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide text-muted-foreground">
+                    {t.category}
+                  </span>
+                  <span class="text-[0.95rem] font-medium">{t.threat}</span>
+                  <span
+                    class:list={[
+                      "ml-auto rounded-md border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase",
+                      t.severity === "high" ? "border-destructive/60 text-destructive" : "border-border text-muted-foreground",
+                    ]}
+                  >
+                    {t.severity}
+                  </span>
+                </div>
+                <p class="mt-1 text-[0.875rem] leading-relaxed text-muted-foreground">
+                  {t.detail}
+                </p>
+              </li>
+            ))}
+          </ol>
+        )
+      }
+
+      {
+        exposure && (
+          <div class="mt-4">
+            <p class="mb-1 font-mono text-[0.7rem] tracking-wide text-muted-foreground">
+              VERDICT
+            </p>
+            {exposure.verdict.rules.map(r => (
+              <p class="text-[0.9rem]">
+                <span class="font-mono text-[0.7rem] uppercase text-muted-foreground">if</span>{" "}
+                {r.if} <span class="font-mono text-muted-foreground">&rarr;</span>{" "}
+                <span class="font-medium">{r.then}</span>
+              </p>
+            ))}
+            <p class="text-[0.9rem]">
+              <span class="font-mono text-[0.7rem] uppercase text-muted-foreground">
+                {exposure.verdict.rules.length > 0 ? "else" : "always"}
+              </span>{" "}
+              <span class="font-medium">{exposure.verdict.otherwise}</span>
+            </p>
+          </div>
+        )
+      }
+    </div>
+
+    <div class="flex justify-end gap-2 border-t border-border px-5 py-3">
+      <button
+        value="cancel"
+        class="rounded-md border border-border px-3 py-1 text-sm text-muted-foreground hover:text-foreground"
+      >
+        Cancel
+      </button>
+      <button
+        value="export"
+        id="export-confirm"
+        class="rounded-md border border-foreground bg-foreground px-3 py-1 text-sm font-medium text-background"
+      >
+        Export as PDF
+      </button>
+    </div>
+  </form>
+</dialog>

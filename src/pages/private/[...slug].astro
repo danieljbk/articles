@@ -6,6 +6,7 @@ import Layout from "@/layouts/Layout.astro";
 import { splitPrivateId } from "@/utils/slug";
 import ExposurePanel from "@/components/ExposurePanel.astro";
 import Connections from "@/components/Connections.astro";
+import ExportDialog from "@/components/ExportDialog.astro";
 import { getConnections } from "@/utils/links";
 
 type Props = { article: CollectionEntry<"private">; status: string };
@@ -46,7 +47,7 @@ const connections = await getConnections(
 <Layout title={article.data.title} description={article.data.description}>
   <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-12">
     <header class="mb-10">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3" data-print-hide>
         <time
           datetime={isoDate}
           class="font-mono text-sm text-muted-foreground"
@@ -63,7 +64,20 @@ const connections = await getConnections(
         >
           {status}
         </span>
+        <button
+          type="button"
+          id="print-article"
+          class="ml-auto rounded-md border border-border bg-secondary px-2 py-0.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
+        >
+          save as pdf
+        </button>
       </div>
+      <time
+        datetime={isoDate}
+        class="hidden font-mono text-sm text-muted-foreground print:block"
+      >
+        {dateFormatter.format(article.data.pubDate)}
+      </time>
       <h1
         class="mt-2 text-3xl font-semibold tracking-tight md:text-4xl"
       >
@@ -114,5 +128,19 @@ const connections = await getConnections(
     </article>
 
     <Connections {...connections} session={article.data.session} />
+
+    <ExportDialog exposure={article.data.exposure} title={article.data.title} />
   </main>
+
+  <script is:inline>
+    // Print is the export path: the browser's own "Save as PDF" destination
+    // produces the document. No library, no server-side rendering step.
+    // Export is gated on seeing the exposure assessment. The dialog blocks,
+    // and only an explicit "Export as PDF" reaches window.print().
+    const dlg = document.getElementById("export-dialog");
+    document.getElementById("print-article")?.addEventListener("click", () => dlg?.showModal());
+    dlg?.addEventListener("close", () => {
+      if (dlg.returnValue === "export") window.print();
+    });
+  </script>
 </Layout>

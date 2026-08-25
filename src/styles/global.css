@@ -428,3 +428,104 @@
 .article-prose :where(h3)::before {
   content: counter(section) "." counter(subsection);
 }
+
+/* ---------------------------------------------------------------------
+   PRINT / PDF EXPORT
+   ---------------------------------------------------------------------
+   Articles are exported as documents rather than shared as links: the reader
+   gets a PDF, chosen and sent per recipient, with nothing hosted and no URL
+   to enumerate or forward by accident.
+
+   Two rules matter more than the typography.
+
+   1. The exposure panel MUST NOT print. It is the article's own threat
+      assessment — handing it to a reader would be worse than publishing the
+      article. Two independent selectors hide it: its aria-label and a
+      data-print-hide attribute on the component itself.
+   2. Ink is expensive and this printer runs dark. Backgrounds are dropped
+      entirely, borders are hairlines, and nothing relies on a fill to be
+      legible.
+   --------------------------------------------------------------------- */
+@media print {
+  /* Anything structural, navigational, or interactive. */
+  [data-print-hide],
+  body > header,
+  body > footer,
+  nav[aria-label="Contents"],
+  nav[aria-label="Connected articles"],
+  aside[aria-label="Exposure assessment"] {
+    display: none !important;
+  }
+
+  /* Force the light palette regardless of the viewer's theme — a dark page
+     would print as a solid black rectangle. */
+  :root,
+  :root[data-theme="dark"] {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --muted-foreground: 0 0% 35%;
+    --border: 0 0% 80%;
+    --secondary: 0 0% 100%;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .article-prose {
+    max-width: none;
+    font-size: 11pt;
+    line-height: 1.55;
+  }
+
+  /* No fills. Code and quotes are marked by rule and indent instead. */
+  .article-prose :where(pre),
+  .article-prose :where(code):not(pre code),
+  .article-prose :where(blockquote) {
+    background: transparent !important;
+    border-color: #bbb !important;
+  }
+  .article-prose :where(pre) {
+    border: 1px solid #bbb;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .article-prose :where(pre) code,
+  .article-prose :where(pre) span {
+    color: #000 !important;
+  }
+
+  /* A printed link is dead unless its destination is on the page. */
+  .article-prose a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.82em;
+    color: #444;
+    word-break: break-all;
+  }
+
+  /* Keep things whole across page boundaries. */
+  .article-prose :where(h1, h2, h3, h4) {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .article-prose :where(pre, blockquote, table, figure, img) {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .article-prose :where(p, li) {
+    orphans: 3;
+    widows: 3;
+  }
+
+  @page {
+    margin: 18mm 16mm;
+  }
+}
