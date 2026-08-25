@@ -390,6 +390,29 @@ Renders as a left-bordered block, same foreground color as body, no italic. **Th
 
 Renders as a thin border-color rule, separating major sections.
 
+### Assets for private articles
+
+Public articles put images in `public/images/` and reference them as
+`/images/foo.png`. Private articles have their own home, because their assets
+must not reach the deployed site either:
+
+```
+articles-private/assets/<article-slug>/whatever.png
+```
+
+Reference it from the article as `/private-assets/<article-slug>/whatever.png`.
+
+This works through a symlink at `articles/public/private-assets`, which is
+gitignored in the public repo, so the files exist locally and are never
+committed. As a second guard the `build` script deletes `dist/private-assets`
+before Pagefind runs — a local `astro build` copies everything under `public/`
+including symlinked content, so without that step a manually deployed `dist/`
+would carry private files even though git never sees them.
+
+Use this for anything an article *is about* as well as anything it displays —
+a generated page, a dataset, a simulation. The artifact belongs with the piece
+that explains it.
+
 ### Images
 
 ```md

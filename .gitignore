@@ -23,3 +23,6 @@ pnpm-debug.log*
 
 # pagefind
 public/pagefind/
+
+# Symlink to the private assets directory — must never be committed or deployed
+public/private-assets
