@@ -137,4 +137,6 @@ fi
 open "$url"
 echo "Opened $label"
 echo "  $url"
-[[ -n "${also_public:-}" ]] && echo "  (also published: $also_public)"
+if [[ -n "${also_public:-}" ]]; then
+  echo "  (also published: $also_public)"
+fi
