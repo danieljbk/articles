@@ -12,8 +12,22 @@ import { getConnections } from "@/utils/links";
 type Props = { article: CollectionEntry<"private">; status: string };
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  // Runs on EVERY build, including production where no private paths are
+  // emitted. Placing this after the early return below would mean the guard
+  // only fired locally, which is the half that does not matter.
+  const all = await getCollection("private", ({ data }) => !data.draft);
+  for (const a of all) {
+    const { status } = splitPrivateId(a.id);
+    if (status !== "drafts" && !a.data.exposure) {
+      throw new Error(
+        `${a.id} has no exposure assessment. Every finished private article needs ` +
+        `one — add an "exposure" block, or move it to drafts/ while it is in progress.`
+      );
+    }
+  }
+
   if (process.env.INCLUDE_PRIVATE !== "1") return [];
-  const articles = await getCollection("private", ({ data }) => !data.draft);
+  const articles = all;
   return articles.map(article => {
     const { status, slug } = splitPrivateId(article.id);
     return { params: { slug: `${status}/${slug}` }, props: { article, status } };
@@ -37,6 +51,12 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 const isoDate = article.data.pubDate.toISOString().slice(0, 10);
 
 const { slug: ownSlug } = splitPrivateId(article.id);
+
+// Vault content must not leave the machine by ANY route. The schema guard
+// stops it reaching the public collection; export to PDF is a second, entirely
+// separate disclosure path that guard never covered. No button, no dialog.
+const isVault = article.data.vault;
+
 const connections = await getConnections(
   ownSlug,
   article.data.session,
@@ -45,6 +65,7 @@ const connections = await getConnections(
 ---
 
 <Layout title={article.data.title} description={article.data.description}>
+  {isVault && <style is:inline>{`@media print { body { display: none !important } }`}</style>}
   <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-12">
     <header class="mb-10">
       <div class="flex items-center gap-3" data-print-hide>
@@ -64,6 +85,14 @@ const connections = await getConnections(
         >
           {status}
         </span>
+        {isVault ? (
+          <span
+            class="ml-auto rounded-md border border-destructive/60 px-2 py-0.5 font-mono text-xs uppercase tracking-wide text-destructive"
+            title="Vault content cannot be exported"
+          >
+            no export
+          </span>
+        ) : (
         <button
           type="button"
           id="print-article"
@@ -71,6 +100,7 @@ const connections = await getConnections(
         >
           save as pdf
         </button>
+        )}
       </div>
       <time
         datetime={isoDate}
@@ -129,7 +159,7 @@ const connections = await getConnections(
 
     <Connections {...connections} session={article.data.session} />
 
-    <ExportDialog exposure={article.data.exposure} title={article.data.title} />
+    {!isVault && <ExportDialog exposure={article.data.exposure} title={article.data.title} />}
   </main>
 
   <script is:inline>
