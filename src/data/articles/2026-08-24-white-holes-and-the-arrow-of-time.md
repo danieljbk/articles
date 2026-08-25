@@ -79,7 +79,17 @@ The part about mechanisms is correct. Reverse the block and every process in it 
 
 A memory is not a process. It is a **correlation** — a physical record in one place that matches an event elsewhere in time. And a correlation is a fact about the block's contents, not about the direction anyone reads them. In our spacetime, brain states at any moment correlate with events on the low-entropy side and with nothing on the high-entropy side. Flipping the reading direction does not move that correlation; it stays exactly where it was.
 
-So reversing a memory mechanism does not produce a mechanism that remembers the other way. It produces a mechanism that **forgets** — records dissolving rather than forming, correlations still anchored to the same end of the block. Forgetting toward one end is not remembering toward the other.
+So reversing a memory mechanism does not produce a mechanism that remembers the other way. It produces a mechanism that **forgets** — records dissolving rather than forming.
+
+That word cannot be leaned on, though. "Forgetting" is itself defined by an arrow, so calling the reversed process forgetting is a relabeling rather than an argument; from the other side, our remembering is their forgetting. The fact that does the work is not the direction the process runs. It is **which end the correlations point at**.
+
+"Records correlate with earlier events" is arrow-relative and says nothing. "Records correlate with the smooth end" is not arrow-relative at all — the smooth end can be picked out by inspecting the contents of the block, with no direction of time assumed.
+
+And there is a mechanism forcing the second one. Making a record requires a low-entropy ready state: a blank page, an unexposed film, a neuron that has not yet fired. Ready states have to be paid for out of the entropy budget, and in our universe that budget has exactly one source. So any record-bearing structure anywhere in the block, running in whichever direction, carries records of the smooth end. Scan the reversed being's brain at any moment and the traces in it correlate with the Big Bang side — fixed by the block's contents, not by who reads them.
+
+Whatever such a being knows about, it knows about the smooth end. And what you hold records of is what you call your past.
+
+The symmetric reply would be that in their universe records point at *their* low-entropy end, which is our high-entropy end. That needs a universe with a smooth end in both directions. Ours has one; a universe with two is the subject of section 6.
 
 ### The time-reverse of our universe, lived in, is our universe
 
@@ -118,6 +128,14 @@ Less than it sounds like, and this is the load-bearing point of the whole articl
 A physical theory has two independent parts: the equations, and the state you feed them. The equations say which evolutions are legal. The state says which one is happening. Time-symmetric equations are entirely compatible with a universe where one direction looks nothing like the other, because the asymmetry can live in the state rather than the law.
 
 Everyday life is saturated with this. Newtonian mechanics is time-symmetric, so a film of a glass shattering and a film of shards reassembling are both legal evolutions. Only one of them ever plays. Nothing in the laws picks the winner; the initial condition does. "Einstein's equations permit white holes" is a statement of exactly this kind — true, and silent about whether any exist.
+
+### One caveat on the symmetry itself
+
+Time-reversal invariance is not quite universal among the laws, which is worth stating because the argument above leans on it.
+
+Gravity and electromagnetism are exactly time-symmetric. The weak interaction is not. T violation has been measured directly — the BaBar collaboration observed it in 2012 in the neutral B meson system, comparing transition rates that can only be related to one another by a time-reversal transformation, and found them unequal. The exact symmetry of nature appears to be CPT: reverse time, mirror space, and swap every particle for its antiparticle, and only then does the reversed process become a genuine solution.
+
+For black holes none of this matters. General relativity is exactly T-symmetric, the weak interaction plays no role in the geometry, and the reversed solution is a solution in the full sense. But "reverse time and the reversed motion is legal" is a statement about specific laws rather than about time as such, and it happens to be false for one of the four forces.
 
 ### And a white hole would not survive being made
 
@@ -227,3 +245,4 @@ There is a genuine irony at the end of this. The one event in the history of the
 - [2 Futures Can Explain Time's Mysterious Past — Scientific American](https://www.scientificamerican.com/article/2-futures-can-explain-time-s-mysterious-past/) — the Carroll–Chen hourglass, with entropy increasing outward in both directions and observers possible on both sides
 - [Thermodynamic Asymmetry in Time — Stanford Encyclopedia of Philosophy](https://plato.stanford.edu/entries/time-thermo/) — Gold's reversing universe, its refutation by Penrose, Zeldovich and Novikov, and Tolman's earlier objection to the premise
 - [Time and Chance — Albert, and the record asymmetry literature](https://ndpr.nd.edu/reviews/time-and-chance/) — why records and memories are anchored to the low-entropy end rather than to a direction of reading
+- [Observation of Time Reversal Violation in the B0 Meson System — BaBar (arXiv:1207.5832)](https://arxiv.org/abs/1207.5832) — direct measurement of T violation in the weak interaction, and why CPT rather than T is the exact symmetry
