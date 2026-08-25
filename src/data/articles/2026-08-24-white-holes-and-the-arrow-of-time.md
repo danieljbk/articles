@@ -145,6 +145,45 @@ A white hole is violently unstable. Douglas Eardley showed in 1974 that anything
 
 So the case against macroscopic white holes has two independent legs. Nothing known makes one, and if something did, it would promptly turn into a black hole.
 
+## Where the reversal is real, and observed
+
+There is one place where "reverse it and you get the anti version" is not an analogy but the standard working formalism of physics. Setting it beside the black hole case is instructive in both directions.
+
+**An antiparticle is a particle propagating backwards in time.** This is the Stückelberg–Feynman interpretation, and it is not a picturesque gloss on the mathematics — it *is* the mathematics. Stückelberg found that the negative-energy solutions of the relativistic electron equation become sensible when read as propagating backward, which immediately explains why the partner object carries identical mass and spin and opposite charge. Feynman built that reading into his diagram technique, where an antiparticle line is drawn literally as a particle line pointing the other way through time — and that technique is how amplitudes are computed in quantum field theory today. A positron is an electron going the other way.
+
+### The formalism does not merely permit this, it requires it
+
+T alone is not an exact symmetry of nature. The exact one is CPT: reverse time, mirror space, and exchange every particle for its antiparticle.
+
+The C in that expression is precisely the particle–antiparticle swap, and it is there because reversing time by itself does not hand back a solution. To make the reversed process legal you must also turn everything into its opposite. So the demand that things become their anti versions when time runs backwards is not a fact discovered about antiparticles afterwards — it is written into the deepest symmetry theorem in physics, and it is why the C sits next to the T.
+
+Antiparticles are also not an optional extra. Charge conjugation only has meaning inside Lorentz symmetry; antiparticles are a consequence of special relativity, and a particle and its antiparticle occupy the same irreducible representation of the Poincaré group. In the formal sense that matters, they are one object.
+
+### Wheeler's one electron
+
+The most extreme version of this idea came from John Wheeler, in a phone call to Feynman in 1940: every electron in the universe is the *same* electron, threading forward and backward through time, with the backward-running segments being what we detect as positrons. Cut the tangle with a plane of constant time and you see many particles, half of them going each way.
+
+Feynman found it could be made mathematically consistent and gave it its famous airing in his 1965 Nobel lecture. He also supplied the objection: we observe vastly more electrons than positrons, so the tangle does not balance. Wheeler's patch — that the missing positrons are hiding inside protons — did not survive.
+
+### What the comparison shows
+
+This is where the antiparticle case and the black hole case come apart, and the difference is the informative part.
+
+Positrons are *here*. They exist in our universe, moving forward along our arrow, produced in accelerators and in certain radioactive decays, used routinely in medical imaging. The backwards-in-time reading is how the propagator is written; the object it describes is an ordinary forward-moving thing in our world, sitting alongside its partner.
+
+So if a black hole and a white hole stood in the relation an electron and a positron stand in, white holes would be predicted right here — observable, in the same universe, along the same arrow as black holes. Followed through, the analogy points at our own sky rather than at the far side of a reversal.
+
+And then the parallel resumes exactly, at the level that matters most:
+
+| | The laws | The contents |
+|---|---|---|
+| Time direction | Symmetric under T; exactly symmetric under CPT | Black holes, no white holes |
+| Matter type | Nearly symmetric under C; CP violation is minute | Matter, almost no antimatter |
+
+Both are cases where the laws barely distinguish the two options and the universe is overwhelmingly one-sided. In both, the asymmetry is not produced by the laws — it traces back to conditions in the early universe. The matter side of it is called baryogenesis, and Andrei Sakharov's conditions for it are baryon number violation, C and CP violation, and **departure from thermal equilibrium** — a thermodynamic condition on the early universe, from the same family as the low-entropy past this article keeps returning to. It is also unsolved: the CP violation available in the Standard Model falls far short of accounting for the matter we see, and something beyond it is required.
+
+So the antiparticle case is a second instance of the same structure rather than an exception to it. Symmetric laws, one-sided contents, the asymmetry deposited by the early universe, and the reason still unknown.
+
 ## The second proposal: the universe as somebody's Hawking radiation
 
 Now the harder question, which has a genuinely good observation inside it.
@@ -246,3 +285,7 @@ There is a genuine irony at the end of this. The one event in the history of the
 - [Thermodynamic Asymmetry in Time — Stanford Encyclopedia of Philosophy](https://plato.stanford.edu/entries/time-thermo/) — Gold's reversing universe, its refutation by Penrose, Zeldovich and Novikov, and Tolman's earlier objection to the premise
 - [Time and Chance — Albert, and the record asymmetry literature](https://ndpr.nd.edu/reviews/time-and-chance/) — why records and memories are anchored to the low-entropy end rather than to a direction of reading
 - [Observation of Time Reversal Violation in the B0 Meson System — BaBar (arXiv:1207.5832)](https://arxiv.org/abs/1207.5832) — direct measurement of T violation in the weak interaction, and why CPT rather than T is the exact symmetry
+- [Stückelberg–Feynman interpretation of antiparticles](https://en.wikipedia.org/wiki/Stuckelberg-Feynman_interpretation) — antiparticles as particles propagating backward in time, and its role in the Feynman diagram technique
+- [CPT symmetry](https://en.wikipedia.org/wiki/CPT_symmetry) and [The genesis of the CPT theorem](https://link.springer.com/article/10.1140/epjh/s13129-022-00037-w) — why C accompanies T, and why CPT rather than any of its parts is the exact symmetry
+- [One-electron universe](https://en.wikipedia.org/wiki/One-electron_universe) and [Feynman's 1965 Nobel Lecture](https://www.nobelprize.org/prizes/physics/1965/feynman/lecture/) — Wheeler's proposal and the electron/positron counting objection
+- [The Matter-Antimatter Asymmetry of the Universe (arXiv:hep-ph/0207323)](https://arxiv.org/pdf/hep-ph/0207323) and [Matter over Antimatter: The Sakharov Conditions After 50 Years](https://www.lorentzcenter.nl/matter-over-antimatter-the-sakharov-conditions-after-50-years.html) — the three conditions for baryogenesis and why Standard Model CP violation is insufficient
