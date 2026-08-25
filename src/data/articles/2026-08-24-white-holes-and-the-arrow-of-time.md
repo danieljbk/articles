@@ -20,11 +20,11 @@ There is still no white hole anywhere anyone has looked, and there are two indep
 
 Two proposals, asked one after the other, which turn out to be the same proposal.
 
-The first: a white hole is just a black hole in reverse time, and since Einstein's equations are indifferent to the direction of time, the white hole is not merely permitted but is **literally happening simultaneously** with the black hole — the same object, viewed with the film running the other way.
+The first: a white hole is just a black hole in reverse time, and since Einstein's equations are indifferent to the direction of time, the white hole is not merely permitted but is **literally happening simultaneously** with the black hole. Not two objects sitting side by side — one object. An observer outside the history, scrolling it one way, sees a black hole; scrolling the other way, sees a white hole. Same footage, opposite playback.
 
 The second: our universe might be sitting in the middle of the Hawking radiation of a really, really big black hole. Hawking radiation is random, so it would produce a **random and evenly distributed cloud of matter** — which is a fair description of how the early universe looked, and so could be what began it.
 
-The first proposal is half standard textbook physics and half a specific, checkable error. The second fails on a number, and then fails again on something much more interesting than a number. Both are reaching for the same missing piece.
+The first proposal is right about the idealized black hole, in a stronger technical sense than it first appears, and breaks only where the black hole is one that actually formed. The second fails on a number, and then fails again on something more interesting than a number. Both are reaching for the same missing piece.
 
 ## The time-reverse of a black hole really is a white hole
 
@@ -36,40 +36,58 @@ The mirror image is the white hole. Where a black hole horizon is a surface you 
 
 For a spinning black hole the reversal takes one extra step: the time-reverse of a rotating black hole is a white hole rotating the other way. The symmetry holds, it just carries the spin along with it.
 
-## Why the two can never be simultaneous
+## Scrolling the history in both directions
 
-Here the proposal breaks, and it breaks in a way that can be shown rather than asserted.
+The strongest form of the reverse-time claim is not about two objects coexisting somewhere. It is this: take the whole four-dimensional spacetime as a finished block, and let something outside it read the block in either direction. Read one way, matter falls in and never returns — a black hole. Read the other way, matter emerges and can never get back in — a white hole. One object. The label depends on which way you scan.
 
-The full Schwarzschild geometry is easiest to see in coordinates chosen so that light always travels at forty-five degrees on the page. Drawn that way, the spacetime is a square divided by two crossing diagonal lines — a large X — into four wedges:
+For the eternal black hole this is not an analogy. It is literally true, and it is provable.
+
+Write the eternal Schwarzschild geometry in coordinates chosen so light always travels at forty-five degrees on the page. Flip the sign of the time coordinate and the metric comes back **identical** — not similar, not physically equivalent, but the same geometry point for point. That is a genuine symmetry of the spacetime, an isometry. And it does something specific: it exchanges the black hole region with the white hole region, leaving everything else where it was.
+
+So for the eternal solution, which one you call "the hole" is a choice of time orientation rather than a fact about the object. The black hole and the white hole are related by a symmetry the geometry already possesses. The scrolling picture holds exactly.
+
+### Where the two regions sit
+
+Drawn in those coordinates, the spacetime is a square cut by two crossing diagonals — a large X — into four wedges:
 
 | Wedge | What it is |
 |---|---|
-| Right | The exterior. Ordinary space, where an observer watching the black hole sits. |
+| Right | The exterior. Ordinary space, where an observer watching the hole sits. |
 | Top | The black hole interior. Everything here reaches the future singularity. |
 | Left | A second exterior region, a separate asymptotically flat space. |
 | Bottom | The white hole interior. Everything here came out of a past singularity. |
 
-The black hole and the white hole are both present in this picture, which is what makes the proposal tempting. But they are not the same region seen two ways, and they are not side by side. They are the top and bottom wedges of the X, and the geometry of the X settles the question of simultaneity completely.
+The time-flip is the reflection that swaps top and bottom. And within the block, the geometry orders these two regions on its own: every event in the bottom wedge lies in the causal past of every event in the top one, for every observer, with no exceptions. To be in the top wedge a point must sit higher above the crossing than it sits sideways from center; to be in the bottom, lower below than sideways. So any line joining a bottom point to a top point covers more vertical than horizontal — steeper than a light ray, and therefore strictly ordered in time.
 
-Two events can be simultaneous for *some* observer only if the line joining them on this diagram is shallower than forty-five degrees — flatter than a light ray. Now look at what it takes to be in each wedge. A point in the top wedge sits higher above the crossing point than it sits sideways from the center. A point in the bottom wedge sits lower below the crossing than it sits sideways. So draw a line from any bottom point to any top point: the vertical gap between them is more than the first point's sideways distance plus the second's — which is at least the sideways gap separating the two. Vertical always beats horizontal. The line is always steeper than forty-five degrees.
+That ordering is worth noticing, because it is a fact about the block's contents rather than about how anyone reads it. Scanning direction decides which end you *call* earlier. It does not decide the internal structure.
 
-That means every single event in the white hole region lies in the causal past of every single event in the black hole region. Not *usually*, not *in most reference frames* — in all of them, with no exceptions. Simultaneity is the one relationship these two regions can never have. They are as strictly ordered in time as a gunshot and the bullet's arrival.
+## Where the picture stops working
 
-The intuition behind the proposal was that time-symmetry makes the two descriptions co-real. What time-symmetry actually delivers is weaker and stranger: the equations permit both regions to exist in one spacetime, arranged so that one is unambiguously earlier than the other.
+Every black hole that exists formed from something, and a spacetime with a collapsing star in it is not time-symmetric.
+
+Reverse it and you do still get a white hole — that much is fully general, and it is the part of the original claim that survives all the way down. The time-reverse of any black hole solution is a white hole solution. But it is a **different spacetime**, not the same one read backwards. The eternal solution maps onto *itself* under the flip, which is what licenses the scrolling picture. A collapse spacetime maps onto a distinct solution: a white hole that disgorges a star, which then flies apart. Two solutions, not one object with two readings.
+
+Both are legal. Both satisfy the field equations exactly. The universe contains an enormous number of the first and, as far as anyone can tell, none of the second.
+
+So the simultaneity claim holds precisely where the object is idealized enough to be time-symmetric, and fails precisely where it is real. The eternal black hole is a vacuum solution with no formation history, no matter anywhere, existing unchanged for infinite time in both directions. Its time-symmetry is a property of that idealization. Nothing in nature has it — because everything in nature has a past.
+
+## The observer who scrolls
+
+There is one more problem with the scrolling picture, and it is the deepest one: there is no such observer. Not "none has been found" — the position is not available to occupy.
+
+Which direction counts as the past is not a free parameter an observer brings in from outside. It is fixed by the thermodynamics they are made of. Memory works by recording, and recording increases entropy, so a mind can only accumulate memories in the direction entropy grows. Any observer placed anywhere in the block, oriented however you like, will identify the low-entropy end as their past — because that is the direction their own memories point.
+
+So two observers "scrolling opposite ways" would not disagree about which end the Big Bang is on. They would both point at the smooth end and call it earlier, because being an observer at all requires it. The scroll direction is a labeling choice. Which end is smooth is not.
+
+The scrolling observer is a genuinely useful fiction: it makes visible that the laws have no preferred direction. But the conclusion it is being asked to support — that both readings are equally real — is exactly what the contents of our particular block deny.
 
 ## What "the equations allow it" actually buys
 
-Very little, and this is the load-bearing point of the whole article.
+Less than it sounds like, and this is the load-bearing point of the whole article.
 
-A physical theory has two independent parts: the equations, and the state you feed them. The equations say what evolutions are legal. The state says which one is happening. Time-symmetric equations are entirely compatible with a universe in which one direction of time looks nothing like the other, because the asymmetry can sit in the state rather than the law.
+A physical theory has two independent parts: the equations, and the state you feed them. The equations say which evolutions are legal. The state says which one is happening. Time-symmetric equations are entirely compatible with a universe where one direction looks nothing like the other, because the asymmetry can live in the state rather than the law.
 
-Everyday life is saturated with this. Newtonian mechanics is time-symmetric, so a film of a glass shattering and a film of shards reassembling into a glass are both legal evolutions. Only one of them ever plays. Nothing in the laws picks the winner; the initial condition does.
-
-### A collapsing star has no white hole in its past
-
-The four-wedge picture describes an *eternal* black hole — a vacuum solution that has always existed and always will, with no formation history and no matter anywhere. It is a mathematical object, and the white hole wedge is a feature of that idealization.
-
-Real black holes form when something collapses. And once you put an actual star in the picture, the bottom and left wedges are gone. The Schwarzschild geometry only describes the region *outside* the collapsing matter, so the part of the diagram where the white hole would sit is simply occupied by the star before it collapsed — an ordinary ball of gas with an ordinary past. There is no known physical process that produces the white hole wedge. Every black hole that exists in nature has, in place of a white hole in its past, a star.
+Everyday life is saturated with this. Newtonian mechanics is time-symmetric, so a film of a glass shattering and a film of shards reassembling are both legal evolutions. Only one of them ever plays. Nothing in the laws picks the winner; the initial condition does. "Einstein's equations permit white holes" is a statement of exactly this kind — true, and silent about whether any exist.
 
 ### And a white hole would not survive being made
 
@@ -77,7 +95,7 @@ Suppose one existed anyway. It would not last.
 
 A white hole is violently unstable. Douglas Eardley showed in 1974 that anything falling toward one — even the faintest ambient radiation — piles up on the past horizon with unboundedly growing energy, and the gravitational effect of that accumulating material converts the white hole into an ordinary black hole. The instability grows exponentially. Later work refined the mechanism, disputing whether the primary cause is the blueshift itself or the gravity of the accreted material, but not the conclusion.
 
-So the case against white holes has two independent legs. Nothing we know of makes one, and if something did, it would promptly turn into a black hole.
+So the case against macroscopic white holes has two independent legs. Nothing known makes one, and if something did, it would promptly turn into a black hole.
 
 ## The second proposal: the universe as somebody's Hawking radiation
 
