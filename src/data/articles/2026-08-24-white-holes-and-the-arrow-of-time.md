@@ -18,13 +18,41 @@ There is still no white hole anywhere anyone has looked, and there are two indep
 
 ## Where this came from
 
-Two proposals, asked one after the other, which turn out to be the same proposal.
+Three proposals, arrived at in sequence, which turn out to be one proposal.
 
 The first: a white hole is just a black hole in reverse time, and since Einstein's equations are indifferent to the direction of time, the white hole is not merely permitted but is **literally happening simultaneously** with the black hole. Not two objects sitting side by side — one object. An observer outside the history, scrolling it one way, sees a black hole; scrolling the other way, sees a white hole. Same footage, opposite playback.
 
-The second: our universe might be sitting in the middle of the Hawking radiation of a really, really big black hole. Hawking radiation is random, so it would produce a **random and evenly distributed cloud of matter** — which is a fair description of how the early universe looked, and so could be what began it.
+The second: our universe might be sitting in the middle of the Hawking radiation of a really, really big black hole. Hawking radiation is random, so it would produce a **random and evenly distributed cloud of matter** — a fair description of how the early universe looked, and so possibly what began it.
 
-The first proposal is right about the idealized black hole, in a stronger technical sense than it first appears, and breaks only where the black hole is one that actually formed. The second fails on a number, and then fails again on something more interesting than a number. Both are reaching for the same missing piece.
+The third: that smoothness is the reversed direction's natural end state. Matter moving apart eventually spreads until it is spread evenly, while matter that attracts eventually crumples into a ball. Our beginning is where the reversed reading finishes, which would make the Big Bang's evenness an equilibrium rather than a fine-tuned accident.
+
+### The position, stated in full
+
+Worth setting out at its strongest before anything is done to it, because the parts support one another.
+
+1. **The premise.** Time is reversible. The laws governing matter carry no preferred direction. If a sequence of events is a legal way for matter to move, that same sequence run backwards is equally legal.
+
+2. **What reversal produces.** Reverse time and matter behaves in the opposite way from how it behaved before. That reversed behaviour is not an artifact or an approximation — it is a valid way for matter to move, with the same standing as the original.
+
+3. **What a white hole is.** A black hole is a region matter falls into and cannot leave. Reversed, it is a region matter leaves and cannot enter — a white hole. Not a separate exotic object requiring its own justification, but what a black hole *is*, read the other way.
+
+4. **Why they are simultaneous.** Because the reversal is a reading direction, there are not two objects but one. An observer outside the history, scrolling it: scroll right, black hole; scroll left, white hole. Same footage. Both descriptions are true of the same thing at once.
+
+5. **Why the mathematics carries both.** This is the explanation for why Einstein's equations hold black hole and white hole solutions — not two separate discoveries that happen to coexist, but one solution read two ways.
+
+6. **The observers reverse too.** The objection that beings on the other side would notice something wrong — remembering the future, seeing effects before causes — fails, because everything reverses, including them. They do not make memories the way we do; the memorisation process reverses along with the rest. Memory cannot be used to break the tie, because memory pointing the other way *is* forgetting: the terms themselves flip. Every asymmetry offered as proof that our direction is the real one reverses along with everything else.
+
+7. **Why we see no white holes.** The theory explains the absence rather than being embarrassed by it. We do not observe white holes because we are on the black hole side — our universe is the black hole reading. That is the prediction, not a coincidence. And for the guys living in the other direction, the very objects we call black holes are white holes. Their universe is full of them, and it is the same universe.
+
+8. **The antiparticle case.** The pattern already shows up in matter itself. Antiparticles exist because reversing time makes particles behave in the anti way — the same particles, acting oppositely.
+
+9. **The smoothness.** In the reversed direction matter moves apart until it is spread evenly, which is what the early universe looked like; in ours everything attracts and eventually crumples together. The Big Bang's evenness is therefore the reversed reading's end state rather than a fine-tuned accident.
+
+**The load-bearing commitment.** Nothing in the contents of the universe privileges one reading over the other. Every apparent asymmetry is an artifact of which reading is being performed, and reverses when the reading switches. Everything above rests on this.
+
+### Where the article goes
+
+The sections that follow take these in order: what reversal actually changes and what it leaves alone; where the scrolling picture is exact and where it stops; whether the other direction can be occupied at all; what "the equations allow it" buys; the antiparticle case, which is the one place the reversal is real and observed; then the Hawking-radiation proposal; then the smoothness proposal.
 
 ## The time-reverse of a black hole really is a white hole
 
