@@ -435,6 +435,36 @@ Bullets/numbers in the muted-foreground color; item text in foreground.
 
 Bordered, header row weighted; uses `--border` for cell borders.
 
+### Chrome: one shape per function, and as little of it as possible
+
+Page furniture had accumulated into nine near-identical grey pills on a single
+article header — date, `PRIVATE`, `COMPLETED`, `SAVE AS PDF`, four tags, and a
+`PRIVATE` nav badge. Same shape, same colour, four different meanings: one
+action, one link, two status labels, four taxonomy terms. Nothing could be
+parsed at a glance because nothing looked different from anything else.
+
+The rule now:
+
+| Function | Treatment |
+|---|---|
+| **Action** (something you click) | The only bordered element on the page. Rounded border, icon, sentence case. |
+| **Status** (private, vault, archive) | Plain mono small-caps, no border, no background. Coloured only when it carries risk. |
+| **Taxonomy** (tags) | `#prefixed`, mono, dimmed further than status. No border. |
+| **Navigation** | A link with an icon. Never a pill. |
+
+Two deletions did more than the styling. **Status is shown only when it is not
+the default** — every private article carried both a "private" pill (implied by
+the URL and the nav) and a "completed" pill (true of the large majority), so
+neither carried information. Silence now means ordinary. And a **vault article
+renders no action element at all**, because there is nothing to click.
+
+Icons are inline SVG, `currentColor`, 3.5 units, `aria-hidden`. Never an icon
+font or an external asset. Use one only where it names the function faster than
+the word does — download for export, padlock for private and vault.
+
+If a page ends up with more than one bordered element, something that is not an
+action is pretending to be one.
+
 ### Colour is semantic, and only for status
 
 The site is monochrome for prose, and that is deliberate. Colour carries exactly

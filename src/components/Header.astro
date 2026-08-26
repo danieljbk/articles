@@ -45,11 +45,15 @@ const includePrivate = process.env.INCLUDE_PRIVATE === "1";
           <a
             href="/private"
             class:list={[
-              "rounded-md border border-border bg-secondary px-2 py-0.5 font-mono text-xs uppercase tracking-wide hover:text-foreground",
+              "inline-flex items-center gap-1.5 hover:text-foreground",
               isActive("/private") ? "text-foreground" : "text-muted-foreground",
             ]}
           >
-            private
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-3.5 w-3.5" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            Private
           </a>
         )
       }
