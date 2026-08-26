@@ -61,7 +61,7 @@ So the light is not the electricity. The light is the sound of the door closing 
 
 ## Lightning is the same event, made enormous
 
-Every step scales up without changing character. In a storm cloud, an updraft drives small ice crystals up past larger, heavier soft hail falling down. They collide, charge transfers on contact, and the two populations separate by weight — light positive crystals carried to the top, heavy negative hail settling to the base. It is the carpet-and-feet mechanism run by weather, at cubic-kilometer scale.
+Every step scales up without changing character. In a storm cloud, an updraft drives small ice crystals up past larger, heavier soft hail falling down. They collide, charge transfers on contact, and the two populations separate by weight — light positive crystals carried to the top, heavy negative hail settling lower down. Which way the charge goes depends on temperature, so a real storm ends up more layered than that — but the main split is the one that drives the stroke. It is the carpet-and-feet mechanism run by weather, at cubic-kilometer scale.
 
 The field between cloud base and ground builds until air breaks down, a conducting channel is negotiated downward in steps, and when it meets an upward reach from the ground the accumulated charge dumps through in a return stroke. The channel reaches something like 30,000 K — several times the temperature of the surface of the sun — and that is thunder.
 
@@ -184,6 +184,7 @@ Three places where the tidy version above is genuinely unfinished, rather than s
 - [The Feynman Lectures, Vol. I, Ch. 4 — Conservation of Energy](https://www.feynmanlectures.caltech.edu/I_04.html). The canonical statement that energy is an abstract accounting quantity rather than a substance, including the blocks parable.
 - [The Feynman Lectures, Vol. II, Ch. 27 — Field Energy and Field Momentum](https://www.feynmanlectures.caltech.edu/II_27.html). Where the energy actually flows in a circuit, and why it enters a bulb through the sides.
 - [NOAA / National Weather Service — Understanding Lightning](https://www.weather.gov/safety/lightning-science-overview). Charge separation in storm clouds, stepped leaders, return strokes, channel temperature.
+- [The Ice Crystal–Graupel Collision Charging Mechanism of Thunderstorm Electrification](https://journals.ametsoc.org/view/journals/atsc/58/18/1520-0469_2001_058_2751_ticgcc_2.0.co_2.xml). The temperature dependence of the charge transfer, and why storm charge structure is layered rather than a simple dipole.
 - [Particle Data Group](https://pdg.lbl.gov/). Quark and proton masses, for the ~1% figure.
 - [Noether's theorem](https://en.wikipedia.org/wiki/Noether%27s_theorem). The symmetry-to-conservation-law correspondence.
 - [The cosmological constant problem](https://en.wikipedia.org/wiki/Cosmological_constant_problem). The vacuum energy discrepancy noted at the end.
