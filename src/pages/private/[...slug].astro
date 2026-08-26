@@ -7,6 +7,7 @@ import { splitPrivateId } from "@/utils/slug";
 import ExposurePanel from "@/components/ExposurePanel.astro";
 import Connections from "@/components/Connections.astro";
 import ExportDialog from "@/components/ExportDialog.astro";
+import TagList from "@/components/TagList.astro";
 import { getConnections } from "@/utils/links";
 
 type Props = { article: CollectionEntry<"private">; status: string };
@@ -102,7 +103,7 @@ const connections = await getConnections(
         <button
           type="button"
           id="print-article"
-          class="ml-auto inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
+          class="chrome-action ml-auto"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5" aria-hidden="true">
             <path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 21h14" />
@@ -125,17 +126,7 @@ const connections = await getConnections(
       <p class="mt-3 text-lg text-muted-foreground">
         {article.data.description}
       </p>
-      {
-        article.data.tags.length > 0 && (
-          <div class="mt-4 flex flex-wrap gap-x-3 gap-y-1" data-print-hide>
-            {article.data.tags.map(tag => (
-              <span class="font-mono text-xs text-muted-foreground/60">
-                #{tag}
-              </span>
-            ))}
-          </div>
-        )
-      }
+    <TagList tags={article.data.tags} />
     </header>
 
     {article.data.exposure && <ExposurePanel exposure={article.data.exposure} />}

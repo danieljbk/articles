@@ -240,6 +240,27 @@
   border-radius: 0.5rem;
 }
 
+/* Header actions — the ONE bordered control a page is allowed. Defined once so
+   the public "Copy link" and the private "Save as PDF" cannot drift apart; they
+   had separate copies and diverged the moment one was restyled. */
+.chrome-action {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 0.375rem;
+  border: 1px solid hsl(var(--border));
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: hsl(var(--muted-foreground));
+  transition: color 150ms, border-color 150ms;
+}
+.chrome-action:hover {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--foreground) / 0.4);
+}
+
 /* Share button: confirmation state, matching the code-block copy button. */
 .share-button[data-copied="true"] {
   color: hsl(var(--foreground));

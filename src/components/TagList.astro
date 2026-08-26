@@ -1,0 +1,42 @@
+---
+/**
+ * Article tags. ONE definition, used by both the public and private article
+ * pages — they previously had separate copies of this markup, so restyling one
+ * silently left the other behind.
+ *
+ * Public tags link to a filtered index; private tags are plain labels. That is
+ * a real difference in function, expressed through interactivity (hover, a
+ * cursor) rather than through a different shape. Same treatment either way, so
+ * a change here lands in both places by construction.
+ */
+interface Props {
+  tags: string[];
+  /** Given, each tag links to `${hrefPrefix}${tag}`. Omitted, they are labels. */
+  hrefPrefix?: string;
+  pagefindMeta?: boolean;
+}
+const { tags, hrefPrefix, pagefindMeta = false } = Astro.props;
+const cls =
+  "font-mono text-xs text-muted-foreground/60" +
+  (hrefPrefix ? " transition-colors hover:text-foreground" : "");
+---
+
+{
+  tags.length > 0 && (
+    <div
+      class="mt-4 flex flex-wrap gap-x-3 gap-y-1"
+      data-print-hide
+      data-pagefind-meta={pagefindMeta ? `tags:${tags.join(",")}` : undefined}
+    >
+      {tags.map(tag =>
+        hrefPrefix ? (
+          <a href={`${hrefPrefix}${tag}`} class={cls}>
+            #{tag}
+          </a>
+        ) : (
+          <span class={cls}>#{tag}</span>
+        )
+      )}
+    </div>
+  )
+}
