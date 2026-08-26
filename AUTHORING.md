@@ -435,6 +435,36 @@ Bullets/numbers in the muted-foreground color; item text in foreground.
 
 Bordered, header row weighted; uses `--border` for cell borders.
 
+### Colour is semantic, and only for status
+
+The site is monochrome for prose, and that is deliberate. Colour carries exactly
+one meaning here — **how much risk something represents** — on a traffic-light
+scale:
+
+| Token | Colour | Means |
+|---|---|---|
+| `--safe` | green | Nothing to weigh. `none` and `low` severity. |
+| `--caution` | amber | Weigh it before acting. `moderate` severity. |
+| `--destructive` | red | Stop. `high` severity, and vault content. |
+
+Use `text-safe`, `text-caution`, `text-destructive` and their `border-*`
+equivalents. All three are defined in every theme block, so they invert
+correctly in dark mode.
+
+**Colour is never the only signal.** The severity word is printed alongside it
+everywhere, so nothing depends on colour perception.
+
+**Never use colour decoratively**, and never introduce a fourth hue. If
+something wants colour and is not a risk level, it does not want colour.
+
+> **Why this exists.** The palette originally shipped only `--destructive`, so
+> everything below `high` rendered identically to body text — three severity
+> levels, two visual states, and a warning that did not look like a warning.
+> Compounding it, the `LineChart` monochrome invariant below (correct for data
+> viz, where hue encodes series badly) got generalised into a house style and
+> suppressed colour where it was exactly the right encoding. Charts stay
+> monochrome. Status does not.
+
 ### Blockquotes (the convention for callouts)
 
 ```md

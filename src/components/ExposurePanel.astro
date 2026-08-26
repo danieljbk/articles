@@ -12,7 +12,10 @@
  *   2. Unconditional verdicts are stated, not templated. Rendering "ALWAYS →
  *      never publish" forced a plain judgement through a conditional shape.
  *
- * Monochrome except severity, which is the one place a glance has to land.
+ * Colour is semantic and traffic-light: green means no action needed, amber
+ * means think before acting, red means stop. It is never decorative, and the
+ * severity word is always printed alongside it so the signal never depends on
+ * colour perception alone.
  */
 interface Threat {
   category: string;
@@ -34,10 +37,20 @@ const { threats, verdict } = exposure;
 const rank = { low: 1, moderate: 2, high: 3 } as const;
 const worst = threats.reduce((m, t) => Math.max(m, rank[t.severity]), 0);
 const overall = (["none", "low", "moderate", "high"] as const)[worst];
-const elevated = worst >= 3;
 
 const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const conditional = verdict.rules.length > 0;
+
+// Traffic-light mapping. none/low: nothing to weigh. moderate: weigh it.
+// high: stop. Applied to the rule, the header, and each threat so the panel
+// reads at a glance before any of it is read as text.
+const TONE = {
+  none: { text: "text-safe", border: "border-safe/60" },
+  low: { text: "text-safe", border: "border-safe/60" },
+  moderate: { text: "text-caution", border: "border-caution/70" },
+  high: { text: "text-destructive", border: "border-destructive/70" },
+} as const;
+const tone = TONE[overall];
 ---
 
 <aside
@@ -45,7 +58,7 @@ const conditional = verdict.rules.length > 0;
   data-print-hide
   class:list={[
     "mb-14 border-l-2 pl-5",
-    elevated ? "border-destructive/70" : "border-border",
+    tone.border,
   ]}
 >
   <div class="flex items-baseline gap-2.5">
@@ -53,12 +66,9 @@ const conditional = verdict.rules.length > 0;
       If published
     </p>
     <span
-      class:list={[
-        "font-mono text-[0.7rem] uppercase tracking-[0.14em]",
-        elevated ? "text-destructive" : "text-muted-foreground/70",
-      ]}
+      class:list={["font-mono text-[0.7rem] uppercase tracking-[0.14em]", tone.text]}
     >
-      &middot; {overall} risk
+      &middot; {overall === "none" ? "no risk" : `${overall} risk`}
     </span>
   </div>
 
@@ -93,7 +103,7 @@ const conditional = verdict.rules.length > 0;
   {/* The reasoning, second and quieter. */}
   {
     threats.length === 0 ? (
-      <p class="mt-4 text-sm text-muted-foreground">No threats identified.</p>
+      <p class="mt-4 text-sm text-safe">No threats identified.</p>
     ) : (
       <ol class="mt-5 space-y-3.5">
         {threats.map(t => (

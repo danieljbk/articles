@@ -23,6 +23,13 @@ interface Props {
 }
 const { exposure, title } = Astro.props;
 const threats = exposure?.threats ?? [];
+const TONE = {
+  none: "text-safe",
+  low: "text-safe",
+  moderate: "text-caution",
+  high: "text-destructive",
+} as const;
+
 const rank = { low: 1, moderate: 2, high: 3 } as const;
 const worst = threats.reduce((m, t) => Math.max(m, rank[t.severity]), 0);
 const overall = (["none", "low", "moderate", "high"] as const)[worst];

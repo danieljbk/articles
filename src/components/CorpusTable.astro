@@ -13,6 +13,13 @@
 import { getCollection } from "astro:content";
 import { splitPrivateId } from "@/utils/slug";
 
+const TONE = {
+  none: "text-safe",
+  low: "text-safe",
+  moderate: "text-caution",
+  high: "text-destructive",
+} as const;
+
 const rank = { low: 1, moderate: 2, high: 3 } as const;
 const names = ["none", "low", "moderate", "high"] as const;
 
@@ -76,10 +83,8 @@ const unassessed = rows.filter(r => !r.assessed).length;
               <td class="py-2.5 pr-3 whitespace-nowrap">
                 <span
                   class:list={[
-                    "rounded-md border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase",
-                    r.severity === "high"
-                      ? "border-destructive/60 text-destructive"
-                      : "border-border text-muted-foreground",
+                    "font-mono text-[0.7rem] uppercase tracking-wider",
+                    TONE[r.severity as keyof typeof TONE],
                   ]}
                 >
                   {r.severity}
@@ -93,7 +98,7 @@ const unassessed = rows.filter(r => !r.assessed).length;
                 )}
                 {r.verdict}
                 {r.vault && (
-                  <span class="ml-1 rounded-md border border-destructive/60 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase text-destructive">
+                  <span class="ml-1 font-mono text-[0.7rem] uppercase tracking-wider text-destructive">
                     vault
                   </span>
                 )}
