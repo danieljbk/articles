@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
+import ArticleRow from "@/components/ArticleRow.astro";
 import { splitPrivateId } from "@/utils/slug";
 
 const isLocal = process.env.INCLUDE_PRIVATE === "1";
@@ -99,24 +100,21 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
             <ul class="divide-y divide-border">
               {group.items.map(({ article, status, slug }) => (
                 <li>
-                  <a
+                  <ArticleRow
                     href={`/private/${status}/${slug}`}
-                    class="group flex flex-col gap-1.5 py-4 transition-colors hover:bg-secondary/40 sm:-mx-4 sm:px-4"
+                    title={article.data.title}
+                    description={article.data.description}
+                    dense
                   >
-                    <div class="flex items-baseline justify-between gap-4">
-                      <span class="font-medium tracking-tight">
-                        {article.data.title}
+                    {status !== "completed" && (
+                      <span
+                        slot="meta"
+                        class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground/70"
+                      >
+                        {status}
                       </span>
-                      {status !== "completed" && (
-                        <span class="shrink-0 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground/70">
-                          {status}
-                        </span>
-                      )}
-                    </div>
-                    <p class="line-clamp-2 text-sm text-muted-foreground">
-                      {article.data.description}
-                    </p>
-                  </a>
+                    )}
+                  </ArticleRow>
                 </li>
               ))}
             </ul>

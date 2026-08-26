@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
+import ArticleRow from "@/components/ArticleRow.astro";
 import { toUrlSlug } from "@/utils/slug";
 
 // League pieces are readable by anyone who wants them but must not sit at the
@@ -120,32 +121,25 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                 data-title={article.data.title.toLowerCase()}
                 data-section={article.data.section}
               >
-                <a
+                <ArticleRow
                   href={`/${toUrlSlug(article.id)}`}
-                  class="group flex flex-col gap-1.5 py-5 transition-colors hover:bg-secondary/40 sm:-mx-4 sm:px-4"
+                  title={article.data.title}
+                  description={article.data.description}
                 >
-                  <div class="flex items-baseline justify-between gap-4">
-                    <span class="font-medium tracking-tight group-hover:text-foreground">
-                      {article.data.title}
-                    </span>
-                    <span class="flex shrink-0 items-baseline gap-2">
-                      {article.data.section === "league" && (
-                        <span class="rounded-md border border-border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide text-muted-foreground">
-                          league
-                        </span>
-                      )}
-                      <time
-                        datetime={article.data.pubDate.toISOString().slice(0, 10)}
-                        class="font-mono text-xs text-muted-foreground"
-                      >
-                        {dateFormatter.format(article.data.pubDate)}
-                      </time>
-                    </span>
-                  </div>
-                  <p class="line-clamp-2 text-sm text-muted-foreground">
-                    {article.data.description}
-                  </p>
-                </a>
+                  <Fragment slot="meta">
+                    {article.data.section === "league" && (
+                      <span class="rounded-md border border-border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide text-muted-foreground">
+                        league
+                      </span>
+                    )}
+                    <time
+                      datetime={article.data.pubDate.toISOString().slice(0, 10)}
+                      class="font-mono text-xs text-muted-foreground"
+                    >
+                      {dateFormatter.format(article.data.pubDate)}
+                    </time>
+                  </Fragment>
+                </ArticleRow>
               </li>
             ))}
           </ul>

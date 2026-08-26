@@ -1,0 +1,40 @@
+---
+/**
+ * One row in an article index. ONE definition, rendered by both the public and
+ * the private index page — they previously held separate copies of this
+ * markup, so restyling one silently left the other behind. Same failure
+ * TagList.astro was extracted to fix, one level up.
+ *
+ * The only real difference between the two callers is what sits to the right
+ * of the title: a league badge and a date on the public index, a status label
+ * on the private one, where the date belongs to the session header instead.
+ * That goes in the `meta` slot. Everything else is identical by construction.
+ */
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  /** Tighter rows for the private index, where session headers group them. */
+  dense?: boolean;
+}
+
+const { href, title, description, dense = false } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={[
+    "group flex flex-col gap-1.5 transition-colors hover:bg-secondary/40 sm:-mx-4 sm:px-4",
+    dense ? "py-4" : "py-5",
+  ]}
+>
+  <div class="flex items-baseline justify-between gap-4">
+    <span class="font-medium tracking-tight group-hover:text-foreground">
+      {title}
+    </span>
+    <span class="flex shrink-0 items-baseline gap-2">
+      <slot name="meta" />
+    </span>
+  </div>
+  <p class="line-clamp-2 text-sm text-muted-foreground">{description}</p>
+</a>
