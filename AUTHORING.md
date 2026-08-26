@@ -8,6 +8,7 @@ How to write content for this system. Aimed at a future Claude (or human) who ha
 - **Private is the default — everything.** Every article goes to **`articles-private/completed/`**, git-tracked and pushed to a private repo, rendered locally. Nothing is published unless Daniel asks for that specific piece. See [Where an article goes](#where-an-article-goes).
 - **Quote him verbatim.** Articles are private, so his own words belong in them. See [His words](#his-words).
 - Preview any article with **`bun run open <slug>`** — it starts the dev server and opens the page. See [Previewing an article](#previewing-an-article).
+- **Review is mandatory before publishing** — recompute the figures, read it cold, check your least-confident claims. See [Reviewing it](#reviewing-it-which-is-mandatory).
 - **Sections are numbered automatically** — never write numbers into headings. See [Section numbering](#section-numbering).
 - **Never write CSS, `<style>`, or layout HTML in articles.** The Astro app already styles every Markdown construct using shadcn design tokens. Writing CSS in articles means you didn't read this file.
 
@@ -150,6 +151,38 @@ Two rules about how the surrounding explanation gets written:
 - **Voice is explanatory second person, where "you" is any reader.** "The room
   you are sitting in" is fine. "Your guess", "you asked", "as you mentioned"
   are not — they presume a conversation the reader wasn't in.
+
+## Reviewing it, which is mandatory
+
+Three separate defects reached the *published* version of one article, each one
+invisible to the pass before it. They were only found because Daniel asked for a
+review, and then asked again. The reason the original pass missed all three is
+that it verified the **pipeline** — HTTP status, clean build, exposure block
+stripped, no private leakage — and then reported the article as "verified,"
+which sounds like the content was checked. It was not. A structural check
+reported as a substantive one is worse than no check, because it spends trust on
+the half nobody examined.
+
+So: run all three passes below on every article before it goes anywhere, and say
+in the report which ones were run.
+
+1. **Recompute every figure.** Not "does this number look plausible" — derive it.
+   Case: a drift-velocity claim that held only below about 1 A and was false
+   across the rest of its own stated range, in a piece already reported verified.
+
+2. **Read it as someone who was not in the conversation.** The originating
+   question is in your context and not in the reader's, which makes referential
+   gaps invisible from the inside. Case: an opening that said "the second
+   question" before any second question had been introduced.
+
+3. **Name the claims you are least confident about, and check them against a
+   source.** Fluency is not evidence — the sentences that need checking are
+   usually the ones that came out easily. Case: a storm's charge structure
+   written as a simple dipole when the sign of the transfer reverses with
+   temperature.
+
+A pass that only confirms the page deployed is not a review and must not be
+reported as one.
 
 ## Sharing an article
 
