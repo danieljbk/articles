@@ -167,6 +167,74 @@ export function stepSeries(
   return pts;
 }
 
+// Same step series, but quiet stretches carry no information, so they get no
+// width: a gap longer than `threshold` days collapses to `breakWidth` x-units
+// and is returned as a labeled axis break. Short gaps stay proportional, so
+// the local time-shape survives; only dead space is removed.
+export function compressedStepSeries(
+  daily: DerivedDay[],
+  scale = 1,
+  threshold = 14,
+  breakWidth = 5
+): {
+  pts: { x: number; y: number }[];
+  breaks: { x: number; label: string }[];
+  span: number;
+  xOf: Record<string, number>;
+} {
+  const pts: { x: number; y: number }[] = [];
+  const breaks: { x: number; label: string }[] = [];
+  const xOf: Record<string, number> = {};
+  let x = 0;
+  let prevDate: string | null = null;
+  let prevY: number | null = null;
+  for (const d of daily) {
+    if (prevDate !== null && prevY !== null) {
+      const gap = dayIndex(d.date, prevDate);
+      if (gap > threshold) {
+        breaks.push({ x: x + breakWidth / 2, label: `${gap}d` });
+        x += breakWidth;
+      } else {
+        x += gap;
+      }
+      pts.push({ x, y: prevY });
+    }
+    pts.push({ x, y: d.chars / scale });
+    xOf[d.date] = x;
+    prevDate = d.date;
+    prevY = d.chars / scale;
+  }
+  return { pts, breaks, span: x, xOf };
+}
+
+// Date ticks only where the compressed axis changes meaning: the endpoints
+// and both sides of every collapsed gap. Everything else is legible from the
+// line itself.
+export function breakTickLabels(
+  daily: DerivedDay[],
+  xOf: Record<string, number>,
+  threshold = 14
+): { x: number; label: string }[] {
+  const dlab = (iso: string) =>
+    new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    });
+  const dates = new Set<string>();
+  if (daily.length) {
+    dates.add(daily[0].date);
+    dates.add(daily[daily.length - 1].date);
+    for (let i = 1; i < daily.length; i++) {
+      if (dayIndex(daily[i].date, daily[i - 1].date) > threshold) {
+        dates.add(daily[i - 1].date);
+        dates.add(daily[i].date);
+      }
+    }
+  }
+  return [...dates].sort().map(d => ({ x: xOf[d], label: dlab(d) }));
+}
+
 // Counts derived from the diff tool's own source, so they can never go stale
 // against it: one I.append(dict(n=…)) per item, pending=True on amber ones.
 export function rebuildDiffStats(): { executed: number; pending: number } | null {
