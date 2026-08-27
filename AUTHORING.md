@@ -31,10 +31,11 @@ The Astro app reads from both via content collections. Private articles (only wh
 ## Where an article goes
 
 **Every article gets an attack-surface assessment before it goes anywhere, and
-Claude makes the call.** Clean pieces are published to
-`articles/src/data/articles/` and pushed. Anything carrying attack surface goes
-to `articles-private/completed/` and stays there. The assessment is reported to
-Daniel either way — that reporting is the point of the system, not a formality.
+every article then stays private.** Finished pieces go to
+`articles-private/completed/` and are pushed to the private repo. Daniel reviews
+the archive periodically and names what gets published; publish a piece only when
+he names it. The assessment is reported to him either way — that reporting is the
+point of the system, not a formality.
 
 The assessment is a threat model, not a topic check. It states what the piece
 discloses, who could use it and how, a severity, a verdict, and anything
@@ -42,9 +43,10 @@ stripped to make publication possible. Severity runs **none** / **low** /
 **moderate** / **high**, where high means concrete legal, financial, account,
 or physical exposure.
 
-**Report before publishing anything that isn't obviously clean.** Science and
-world-explanation can publish and report in the same breath. Everything else
-gets the report first, because a report on a live article is a post-mortem.
+**Report the assessment when the piece is finished, not when it goes live.** Its
+job is to make Daniel's review cheap, and no category of article clears itself —
+there is no science or world-explanation exemption. A report on a live article is
+a post-mortem.
 
 Every assessment is appended to the `publishing-security-review` article in
 `articles-private/completed/`.
@@ -348,7 +350,7 @@ exposure:
     rules:
       - if: some condition about your own intent or plans
         then: do not publish
-    otherwise: publish
+    otherwise: clear to publish whenever Daniel asks for it
 ---
 ```
 
@@ -577,8 +579,11 @@ that explains it.
 
 Auto-rounded corners. Place images in `public/images/` and reference with absolute paths.
 
+**When an article names a real thing that has a canonical, trivially fetchable image — a product, a tool, a piece of equipment, a logo, a game item — show the image beside the name.** Fetch the official asset, verify the identifier against the authoritative source instead of guessing it, store it locally per the conventions above rather than hotlinking, and surface it through a small reusable component so later articles get it for free. Stating a name when showing it is one lookup away is the laziness this rule exists to prevent. `Item` below is this rule already built for League items.
+
 ## What NOT to write in articles
 
+- **No reference to the article's own drafting, or to Claude's process.** Not "the draft version I first wrote got half of it wrong," not "as noted earlier," not "my earlier draft." An article is settled fact for its reader, and correction history breaks that frame. State the corrected fact directly.
 - **No `<style>` tags, no inline `style="..."` attributes.** Ever.
 - **No CSS classes.** No `class="..."` on elements (Markdown renders to plain HTML; styling comes from `.article-prose`).
 - **No `<div>` wrappers** for visual effect. If you need structural grouping, use Markdown sections (headings split content); if you need a custom component, use MDX.
