@@ -24,14 +24,23 @@ const telemetry = readTelemetry();
 const activeBoards = boards.filter(b => b.status === "active");
 const openItems = activeBoards.reduce((n, b) => n + b.open, 0);
 const lastTel = telemetry[0];
-const cmPct = cm ? (cm.chars / cm.budget) * 100 : 0;
-const nearCap = cmPct > 95;
+// Against the target, not the hard stop: the target is the number a version
+// pass has to reach, so that is the bar worth reading at a glance. Over it is
+// "pass due", not a failure — writes keep landing until the hard stop.
+const cmPct = cm ? (cm.tokens / cm.target) * 100 : 0;
+const overTarget = !!cm && cm.tokens > cm.target;
+const cmState = !cm
+  ? "unavailable"
+  : cm.tokens > cm.hardStop
+    ? "writes refused"
+    : cm.tokens > cm.warn
+      ? "pass due"
+      : overTarget
+        ? "over target"
+        : "under target";
 
 const derived = readDerived();
 const daily = derived?.claude_md.daily ?? [];
-const lastDay = daily[daily.length - 1];
-const todayUtc = new Date().toISOString().slice(0, 10);
-const deltaToday = lastDay?.date === todayUtc ? lastDay.delta : 0;
 const { pts: sizePts, breaks: sizeBreaks, span: sizeSpan, xOf } =
   compressedStepSeries(daily, 1000);
 const sizeTicks = breakTickLabels(daily, xOf);
@@ -146,26 +155,23 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
               CLAUDE.md budget
             </div>
             <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
-              {cm ? `${Math.round(cmPct * 10) / 10}%` : "—"}
+              {cm ? `${cm.tokens.toLocaleString()}` : "—"}
+              <span class="text-sm font-normal text-muted-foreground">tokens</span>
             </div>
             <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
               <div
-                class:list={["h-full rounded-full", nearCap ? "bg-caution" : "bg-foreground"]}
+                class:list={["h-full rounded-full", overTarget ? "bg-caution" : "bg-foreground"]}
                 style={`width:${Math.min(cmPct, 100)}%`}
               />
             </div>
             <div
               class:list={[
                 "mt-1.5 font-mono text-[0.7rem]",
-                nearCap ? "text-caution" : "text-muted-foreground",
+                overTarget ? "text-caution" : "text-muted-foreground",
               ]}
             >
               {cm
-                ? `${cm.chars.toLocaleString()} of ${cm.budget.toLocaleString()}${
-                    deltaToday
-                      ? ` · ${deltaToday > 0 ? "+" : ""}${deltaToday.toLocaleString()} today`
-                      : ""
-                  }${nearCap ? " · near cap" : ""}`
+                ? `${cmState} of ${cm.target.toLocaleString()}`
                 : "unavailable"}
             </div>
           </a>

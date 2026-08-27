@@ -80,17 +80,51 @@ export function readTelemetry(): TelemetryRecord[] {
   return records;
 }
 
-export function claudeMdStats(): { chars: number; budget: number } | null {
+// The rulebook is measured in Claude tokens against the three-threshold band
+// in validate.py, per Daniel's ruling that tokens are the standard unit. The
+// old flat BUDGET constant it used to read no longer exists.
+//
+// Counted live on every render: a budget gate reading a cached number is not a
+// gate. tokens.py owns the tokenizer and the measured cl100k-to-Claude ratio,
+// so the tile can never disagree with what validate.py enforces on write.
+export type RulebookBudget = {
+  tokens: number;
+  chars: number;
+  target: number;
+  warn: number;
+  hardStop: number;
+};
+
+export function claudeMdStats(): RulebookBudget | null {
   if (!suiteEnabled) return null;
   const file = join(ROOT, "CLAUDE.md");
   if (!existsSync(file)) return null;
   const chars = readFileSync(file, "utf8").length;
-  const budget = Number(
-    readFileSync(join(ROOT, "validate.py"), "utf8").match(
-      /^BUDGET = ([\d_]+)/m
-    )?.[1].replace(/_/g, "") ?? 0
-  );
-  return { chars, budget };
+  const py = readFileSync(join(ROOT, "validate.py"), "utf8");
+  const threshold = (name: string) =>
+    Number(
+      py.match(new RegExp(`^${name} = ([\\d_]+)`, "m"))?.[1].replace(/_/g, "") ?? 0
+    );
+  const target = threshold("TARGET");
+  if (!target) return null;
+  let tokens = 0;
+  try {
+    tokens = Number(
+      execFileSync(
+        "python3",
+        [
+          "-c",
+          "import sys,pathlib,tokens;t=pathlib.Path(sys.argv[1]).read_text();print(round(len(tokens.ENC.encode(t))*tokens.RATIO))",
+          file,
+        ],
+        { cwd: ROOT, timeout: 30_000, encoding: "utf8" }
+      ).trim()
+    );
+  } catch {
+    return null;
+  }
+  if (!tokens) return null;
+  return { tokens, chars, target, warn: threshold("WARN"), hardStop: threshold("HARD_STOP") };
 }
 
 // The derived time series — the flywheel layer. derive_metrics.py computes it
