@@ -18,6 +18,7 @@ const fullTitle =
   title === "articles.kwon.ai" ? title : `${title} · articles.kwon.ai`;
 
 const noindex = Astro.url.pathname.startsWith("/private");
+const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -27,8 +28,18 @@ const noindex = Astro.url.pathname.startsWith("/private");
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:site_name" content="articles.kwon.ai" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
