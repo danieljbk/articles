@@ -101,7 +101,11 @@ export function claudeMdStats(): { chars: number; budget: number } | null {
 export type DerivedDay = { date: string; chars: number; delta: number; commits: number };
 export type Derived = {
   generated_at: string;
-  claude_md: { per_commit: { t: number; chars: number }[]; daily: DerivedDay[] };
+  claude_md: {
+    per_commit: { t: number; chars: number }[];
+    daily: DerivedDay[];
+    now_tokens?: { chars: number; cl100k: number; claude_est: number } | null;
+  };
   sessions: {
     daily: { date: string; started: number }[];
     recent: {

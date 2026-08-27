@@ -89,7 +89,11 @@ const enrichedCount = recent.filter(r => r.enriched).length;
               refLines={[{ y: 100, label: "flat 100K budget" }]}
               markers={markers}
               height={300}
-              caption={`Ends at <strong>${lastDay.chars.toLocaleString()}</strong> chars — under the budget for the first time since it existed.`}
+              caption={`Ends at <strong>${lastDay.chars.toLocaleString()}</strong> chars${
+                derived.claude_md.now_tokens
+                  ? ` ≈ ${derived.claude_md.now_tokens.claude_est.toLocaleString()} Claude tokens (estimate: cl100k × 1.593, the session-token-cost calibration)`
+                  : ""
+              } — under the budget for the first time since it existed.`}
             />
           </section>
 
