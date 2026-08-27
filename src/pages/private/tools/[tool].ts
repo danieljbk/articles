@@ -8,17 +8,24 @@ import { join } from "node:path";
 // gate as the private article routes: no paths are emitted unless the server
 // runs with INCLUDE_PRIVATE=1, so no tool can exist in a production build —
 // which also means the machine-local paths below are never touched there.
-export const getStaticPaths: GetStaticPaths = () => {
-  if (process.env.INCLUDE_PRIVATE !== "1") return [];
-  return [{ params: { tool: "claude-md" } }];
+// Each tool is a generator script in ~/config/claude that writes an HTML file;
+// it re-runs on every request, so the view is never stale.
+const TOOLS: Record<string, { script: string; out: string }> = {
+  "claude-md": { script: "render.py", out: "CLAUDE.html" },
+  "rebuild-diff": { script: "render_rebuild_diff.py", out: "rebuild-diff.html" },
 };
 
-export const GET: APIRoute = () => {
-  // Regenerate from the live file on every request, so the view is never
-  // stale. The interpreter lives with the file it renders.
+export const getStaticPaths: GetStaticPaths = () => {
+  if (process.env.INCLUDE_PRIVATE !== "1") return [];
+  return Object.keys(TOOLS).map(tool => ({ params: { tool } }));
+};
+
+export const GET: APIRoute = ({ params }) => {
+  const tool = TOOLS[params.tool as string];
+  if (!tool) return new Response(null, { status: 404 });
   const dir = join(homedir(), "config", "claude");
-  execFileSync("python3", [join(dir, "render.py"), "--no-open"]);
-  return new Response(readFileSync(join(dir, "CLAUDE.html")), {
+  execFileSync("python3", [join(dir, tool.script), "--no-open"]);
+  return new Response(readFileSync(join(dir, tool.out)), {
     headers: { "Content-Type": "text/html; charset=utf-8" },
   });
 };
