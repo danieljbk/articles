@@ -436,6 +436,8 @@ tailscale up --accept-routes=false
 ```
 
 Code blocks get **Shiki** syntax highlighting (light/dark themes auto-swap). Always specify the language for highlighting: `bash`, `js`, `ts`, `json`, `yaml`, `astro`, `css`, `tsx`, etc.
+
+**Long lines wrap; horizontal scrolling is banned** (Daniel, 2026-08-27: "it forces me to scroll to the right, and that is sort of unacceptable"). `global.css` sets `pre { white-space: pre-wrap; overflow-wrap: anywhere }` on screen, matching what print always did. Wraps are soft — copied text is byte-identical — so never hand-break a long command to avoid wrapping; paste it whole.
 ````
 
 ### Links
