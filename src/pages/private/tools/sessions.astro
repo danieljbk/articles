@@ -1,0 +1,98 @@
+---
+// Session boards — the live per-session to-do view, native to the site's
+// design system. Data: ~/config/claude/sessions/*.md (format in its README),
+// re-read on every request in dev, so the view is live. In production the
+// suite reader returns nothing and the page renders its hidden state.
+import Layout from "@/layouts/Layout.astro";
+import { readBoards, suiteEnabled } from "@/utils/suite";
+
+const boards = readBoards();
+
+const MARK: Record<string, { glyph: string; cls: string; word: string }> = {
+  done: { glyph: "✓", cls: "text-safe", word: "done" },
+  doing: { glyph: "▶", cls: "text-caution", word: "in progress" },
+  todo: { glyph: "○", cls: "text-muted-foreground", word: "before wrap" },
+  waits: { glyph: "◆", cls: "text-caution", word: "waits on Daniel" },
+};
+---
+
+<Layout title="Session boards" description="Live per-session to-do boards.">
+  <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
+    <header class="mb-10">
+      <div class="flex items-baseline gap-3">
+        <h1 class="text-3xl font-semibold tracking-tight">session boards</h1>
+        <a
+          href="/private/"
+          class="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"
+          >← dashboard</a
+        >
+      </div>
+      <p class="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs text-muted-foreground">
+        {
+          Object.values(MARK).map(m => (
+            <span>
+              <span class={m.cls}>{m.glyph}</span> {m.word}
+            </span>
+          ))
+        }
+      </p>
+    </header>
+
+    {
+      !suiteEnabled ? (
+        <p class="text-muted-foreground">Hidden in production.</p>
+      ) : boards.length === 0 ? (
+        <p class="text-muted-foreground">No session boards yet.</p>
+      ) : (
+        boards.map(b => (
+          <section
+            class:list={[
+              "mb-8 rounded-lg border p-6",
+              b.status === "active" && "border-caution/50",
+            ]}
+          >
+            <div class="flex items-baseline gap-3">
+              <h2 class="font-medium">{b.title}</h2>
+              <span
+                class:list={[
+                  "ml-auto shrink-0 rounded-full px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-[0.12em]",
+                  b.status === "active"
+                    ? "text-caution"
+                    : "text-muted-foreground",
+                ]}
+              >
+                {b.status}
+              </span>
+            </div>
+            <p class="mt-1 font-mono text-xs text-muted-foreground">
+              {b.session} · started {b.started} · {b.open} open
+            </p>
+            <ul class="mt-4 space-y-1.5">
+              {b.items.map(item => (
+                <li class="flex gap-3 text-[0.95rem]">
+                  <span
+                    class:list={[
+                      "w-4 shrink-0 text-center font-mono",
+                      MARK[item.state].cls,
+                    ]}
+                    aria-label={MARK[item.state].word}
+                  >
+                    {MARK[item.state].glyph}
+                  </span>
+                  <span
+                    class:list={[
+                      item.state === "done" && "text-muted-foreground",
+                      item.state === "waits" && "text-caution",
+                    ]}
+                  >
+                    {item.text}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      )
+    }
+  </main>
+</Layout>

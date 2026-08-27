@@ -1,0 +1,108 @@
+---
+// Session telemetry — per-conversation sentiment, topics, signals, and the
+// CLAUDE.md version each session ran under. Data:
+// ~/config/claude/telemetry/sessions.jsonl (schema in its README). Counts are
+// listable events and quotes are verbatim; no invented scores — which is why
+// this renders records, not charts, until there is enough data to plot.
+import Layout from "@/layouts/Layout.astro";
+import { readTelemetry, suiteEnabled } from "@/utils/suite";
+
+const records = readTelemetry();
+const totals = records.reduce(
+  (t, r) => ({
+    c: t.c + (r.signals?.corrections ?? 0),
+    v: t.v + (r.signals?.validations ?? 0),
+  }),
+  { c: 0, v: 0 }
+);
+---
+
+<Layout title="Session telemetry" description="Per-session performance records.">
+  <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
+    <header class="mb-10">
+      <div class="flex items-baseline gap-3">
+        <h1 class="text-3xl font-semibold tracking-tight">session telemetry</h1>
+        <a
+          href="/private/"
+          class="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"
+          >← dashboard</a
+        >
+      </div>
+      <p class="mt-3 font-mono text-xs text-muted-foreground">
+        {records.length} sessions · {totals.c} corrections · {totals.v}
+        validations · schema: telemetry/README.md
+      </p>
+    </header>
+
+    {
+      !suiteEnabled ? (
+        <p class="text-muted-foreground">Hidden in production.</p>
+      ) : records.length === 0 ? (
+        <p class="text-muted-foreground">No records yet.</p>
+      ) : (
+        records.map(r => (
+          <section class="mb-8 rounded-lg border p-6">
+            <div class="flex flex-wrap items-baseline gap-3">
+              <h2 class="font-mono text-sm">{r.session}</h2>
+              <span class="ml-auto shrink-0 rounded-full bg-secondary px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-secondary-foreground">
+                {r.sentiment}
+              </span>
+            </div>
+            <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div>
+                <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                  corrections
+                </div>
+                <div class="text-xl font-semibold tabular-nums">
+                  {r.signals?.corrections ?? "—"}
+                </div>
+              </div>
+              <div>
+                <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                  validations
+                </div>
+                <div class="text-xl font-semibold tabular-nums">
+                  {r.signals?.validations ?? "—"}
+                </div>
+              </div>
+              <div class="col-span-2">
+                <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                  topics
+                </div>
+                <div class="text-sm text-muted-foreground">
+                  {(r.topics ?? []).join(", ")}
+                </div>
+              </div>
+            </div>
+            <p class="mt-3 font-mono text-xs text-muted-foreground">
+              {r.date} · {r.model} · CLAUDE.md {r.claude_md?.start} →{" "}
+              {r.claude_md?.end}
+            </p>
+            <details class="mt-4 border-l-2 pl-4">
+              <summary class="cursor-pointer text-sm text-muted-foreground">
+                evidence & notes
+              </summary>
+              <ul class="mt-3 space-y-2 text-sm">
+                {(r.evidence?.negative ?? []).map(q => (
+                  <li class="flex gap-2">
+                    <span class="shrink-0 font-mono text-muted-foreground">−</span>
+                    <span>“{q}”</span>
+                  </li>
+                ))}
+                {(r.evidence?.positive ?? []).map(q => (
+                  <li class="flex gap-2">
+                    <span class="shrink-0 font-mono text-muted-foreground">+</span>
+                    <span>“{q}”</span>
+                  </li>
+                ))}
+              </ul>
+              {r.notes && (
+                <p class="mt-3 text-sm text-muted-foreground">{r.notes}</p>
+              )}
+            </details>
+          </section>
+        ))
+      )
+    }
+  </main>
+</Layout>

@@ -3,8 +3,32 @@ import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import ArticleRow from "@/components/ArticleRow.astro";
 import { splitPrivateId } from "@/utils/slug";
+import {
+  claudeMdStats,
+  readBoards,
+  readTelemetry,
+  rebuildDiffStats,
+} from "@/utils/suite";
 
 const isLocal = process.env.INCLUDE_PRIVATE === "1";
+
+// Dashboard readouts — all machine-local, all live per request in dev.
+const cm = claudeMdStats();
+const diff = rebuildDiffStats();
+const boards = readBoards();
+const telemetry = readTelemetry();
+const activeBoards = boards.filter(b => b.status === "active");
+const openItems = activeBoards.reduce((n, b) => n + b.open, 0);
+const lastTel = telemetry[0];
+const cmPct = cm ? (cm.chars / cm.budget) * 100 : 0;
+const nearCap = cmPct > 95;
+
+const BOARD_MARK: Record<string, { glyph: string; cls: string }> = {
+  done: { glyph: "✓", cls: "text-safe" },
+  doing: { glyph: "▶", cls: "text-caution" },
+  todo: { glyph: "○", cls: "text-muted-foreground" },
+  waits: { glyph: "◆", cls: "text-caution" },
+};
 
 const articles = isLocal
   ? (await getCollection("private", ({ data }) => !data.draft)).sort(
@@ -68,58 +92,120 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 
     {
       isLocal && (
-        <section class="mb-12">
-          <div class="mb-4 flex items-baseline gap-3 border-b border-border pb-2">
-            <span class="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
-              tools
-            </span>
+        <section class="mb-14">
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <a
+              href="/private/tools/claude-md"
+              class="rounded-lg border p-4 transition-colors hover:bg-secondary/40"
+            >
+              <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                CLAUDE.md budget
+              </div>
+              <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
+                {cm ? `${Math.round(cmPct * 10) / 10}%` : "—"}
+              </div>
+              <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
+                <div
+                  class:list={["h-full rounded-full", nearCap ? "bg-caution" : "bg-foreground"]}
+                  style={`width:${Math.min(cmPct, 100)}%`}
+                />
+              </div>
+              <div
+                class:list={[
+                  "mt-1.5 font-mono text-[0.7rem]",
+                  nearCap ? "text-caution" : "text-muted-foreground",
+                ]}
+              >
+                {cm
+                  ? `${cm.chars.toLocaleString()} of ${cm.budget.toLocaleString()}${nearCap ? " · near cap" : ""}`
+                  : "unavailable"}
+              </div>
+            </a>
+
+            <a
+              href="/private/tools/rebuild-diff"
+              class="rounded-lg border border-caution/50 p-4 transition-colors hover:bg-secondary/40"
+            >
+              <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                awaiting your ruling
+              </div>
+              <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-caution">
+                {diff?.pending ?? "—"}
+              </div>
+              <div class="mt-1.5 font-mono text-[0.7rem] text-muted-foreground">
+                amber diff items · {diff?.executed ?? "—"} executed
+              </div>
+            </a>
+
+            <a
+              href="/private/tools/sessions"
+              class="rounded-lg border p-4 transition-colors hover:bg-secondary/40"
+            >
+              <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                open across sessions
+              </div>
+              <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
+                {openItems}
+              </div>
+              <div class="mt-1.5 font-mono text-[0.7rem] text-muted-foreground">
+                {activeBoards.length} active board{activeBoards.length === 1 ? "" : "s"}
+              </div>
+            </a>
+
+            <a
+              href="/private/tools/telemetry"
+              class="rounded-lg border p-4 transition-colors hover:bg-secondary/40"
+            >
+              <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                last session signals
+              </div>
+              <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
+                {lastTel ? `${lastTel.signals?.corrections ?? 0} / ${lastTel.signals?.validations ?? 0}` : "—"}
+              </div>
+              <div class="mt-1.5 font-mono text-[0.7rem] text-muted-foreground">
+                {lastTel ? "corrections / validations" : "no records yet"}
+              </div>
+            </a>
           </div>
-          <ul class="divide-y divide-border">
-            <li>
-              <a
-                href="/private/tools/sessions"
-                class="block py-3 transition-colors hover:text-foreground"
-              >
-                <span class="font-medium">Session boards</span>
-                <span class="ml-3 text-sm text-muted-foreground">
-                  live per-session to-do — what's in flight, what waits on you
-                </span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="/private/tools/rebuild-diff"
-                class="block py-3 transition-colors hover:text-foreground"
-              >
-                <span class="font-medium">Rebuild diff</span>
-                <span class="ml-3 text-sm text-muted-foreground">
-                  every CLAUDE.md change as a word-diff; amber items await your ruling
-                </span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="/private/tools/telemetry"
-                class="block py-3 transition-colors hover:text-foreground"
-              >
-                <span class="font-medium">Session telemetry</span>
-                <span class="ml-3 text-sm text-muted-foreground">
-                  sentiment, topics, and rulebook version per conversation
-                </span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="/private/tools/claude-md"
-                class="block py-3 transition-colors hover:text-foreground"
-              >
-                <span class="font-medium">CLAUDE.md</span>
-                <span class="ml-3 text-sm text-muted-foreground">
-                  the live rulebook, rendered — regenerated on every open
-                </span>
-              </a>
-            </li>
-          </ul>
+
+          {
+            activeBoards.map(b => (
+              <div class="mt-6 rounded-lg border border-caution/50 p-5">
+                <div class="flex items-baseline gap-3">
+                  <span class="font-medium">{b.title}</span>
+                  <a
+                    href="/private/tools/sessions"
+                    class="ml-auto shrink-0 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-caution"
+                  >
+                    live board →
+                  </a>
+                </div>
+                <ul class="mt-3 space-y-1">
+                  {b.items
+                    .filter(i => i.state !== "done")
+                    .map(i => (
+                      <li class="flex gap-3 text-sm">
+                        <span
+                          class:list={["w-4 shrink-0 text-center font-mono", BOARD_MARK[i.state].cls]}
+                        >
+                          {BOARD_MARK[i.state].glyph}
+                        </span>
+                        <span class:list={[i.state === "waits" && "text-caution"]}>
+                          {i.text}
+                        </span>
+                      </li>
+                    ))}
+                  <li class="flex gap-3 text-sm text-muted-foreground">
+                    <span class="w-4 shrink-0 text-center font-mono text-safe">✓</span>
+                    <span>
+                      {b.items.filter(i => i.state === "done").length} done — full
+                      list on the board
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            ))
+          }
         </section>
       )
     }

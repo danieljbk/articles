@@ -693,18 +693,28 @@ request, so every view is live. The private index at `/private/` is the
 the running dev server is the tool suite and dashboard — "different displays
 that I can constantly check" — of which articles are one tool.
 
+The dashboard index itself shows live readouts — stat tiles (rulebook budget
+meter, amber rulings pending, open items, last-session signals) and the active
+session board inline — via `src/utils/suite.ts`, the one data layer every
+suite surface reads. **Everything wears the site's shadcn tokens**; Daniel,
+2026-08-28: "Keep the aesthetics of the original article page, shadcn, etc. A
+dashboard should not just be text." Color stays semantic-only (`--caution` for
+awaiting-him, `--safe`/`--destructive` for added/removed in diffs) — never a
+fourth hue.
+
 Current tools:
 
-| Route | Shows | Data |
+| Route | Shows | Built as |
 |---|---|---|
-| `/private/tools/sessions` | live per-session to-do boards | `~/config/claude/sessions/*.md` (format: its README) |
-| `/private/tools/rebuild-diff` | every CLAUDE.md rebuild change as word-diffs; amber = awaiting Daniel's ruling | curated in the generator |
-| `/private/tools/telemetry` | per-conversation sentiment, topics, rulebook version | `~/config/claude/telemetry/sessions.jsonl` (schema: its README) |
-| `/private/tools/claude-md` | the rulebook, rendered and linked | `~/config/claude/CLAUDE.md` |
+| `/private/tools/sessions` | live per-session to-do boards (`~/config/claude/sessions/*.md`, format in its README) | native Astro page, site layout |
+| `/private/tools/telemetry` | per-conversation sentiment, topics, signals, rulebook version (`telemetry/sessions.jsonl`) | native Astro page, site layout |
+| `/private/tools/rebuild-diff` | every CLAUDE.md rebuild change as word-diffs; amber awaits Daniel's ruling | generated standalone page, site tokens |
+| `/private/tools/claude-md` | the rulebook, rendered and linked | generated standalone page, site tokens |
 
-Adding a tool: generator script in `~/config/claude` (emit a self-contained
-HTML file, gitignore it), one line in the `TOOLS` map here, one row in the
-dashboard index, one row in this table.
+Adding a tool: prefer a native Astro page reading through `suite.ts` (data
+gated on `INCLUDE_PRIVATE`); use a generator script in `~/config/claude` only
+for heavy interpreters, styled with the site's token values. Either way: one
+dashboard tile or card, one row in this table.
 
 ## When you've added something to the system
 
