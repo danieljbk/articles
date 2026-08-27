@@ -679,6 +679,18 @@ An unknown `id` renders the text without an icon and logs a build warning, so a 
 - **The damage model is duplicated deliberately** — each tool carries its own copy of `dps()` (base attack speed 0.658, no ARAM ×1.05, matching the article). If the model changes, update every tool. Keep them in sync with the article's numbers.
 - Monochrome like everything else: emphasis is weight, border, and `--foreground` vs `--muted-foreground`, never a hue.
 
+## Local tools (private, dev-only)
+
+`src/pages/private/tools/[tool].ts` serves machine-local tools alongside the
+articles when the server runs with `INCLUDE_PRIVATE=1` — the same
+`getStaticPaths` gate as private articles, so no tool route exists in a
+production build and the machine-local paths it reads are never touched there.
+One route per tool. First tool: `/private/tools/claude-md`, which regenerates
+and serves the rendered rulebook (`~/config/claude/render.py`) on every
+request, so it is always current. The private index lists tools above the
+articles. Daniel's framing, 2026-08-27: the running dev server is "my tool
+suite," of which articles are the first tool.
+
 ## When you've added something to the system
 
 If you change `src/styles/global.css`, content schema, or add a component, **update this file in the same commit**. Future Claude sessions read this guide to learn the system; if it lags the system, it actively misleads.

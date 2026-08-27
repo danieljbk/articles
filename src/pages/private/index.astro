@@ -68,6 +68,31 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
     </header>
 
     {
+      isLocal && (
+        <section class="mb-12">
+          <div class="mb-4 flex items-baseline gap-3 border-b border-border pb-2">
+            <span class="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+              tools
+            </span>
+          </div>
+          <ul class="divide-y divide-border">
+            <li>
+              <a
+                href="/private/tools/claude-md"
+                class="block py-3 transition-colors hover:text-foreground"
+              >
+                <span class="font-medium">CLAUDE.md</span>
+                <span class="ml-3 text-sm text-muted-foreground">
+                  the live rulebook, rendered — regenerated on every open
+                </span>
+              </a>
+            </li>
+          </ul>
+        </section>
+      )
+    }
+
+    {
       !isLocal ? (
         <p class="text-muted-foreground">
           Private content is hidden in production. Run{" "}
