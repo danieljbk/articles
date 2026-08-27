@@ -2,52 +2,52 @@
 /**
  * Exposure assessment for a private article.
  *
- * Sits above the article and reads as a document header, not a widget.
+ * INVARIANTS. Check a change against every one of these, in the rendered
+ * output, before shipping it. They are the whole design: the panel is read by
+ * moving your eyes to a place and expecting a part to be there, so a part that
+ * moves between articles — or between two rows of the same card — costs more
+ * than anything it could gain.
+ *
+ *   I1. A badge is the FIRST thing in its row, at the left edge of the
+ *       content column. Header and threat rows are identical in this.
+ *   I2. A metadata label always FOLLOWS its badge. Never precedes it.
+ *   I3. The verdict is its own zone, closed by a rule.
+ *   I4. Every threat renders badge row, title, detail — same order, same
+ *       spacing, same type, always.
+ *   I5. Three type sizes only. 0.7rem mono for labels and badges, 0.9375rem
+ *       for prose, 1.25rem for the verdict. Emphasis is weight and colour.
+ *   I6. One measure. Every block of prose wraps at the same width, so the
+ *       right edge is as constant as the left one.
+ *
+ * I1 and I2 are written down because they were violated: the header rendered
+ * label-then-badge while every threat rendered badge-then-label, so the same
+ * two parts appeared in opposite order in one card.
  *
  * CLOSED BY DEFAULT. Most articles are never published, so the assessment is
- * only wanted when publishing is actually being weighed. Collapsed it is two
- * constant lines; the detail is one click away and nothing is cut. It is never
- * open on load, not even at high risk — a panel that opens itself under some
- * conditions is exactly the variability the fixed anatomy exists to remove.
+ * only wanted when publishing is actually being weighed. Collapsed it is the
+ * badge row and the verdict; the rest is one click away and nothing is cut. It
+ * never opens itself, not even at high risk — a panel that opens under some
+ * conditions is the variability these invariants exist to remove.
  *
- * FIXED ANATOMY. Every article renders the same slots in the same order at the
- * same sizes, so the panel can be parsed from a distance without being read —
- * you learn where to look once and the map holds for the whole corpus:
+ * FIXED ANATOMY. Same slots, same order, every article:
  *
- *   1. The coloured rail and the risk badge.  Always present.   } always
- *   2. The answer, one line, large.           Always present.   } visible
- *   3. Exceptions to it.                      Zero or more.     } behind
- *   4. The threats behind the verdict.        One or more.      } the click
+ *   1. Risk badge and qualifier.   Always present.  } always visible
+ *   2. The verdict, one line.      Always present.  }
+ *   3. Exceptions to it.           Zero or more.    } behind the click
+ *   4. The threats behind it.      One or more.     }
  *
- * That constancy is the whole design, and it is what earlier versions kept
- * breaking. One listed the threats first, so the conclusion arrived last. One
- * rendered a piece with no exceptions as a flush statement and a piece with
- * two as an indented rule table — two unrelated shapes for the same document
- * type. In another the answer was the *last* line of the verdict block, so it
- * sat at a different height on every article and there was nothing to aim at.
- * The answer is `verdict.otherwise` in all cases: it is the default outcome,
+ * The verdict is `verdict.otherwise` in all cases: it is the default outcome
  * and the rules are the cases that depart from it, which is why it can lead.
  *
- * ONE COLUMN, CONVENTIONAL PARTS. Everything is left-aligned in a single
- * column and built from patterns that already exist: a coloured left rail for
- * the callout, as GitHub and Notion set them; a badge for severity, as shadcn
- * and Linear set status; small uppercase mono for metadata. An earlier version
- * hung every label in a fixed column to the left of its content. It aligned,
- * but it is a print convention borrowed into a place it does not belong, and
- * it looked wrong. The badges give the same read-down-the-column scanning at a
- * glance without inventing a layout.
- *
- * Three type sizes, no more: 0.7rem mono for labels and badges, 0.9375rem for
- * everything read up close, 1.25rem for the answer. Emphasis is weight and
- * colour, never a fourth size — a panel this small cannot carry a scale, and
- * the version that tried read as noise.
+ * CONVENTIONAL PARTS. A coloured left rail for the callout, as GitHub and
+ * Notion set them; a badge for severity, as shadcn and Linear set status;
+ * small uppercase mono for metadata. An earlier version hung every label in a
+ * fixed column to the left of its content — a print convention borrowed into a
+ * place it does not belong.
  *
  * Colour is semantic and traffic-light: green means no action needed, amber
- * means think before acting, red means stop. It is never decorative, and the
- * severity word is always printed inside the badge so the signal never depends
- * on colour perception alone. The same mapping drives the rail, the risk badge
- * and each threat, so a severity never renders one colour in the summary and
- * another in the row it summarises.
+ * means think before acting, red means stop. Never decorative, and the word is
+ * always printed inside the badge so the signal never depends on colour alone.
  */
 interface Threat {
   category: string;
@@ -83,9 +83,13 @@ const TONE = {
 } as const;
 const tone = TONE[overall];
 
+// One definition per repeated part, so two rows cannot drift into two designs.
 const LABEL = "font-mono text-[0.7rem] uppercase tracking-[0.14em]";
 const BADGE = `inline-flex items-center rounded-md border px-1.5 py-0.5 font-medium ${LABEL}`;
-const QUIET = "text-[0.9375rem] leading-snug text-muted-foreground";
+const META = "flex items-center gap-2.5";            // I1, I2: badge first, label after
+const MEASURE = "max-w-[32rem]";                     // I6
+const PROSE = `text-[0.9375rem] leading-snug ${MEASURE}`;
+const RULE = "mt-5 border-t border-border pt-5";
 ---
 
 <aside
@@ -95,13 +99,13 @@ const QUIET = "text-[0.9375rem] leading-snug text-muted-foreground";
 >
   <details>
     <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-      {/* 1. Risk. */}
+      {/* 1. Risk. Badge first (I1), qualifier after it (I2). */}
       <div class="flex items-center justify-between gap-4">
-        <span class="flex items-center gap-2.5">
-          <span class:list={[LABEL, "text-muted-foreground"]}>If published</span>
+        <span class={META}>
           <span class:list={[BADGE, tone.badge]}>
             {overall === "none" ? "no risk" : `${overall} risk`}
           </span>
+          <span class:list={[LABEL, "text-muted-foreground"]}>If published</span>
         </span>
         <svg
           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -112,46 +116,51 @@ const QUIET = "text-[0.9375rem] leading-snug text-muted-foreground";
         </svg>
       </div>
 
-      {/* 2. The answer. Same slot, same size, every article. */}
-      <p class="mt-3 text-[1.25rem] font-semibold leading-snug tracking-tight text-foreground">
+      {/* 2. The verdict. Same slot, same size, every article. */}
+      <p
+        class:list={[
+          "mt-3 text-[1.25rem] font-semibold leading-snug tracking-tight text-foreground",
+          MEASURE,
+        ]}
+      >
         {sentence(verdict.otherwise)}.
       </p>
     </summary>
 
-    {/* 3. The cases that depart from it. The condition reads as the sentence
-        it already is, so "if" is a word rather than a label in a column. */}
+    {/* 3. The cases that depart from it. I3: the rule above this closes the
+        verdict's zone. The condition reads as the sentence it already is, so
+        "if" is a word rather than a label in a gutter. */}
     {
       verdict.rules.length > 0 && (
-        <dl class="mt-4 space-y-3">
-          {verdict.rules.map(r => (
-            <div>
-              <dt class:list={QUIET}>If {r.if}</dt>
-              <dd class="mt-0.5 text-[0.9375rem] font-medium leading-snug text-foreground">
-                {sentence(r.then)}
-              </dd>
-            </div>
-          ))}
+        <dl class={RULE}>
+          <div class="space-y-3">
+            {verdict.rules.map(r => (
+              <div>
+                <dt class:list={[PROSE, "text-muted-foreground"]}>If {r.if}</dt>
+                <dd class:list={["mt-0.5 font-medium text-foreground", PROSE]}>
+                  {sentence(r.then)}
+                </dd>
+              </div>
+            ))}
+          </div>
         </dl>
       )
     }
 
-    {/* 4. The reasoning, quieter. Badge, then metadata, then title, then the
-        detail — the order a shadcn or Linear list row uses. */}
-    <div class="mt-5 border-t border-border pt-5">
+    {/* 4. The reasoning. I4: every card is this shape, always. */}
+    <div class={RULE}>
       {threats.length === 0 ? (
-        <p class:list={[QUIET, "text-safe"]}>No threats identified.</p>
+        <p class:list={[PROSE, "text-safe"]}>No threats identified.</p>
       ) : (
         <ol class="space-y-5">
           {threats.map(t => (
             <li>
-              <div class="flex items-center gap-2.5">
+              <div class={META}>
                 <span class:list={[BADGE, TONE[t.severity].badge]}>{t.severity}</span>
                 <span class:list={[LABEL, "text-muted-foreground/60"]}>{t.category}</span>
               </div>
-              <p class="mt-2 text-[0.9375rem] font-medium leading-snug text-foreground">
-                {t.threat}
-              </p>
-              <p class:list={["mt-1 leading-normal", QUIET]}>{t.detail}</p>
+              <p class:list={["mt-2 font-medium text-foreground", PROSE]}>{t.threat}</p>
+              <p class:list={["mt-1 leading-normal text-muted-foreground", PROSE]}>{t.detail}</p>
             </li>
           ))}
         </ol>
