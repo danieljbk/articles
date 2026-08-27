@@ -2,34 +2,51 @@
 /**
  * Exposure assessment for a private article.
  *
- * Sits above the article and reads as a document header, not a widget. Four
- * design rules govern it:
+ * Sits above the article and reads as a document header, not a widget.
  *
- *   1. The verdict leads. An earlier version listed every threat first and put
- *      the conclusion last, so you had to read the evidence to learn the
- *      answer — the inverse of how this is actually used. The decision is the
- *      headline; threats are the reasoning behind it.
- *   2. Unconditional verdicts are stated, not templated. Rendering "ALWAYS →
- *      never publish" forced a plain judgement through a conditional shape.
- *      It is set flush instead, so a plain judgement also *looks* unlike a
- *      rule table rather than sitting in a rule table with an empty label.
- *   3. One spine. Every labelled row — each rule, the otherwise, each threat —
- *      hangs off a single fixed label column. An earlier version set the
- *      labels inline, so "IF" and "OTHERWISE" were different widths and the
- *      two clauses you are meant to read against each other started in
- *      different places. Nothing floats at the end of a line of unpredictable
- *      length: severity and category both live in the spine, where they form
- *      columns you read down.
- *   4. Three type sizes, no more. 0.7rem mono for every label, 0.9375rem for
- *      everything quiet, 1.0625rem for the answer. Emphasis comes from weight
- *      and colour, never from a fourth size — a panel this small cannot carry
- *      a scale, and the version that tried read as noise.
+ * CLOSED BY DEFAULT. Most articles are never published, so the assessment is
+ * only wanted when publishing is actually being weighed. Collapsed it is two
+ * constant lines; the detail is one click away and nothing is cut. It is never
+ * open on load, not even at high risk — a panel that opens itself under some
+ * conditions is exactly the variability the fixed anatomy exists to remove.
+ *
+ * FIXED ANATOMY. Every article renders the same slots in the same order at the
+ * same sizes, so the panel can be parsed from a distance without being read —
+ * you learn where to look once and the map holds for the whole corpus:
+ *
+ *   1. The coloured rail and the risk badge.  Always present.   } always
+ *   2. The answer, one line, large.           Always present.   } visible
+ *   3. Exceptions to it.                      Zero or more.     } behind
+ *   4. The threats behind the verdict.        One or more.      } the click
+ *
+ * That constancy is the whole design, and it is what earlier versions kept
+ * breaking. One listed the threats first, so the conclusion arrived last. One
+ * rendered a piece with no exceptions as a flush statement and a piece with
+ * two as an indented rule table — two unrelated shapes for the same document
+ * type. In another the answer was the *last* line of the verdict block, so it
+ * sat at a different height on every article and there was nothing to aim at.
+ * The answer is `verdict.otherwise` in all cases: it is the default outcome,
+ * and the rules are the cases that depart from it, which is why it can lead.
+ *
+ * ONE COLUMN, CONVENTIONAL PARTS. Everything is left-aligned in a single
+ * column and built from patterns that already exist: a coloured left rail for
+ * the callout, as GitHub and Notion set them; a badge for severity, as shadcn
+ * and Linear set status; small uppercase mono for metadata. An earlier version
+ * hung every label in a fixed column to the left of its content. It aligned,
+ * but it is a print convention borrowed into a place it does not belong, and
+ * it looked wrong. The badges give the same read-down-the-column scanning at a
+ * glance without inventing a layout.
+ *
+ * Three type sizes, no more: 0.7rem mono for labels and badges, 0.9375rem for
+ * everything read up close, 1.25rem for the answer. Emphasis is weight and
+ * colour, never a fourth size — a panel this small cannot carry a scale, and
+ * the version that tried read as noise.
  *
  * Colour is semantic and traffic-light: green means no action needed, amber
  * means think before acting, red means stop. It is never decorative, and the
- * severity word is always printed alongside it so the signal never depends on
- * colour perception alone. The same mapping drives the header, the border and
- * each threat, so a severity never renders one colour in the summary and
+ * severity word is always printed inside the badge so the signal never depends
+ * on colour perception alone. The same mapping drives the rail, the risk badge
+ * and each threat, so a severity never renders one colour in the summary and
  * another in the row it summarises.
  */
 interface Threat {
@@ -54,86 +71,107 @@ const worst = threats.reduce((m, t) => Math.max(m, rank[t.severity]), 0);
 const overall = (["none", "low", "moderate", "high"] as const)[worst];
 
 const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const conditional = verdict.rules.length > 0;
 
 const TONE = {
-  none: { text: "text-safe", border: "border-safe/60" },
-  low: { text: "text-safe", border: "border-safe/60" },
-  moderate: { text: "text-caution", border: "border-caution/70" },
-  high: { text: "text-destructive", border: "border-destructive/70" },
+  none: { rail: "border-safe/60", badge: "border-safe/30 bg-safe/10 text-safe" },
+  low: { rail: "border-safe/60", badge: "border-safe/30 bg-safe/10 text-safe" },
+  moderate: { rail: "border-caution/70", badge: "border-caution/30 bg-caution/10 text-caution" },
+  high: {
+    rail: "border-destructive/70",
+    badge: "border-destructive/30 bg-destructive/10 text-destructive",
+  },
 } as const;
 const tone = TONE[overall];
 
-// Declared once because the whole point is that every row shares them — two
-// copies would drift apart, which is the defect this replaced. 4.5rem clears
-// "OTHERWISE", the widest label the panel can produce.
-const ROW = "flex items-baseline gap-4";
-const SPINE = "w-[4.5rem] shrink-0";
 const LABEL = "font-mono text-[0.7rem] uppercase tracking-[0.14em]";
-const QUIET = "text-[0.9375rem] text-muted-foreground";
-const ANSWER = "text-[1.0625rem] leading-snug text-foreground";
+const BADGE = `inline-flex items-center rounded-md border px-1.5 py-0.5 font-medium ${LABEL}`;
+const QUIET = "text-[0.9375rem] leading-snug text-muted-foreground";
 ---
 
 <aside
   aria-label="Exposure assessment"
   data-print-hide
-  class:list={["mb-14 border-l-2 pl-5", tone.border]}
+  class:list={["mb-10 border-l-2 pl-5", tone.rail]}
 >
-  <p class:list={[LABEL, "text-muted-foreground"]}>
-    If published <span class="text-muted-foreground/50">&middot;</span>
-    <span class:list={["font-medium", tone.text]}>
-      {overall === "none" ? "no risk" : `${overall} risk`}
-    </span>
-  </p>
+  <details>
+    <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+      {/* 1. Risk. */}
+      <div class="flex items-center justify-between gap-4">
+        <span class="flex items-center gap-2.5">
+          <span class:list={[LABEL, "text-muted-foreground"]}>If published</span>
+          <span class:list={[BADGE, tone.badge]}>
+            {overall === "none" ? "no risk" : `${overall} risk`}
+          </span>
+        </span>
+        <svg
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+          class="chevron size-3 shrink-0 text-muted-foreground/50"
+        >
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </div>
 
-  {/* The answer, first. Condition quiet, consequence loud, stacked so the
-      break between them is a line break rather than a mid-sentence dash. */}
-  {
-    conditional ? (
-      <dl class="mt-4 space-y-4">
-        {verdict.rules.map(r => (
-          <div class={ROW}>
-            <dt class:list={[SPINE, LABEL, "text-muted-foreground"]}>If</dt>
-            <dd class="min-w-0">
-              <span class:list={["block leading-snug", QUIET]}>{r.if}</span>
-              <span class:list={["mt-0.5 block font-medium", ANSWER]}>{r.then}</span>
-            </dd>
-          </div>
-        ))}
-        <div class={ROW}>
-          <dt class:list={[SPINE, LABEL, "text-muted-foreground"]}>Otherwise</dt>
-          <dd class:list={["min-w-0 font-medium", ANSWER]}>{verdict.otherwise}</dd>
-        </div>
-      </dl>
-    ) : (
-      <p class:list={["mt-4 font-semibold tracking-tight", ANSWER]}>
+      {/* 2. The answer. Same slot, same size, every article. */}
+      <p class="mt-3 text-[1.25rem] font-semibold leading-snug tracking-tight text-foreground">
         {sentence(verdict.otherwise)}.
       </p>
-    )
-  }
+    </summary>
 
-  {/* The reasoning, second and quieter. Severity over category in the spine,
-      so both are columns you read down — with three threats you see
-      HIGH HIGH HIGH at a glance instead of hunting the ends of three titles
-      of different lengths. */}
-  <div class="mt-5 border-t border-border pt-5">
-    {threats.length === 0 ? (
-      <p class:list={[QUIET, "text-safe"]}>No threats identified.</p>
-    ) : (
-      <ol class="space-y-5">
-        {threats.map(t => (
-          <li class={ROW}>
-            <div class:list={[SPINE, LABEL, "leading-snug"]}>
-              <span class:list={["block font-medium", TONE[t.severity].text]}>{t.severity}</span>
-              <span class="block text-muted-foreground/60">{t.category}</span>
+    {/* 3. The cases that depart from it. The condition reads as the sentence
+        it already is, so "if" is a word rather than a label in a column. */}
+    {
+      verdict.rules.length > 0 && (
+        <dl class="mt-4 space-y-3">
+          {verdict.rules.map(r => (
+            <div>
+              <dt class:list={QUIET}>If {r.if}</dt>
+              <dd class="mt-0.5 text-[0.9375rem] font-medium leading-snug text-foreground">
+                {sentence(r.then)}
+              </dd>
             </div>
-            <div class="min-w-0">
-              <p class="text-[0.9375rem] font-medium leading-snug text-foreground">{t.threat}</p>
+          ))}
+        </dl>
+      )
+    }
+
+    {/* 4. The reasoning, quieter. Badge, then metadata, then title, then the
+        detail — the order a shadcn or Linear list row uses. */}
+    <div class="mt-5 border-t border-border pt-5">
+      {threats.length === 0 ? (
+        <p class:list={[QUIET, "text-safe"]}>No threats identified.</p>
+      ) : (
+        <ol class="space-y-5">
+          {threats.map(t => (
+            <li>
+              <div class="flex items-center gap-2.5">
+                <span class:list={[BADGE, TONE[t.severity].badge]}>{t.severity}</span>
+                <span class:list={[LABEL, "text-muted-foreground/60"]}>{t.category}</span>
+              </div>
+              <p class="mt-2 text-[0.9375rem] font-medium leading-snug text-foreground">
+                {t.threat}
+              </p>
               <p class:list={["mt-1 leading-normal", QUIET]}>{t.detail}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
-    )}
-  </div>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  </details>
 </aside>
+
+<style>
+  /* Scoped CSS rather than a group-open: utility, so the one indicator of
+     whether the panel is open does not depend on class extraction finding a
+     variant. A chevron frozen pointing right is worse than no chevron. */
+  .chevron {
+    transition: transform 150ms ease;
+    transform-origin: center;
+  }
+  details[open] .chevron {
+    transform: rotate(90deg);
+  }
+  summary:hover .chevron {
+    color: var(--color-muted-foreground);
+  }
+</style>
