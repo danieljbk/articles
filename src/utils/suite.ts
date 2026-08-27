@@ -246,3 +246,39 @@ export function rebuildDiffStats(): { executed: number; pending: number } | null
   const pending = (src.match(/pending=True/g) ?? []).length;
   return { executed: total - pending, pending };
 }
+
+export type Report = {
+  series: "anomalies" | "decisions";
+  date: string;
+  title: string;
+  status: string;
+  awaiting: boolean;
+};
+
+export function readReports(): Report[] {
+  if (!suiteEnabled) return [];
+  const out: Report[] = [];
+  for (const series of ["anomalies", "decisions"] as const) {
+    const dir = join(ROOT, series);
+    if (!existsSync(dir)) continue;
+    for (const name of readdirSync(dir)) {
+      if (!/^\d{4}-\d{2}-\d{2}-.+\.md$/.test(name)) continue;
+      const text = readFileSync(join(dir, name), "utf8");
+      const head = text.slice(0, 700);
+      const status =
+        head.match(/\b(OPEN|CLOSED)\b/)?.[1] ??
+        (head.match(/\bStanding\b/) ? "standing" :
+         head.match(/superseded/i) ? "superseded" : "record");
+      out.push({
+        series,
+        date: name.slice(0, 10),
+        title: (text.match(/^# (.+)$/m)?.[1] ?? name).replace(/^Anomaly report[.,]? /, ""),
+        status: status.toLowerCase(),
+        awaiting: /await(s|ing) (his|Daniel)/i.test(head),
+      });
+    }
+  }
+  out.sort((a, b) => b.date.localeCompare(a.date));
+  out.sort((a, b) => Number(b.awaiting) - Number(a.awaiting));
+  return out;
+}

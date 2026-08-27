@@ -728,6 +728,7 @@ Current tools:
 | `/private/tools/telemetry` | per-conversation sentiment, topics, signals, rulebook version (`telemetry/sessions.jsonl`) | native Astro page, site layout |
 | `/private/tools/rebuild-diff` | every CLAUDE.md rebuild change as word-diffs; amber awaits Daniel's ruling | generated standalone page, site tokens |
 | `/private/tools/claude-md` | the rulebook, rendered and linked | generated standalone page, site tokens |
+| `/private/tools/reports` | both report series (anomalies, decisions) with statuses; items awaiting Daniel ranked first | native Astro page, site layout |
 
 Adding a tool: prefer a native Astro page reading through `suite.ts` (data
 gated on `INCLUDE_PRIVATE`); use a generator script in `~/config/claude` only

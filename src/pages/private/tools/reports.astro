@@ -1,0 +1,93 @@
+---
+// Reports — the report layer's console view: both series, statuses, and
+// anything awaiting Daniel's word ranked first (delinquent reports reach the
+// decider). Data: ~/config/claude/{anomalies,decisions}/*.md, read per
+// request in dev; hidden in production like every suite surface.
+import Layout from "@/layouts/Layout.astro";
+import { readReports, suiteEnabled } from "@/utils/suite";
+
+const reports = readReports();
+const awaiting = reports.filter(r => r.awaiting);
+const MARK: Record<string, { glyph: string; cls: string }> = {
+  open: { glyph: "◆", cls: "text-caution" },
+  closed: { glyph: "✓", cls: "text-safe" },
+  standing: { glyph: "✓", cls: "text-safe" },
+  superseded: { glyph: "○", cls: "text-muted-foreground" },
+  record: { glyph: "○", cls: "text-muted-foreground" },
+};
+const SERIES: { key: "anomalies" | "decisions"; label: string; blurb: string }[] = [
+  { key: "anomalies", label: "anomaly series", blurb: "failure investigations, SpaceX mold" },
+  { key: "decisions", label: "decision reports", blurb: "stored reasoning behind decisions" },
+];
+---
+
+<Layout title="Reports" description="The report layer: both series with statuses.">
+  <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
+    <header class="mb-10">
+      <div class="flex items-baseline gap-3">
+        <h1 class="text-3xl font-semibold tracking-tight">reports</h1>
+        <a
+          href="/private/"
+          class="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"
+          >← dashboard</a
+        >
+      </div>
+      <p class="mt-3 font-mono text-xs text-muted-foreground">
+        <span class="text-caution">◆</span> awaits his word ·
+        <span class="text-safe">✓</span> closed or standing ·
+        <span>○</span> record
+      </p>
+    </header>
+
+    {
+      !suiteEnabled ? (
+        <p class="text-muted-foreground">Hidden in production.</p>
+      ) : (
+        <>
+          {awaiting.length > 0 && (
+            <section class="mb-8 rounded-lg border border-caution/50 p-6">
+              <h2 class="mb-3 font-mono text-xs uppercase tracking-[0.14em] text-caution">
+                awaiting his word · {awaiting.length}
+              </h2>
+              {awaiting.map(r => (
+                <p class="mb-1 flex gap-3 text-sm">
+                  <span class="shrink-0 font-mono text-xs text-muted-foreground">{r.date}</span>
+                  <span>{r.title}</span>
+                </p>
+              ))}
+            </section>
+          )}
+          {SERIES.map(s => {
+            const rows = reports.filter(r => r.series === s.key);
+            return (
+              <section class="mb-8 rounded-lg border p-6">
+                <div class="mb-3 flex items-baseline gap-3">
+                  <h2 class="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+                    {s.label} · {rows.length}
+                  </h2>
+                  <span class="ml-auto text-xs text-muted-foreground">{s.blurb}</span>
+                </div>
+                {rows.length === 0 ? (
+                  <p class="text-sm text-muted-foreground">none yet</p>
+                ) : (
+                  rows.map(r => (
+                    <p class="mb-1 flex items-baseline gap-3 text-sm">
+                      <span class={"shrink-0 " + (MARK[r.status]?.cls ?? "")}>
+                        {MARK[r.status]?.glyph ?? "○"}
+                      </span>
+                      <span class="shrink-0 font-mono text-xs text-muted-foreground">{r.date}</span>
+                      <span>{r.title}</span>
+                      <span class="ml-auto shrink-0 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                        {r.status}
+                      </span>
+                    </p>
+                  ))
+                )}
+              </section>
+            );
+          })}
+        </>
+      )
+    }
+  </main>
+</Layout>
