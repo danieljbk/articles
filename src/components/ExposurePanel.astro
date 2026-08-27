@@ -2,7 +2,7 @@
 /**
  * Exposure assessment for a private article.
  *
- * Sits above the article and reads as a document header, not a widget. Three
+ * Sits above the article and reads as a document header, not a widget. Four
  * design rules govern it:
  *
  *   1. The verdict leads. An earlier version listed every threat first and put
@@ -11,12 +11,19 @@
  *      headline; threats are the reasoning behind it.
  *   2. Unconditional verdicts are stated, not templated. Rendering "ALWAYS →
  *      never publish" forced a plain judgement through a conditional shape.
- *   3. One spine. Every row in the panel — each rule, the otherwise, each
- *      threat — hangs off a single fixed label column. An earlier version set
- *      the labels inline, so "IF" and "OTHERWISE" were different widths and
- *      the two clauses you are meant to read against each other started at
- *      different places. The condition and its consequence stacked, rather
- *      than run together with an em dash and a weight change mid-sentence.
+ *      It is set flush instead, so a plain judgement also *looks* unlike a
+ *      rule table rather than sitting in a rule table with an empty label.
+ *   3. One spine. Every labelled row — each rule, the otherwise, each threat —
+ *      hangs off a single fixed label column. An earlier version set the
+ *      labels inline, so "IF" and "OTHERWISE" were different widths and the
+ *      two clauses you are meant to read against each other started in
+ *      different places. Nothing floats at the end of a line of unpredictable
+ *      length: severity and category both live in the spine, where they form
+ *      columns you read down.
+ *   4. Three type sizes, no more. 0.7rem mono for every label, 0.9375rem for
+ *      everything quiet, 1.0625rem for the answer. Emphasis comes from weight
+ *      and colour, never from a fourth size — a panel this small cannot carry
+ *      a scale, and the version that tried read as noise.
  *
  * Colour is semantic and traffic-light: green means no action needed, amber
  * means think before acting, red means stop. It is never decorative, and the
@@ -57,11 +64,14 @@ const TONE = {
 } as const;
 const tone = TONE[overall];
 
-// The spine. Declared once because the whole point is that every row shares
-// it — two copies would drift apart, which is the defect this replaced.
-// 4.5rem clears "OTHERWISE", the widest label the panel can produce.
+// Declared once because the whole point is that every row shares them — two
+// copies would drift apart, which is the defect this replaced. 4.5rem clears
+// "OTHERWISE", the widest label the panel can produce.
 const ROW = "flex items-baseline gap-4";
-const LABEL = "w-[4.5rem] shrink-0 font-mono text-[0.7rem] uppercase tracking-[0.14em]";
+const SPINE = "w-[4.5rem] shrink-0";
+const LABEL = "font-mono text-[0.7rem] uppercase tracking-[0.14em]";
+const QUIET = "text-[0.9375rem] text-muted-foreground";
+const ANSWER = "text-[1.0625rem] leading-snug text-foreground";
 ---
 
 <aside
@@ -69,9 +79,11 @@ const LABEL = "w-[4.5rem] shrink-0 font-mono text-[0.7rem] uppercase tracking-[0
   data-print-hide
   class:list={["mb-14 border-l-2 pl-5", tone.border]}
 >
-  <p class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
-    If published <span class="text-muted-foreground/40">&middot;</span>
-    <span class:list={[tone.text]}>{overall === "none" ? "no risk" : `${overall} risk`}</span>
+  <p class:list={[LABEL, "text-muted-foreground"]}>
+    If published <span class="text-muted-foreground/50">&middot;</span>
+    <span class:list={["font-medium", tone.text]}>
+      {overall === "none" ? "no risk" : `${overall} risk`}
+    </span>
   </p>
 
   {/* The answer, first. Condition quiet, consequence loud, stacked so the
@@ -81,56 +93,43 @@ const LABEL = "w-[4.5rem] shrink-0 font-mono text-[0.7rem] uppercase tracking-[0
       <dl class="mt-4 space-y-4">
         {verdict.rules.map(r => (
           <div class={ROW}>
-            <dt class:list={[LABEL, "text-muted-foreground"]}>If</dt>
+            <dt class:list={[SPINE, LABEL, "text-muted-foreground"]}>If</dt>
             <dd class="min-w-0">
-              <span class="block text-[0.95rem] leading-snug text-muted-foreground">{r.if}</span>
-              <span class="mt-0.5 block text-[1.05rem] font-medium leading-snug text-foreground">
-                {r.then}
-              </span>
+              <span class:list={["block leading-snug", QUIET]}>{r.if}</span>
+              <span class:list={["mt-0.5 block font-medium", ANSWER]}>{r.then}</span>
             </dd>
           </div>
         ))}
         <div class={ROW}>
-          <dt class:list={[LABEL, "text-muted-foreground"]}>Otherwise</dt>
-          <dd class="min-w-0 text-[1.05rem] font-medium leading-snug text-foreground">
-            {verdict.otherwise}
-          </dd>
+          <dt class:list={[SPINE, LABEL, "text-muted-foreground"]}>Otherwise</dt>
+          <dd class:list={["min-w-0 font-medium", ANSWER]}>{verdict.otherwise}</dd>
         </div>
       </dl>
     ) : (
-      <div class:list={["mt-4", ROW]}>
-        <span class={LABEL} aria-hidden="true" />
-        <p class="min-w-0 text-[1.2rem] font-semibold leading-snug tracking-tight text-foreground">
-          {sentence(verdict.otherwise)}.
-        </p>
-      </div>
+      <p class:list={["mt-4 font-semibold tracking-tight", ANSWER]}>
+        {sentence(verdict.otherwise)}.
+      </p>
     )
   }
 
-  {/* The reasoning, second and quieter. Severity takes the label column, so
-      it is a column you can read down rather than a word trailing off the end
-      of a title of unpredictable length. */}
+  {/* The reasoning, second and quieter. Severity over category in the spine,
+      so both are columns you read down — with three threats you see
+      HIGH HIGH HIGH at a glance instead of hunting the ends of three titles
+      of different lengths. */}
   <div class="mt-5 border-t border-border pt-5">
     {threats.length === 0 ? (
-      <div class={ROW}>
-        <span class={LABEL} aria-hidden="true" />
-        <p class="min-w-0 text-[0.95rem] text-safe">No threats identified.</p>
-      </div>
+      <p class:list={[QUIET, "text-safe"]}>No threats identified.</p>
     ) : (
-      <ol class="space-y-4">
+      <ol class="space-y-5">
         {threats.map(t => (
           <li class={ROW}>
-            <span class:list={[LABEL, TONE[t.severity].text]}>{t.severity}</span>
+            <div class:list={[SPINE, LABEL, "leading-snug"]}>
+              <span class:list={["block font-medium", TONE[t.severity].text]}>{t.severity}</span>
+              <span class="block text-muted-foreground/60">{t.category}</span>
+            </div>
             <div class="min-w-0">
-              <p class="text-[0.95rem] leading-snug">
-                <span class="font-medium text-foreground">{t.threat}</span>
-                <span class="ml-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground/60">
-                  {t.category}
-                </span>
-              </p>
-              <p class="mt-1 text-[0.875rem] leading-relaxed text-muted-foreground">
-                {t.detail}
-              </p>
+              <p class="text-[0.9375rem] font-medium leading-snug text-foreground">{t.threat}</p>
+              <p class:list={["mt-1 leading-normal", QUIET]}>{t.detail}</p>
             </div>
           </li>
         ))}
