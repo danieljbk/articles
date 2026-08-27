@@ -1,4 +1,9 @@
 ---
+interface Props {
+  wide?: boolean;
+}
+const { wide = false } = Astro.props;
+
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
   href === "/" ? path === "/" : path.startsWith(href);
@@ -18,7 +23,10 @@ const includePrivate = process.env.INCLUDE_PRIVATE === "1";
 
 <header class="border-b border-border">
   <div
-    class="mx-auto flex max-w-2xl items-center justify-between px-6 py-4"
+    class:list={[
+      "mx-auto flex items-center justify-between px-6 py-4",
+      wide ? "max-w-6xl" : "max-w-2xl",
+    ]}
   >
     <a
       href="/"

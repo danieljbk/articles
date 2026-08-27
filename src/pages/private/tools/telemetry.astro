@@ -10,10 +10,11 @@
 import Layout from "@/layouts/Layout.astro";
 import LineChart from "@components/LineChart.astro";
 import {
+  breakTickLabels,
+  compressedStepSeries,
   dayIndex,
   readDerived,
   readTelemetry,
-  stepSeries,
   suiteEnabled,
 } from "@/utils/suite";
 
@@ -23,15 +24,15 @@ const curated = readTelemetry();
 const daily = derived?.claude_md.daily ?? [];
 const epoch = daily[0]?.date ?? "2026-05-03";
 const lastDay = daily[daily.length - 1];
-const span = lastDay ? dayIndex(lastDay.date, epoch) : 0;
-const sizePts = stepSeries(daily, epoch, 1000);
+const calendarSpan = lastDay ? dayIndex(lastDay.date, epoch) : 0;
+const { pts: sizePts, breaks: sizeBreaks, span, xOf } = compressedStepSeries(daily, 1000);
 const maxK = Math.max(...daily.map(d => d.chars), 100_000) / 1000;
+
+const xTickLabels = breakTickLabels(daily, xOf);
 
 const mark = (date: string, label: string, dy = -9, anchor?: "start" | "end") => {
   const d = daily.find(x => x.date === date);
-  return d
-    ? [{ x: dayIndex(date, epoch), y: d.chars / 1000, label, dy, anchor }]
-    : [];
+  return d ? [{ x: xOf[date], y: d.chars / 1000, label, dy, anchor }] : [];
 };
 const markers = [
   ...mark("2026-05-11", "+35K in a day", -12),
@@ -42,6 +43,13 @@ const markers = [
 const sesDaily = derived?.sessions.daily ?? [];
 const recent = (derived?.sessions.recent ?? []).filter(r => r.first);
 const enrichedCount = recent.filter(r => r.enriched).length;
+
+// Age beyond 15 minutes means the 10-minute refresh failed and this page is
+// serving the last good derivation — say so instead of rendering it as live.
+const derivedAgeMin = derived
+  ? Math.round((Date.now() - Date.parse(derived.generated_at)) / 60_000)
+  : null;
+const derivedStale = derivedAgeMin !== null && derivedAgeMin > 15;
 ---
 
 <Layout title="Session telemetry" description="Derived performance data.">
@@ -59,6 +67,11 @@ const enrichedCount = recent.filter(r => r.enriched).length;
         Derived from git and session transcripts — nothing here depends on a
         session remembering to record anything. Refreshed on open;
         last derivation {derived?.generated_at ?? "never"}.
+        {derivedStale && (
+          <span class="font-mono text-xs uppercase tracking-[0.12em] text-caution">
+            stale — refresh failed, showing data {derivedAgeMin}m old
+          </span>
+        )}
       </p>
     </header>
 
@@ -74,17 +87,18 @@ const enrichedCount = recent.filter(r => r.enriched).length;
           <section class="mb-12">
             <h2 class="mb-1 font-medium">CLAUDE.md size over time</h2>
             <p class="font-mono text-xs text-muted-foreground">
-              {daily.length} change-days across {span} days ·
-              every commit measured in characters · step line: flat means untouched
+              {daily.length} change-days across {calendarSpan} days ·
+              every commit measured in characters · step line: flat means
+              untouched · quiet gaps collapsed (⫽)
             </p>
             <LineChart
-              title="CLAUDE.md size in thousands of characters over days since the first commit"
+              title="CLAUDE.md size in thousands of characters per change-day; quiet gaps collapsed"
               series={[{ points: sizePts }]}
-              xDomain={[0, span + 6]}
+              xDomain={[0, span + 2]}
               yDomain={[60, Math.ceil(maxK / 10) * 10 + 10]}
-              xTicks={[0, 30, 60, 90, span]}
+              xTickLabels={xTickLabels}
+              xBreaks={sizeBreaks}
               yTicks={[60, 80, 100, 120, 140]}
-              xLabel={`days since ${epoch}`}
               ySuffix="K"
               refLines={[{ y: 100, label: "flat 100K budget" }]}
               markers={markers}
@@ -93,7 +107,7 @@ const enrichedCount = recent.filter(r => r.enriched).length;
                 derived.claude_md.now_tokens
                   ? ` ≈ ${derived.claude_md.now_tokens.claude_est.toLocaleString()} Claude tokens (estimate: cl100k × 1.593, the session-token-cost calibration)`
                   : ""
-              } — under the budget for the first time since it existed.`}
+              }${lastDay.chars < 100_000 ? " — under the 100K budget." : " — over the 100K budget."}`}
             />
           </section>
 

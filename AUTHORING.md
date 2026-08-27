@@ -637,7 +637,9 @@ Props:
 | `title` | string (required) | Accessibility label + `<title>`; never drawn |
 | `series` | `{ points: {x,y}[]; label?; dashed?; muted?; labelDy? }[]` | Compute points in real data units. `muted` uses `--muted-foreground`; `dashed` for a secondary/helper line |
 | `xDomain` / `yDomain` | `[min, max]` | Data-space bounds |
-| `xTicks` / `yTicks` | `number[]` | Round numbers; drive gridlines and labels |
+| `xTicks` / `yTicks` | `number[]` | Round numbers; drive gridlines and labels (`xTicks` optional when `xTickLabels` is given) |
+| `xTickLabels` | `{ x, label }[]` | String-labeled x ticks (e.g. dates); replaces `xTicks` when present |
+| `xBreaks` | `{ x, label? }[]` | Axis-break marks (⫽) where the x scale is discontinuous; label carries the collapsed span, e.g. `"102d"` |
 | `xLabel` / `yLabel` | string | Axis titles (sans); `yLabel` sits top-left, unrotated |
 | `xSuffix` / `ySuffix` | string | Appended to tick labels, e.g. `"%"` |
 | `markers` | `{ x, y, label, anchor?, dx?, dy? }[]` | Annotation dot + label; hand-place `dx`/`dy` to avoid collisions |
@@ -647,7 +649,7 @@ Props:
 
 **Design invariants — do not break these:** the chart is monochrome by design. The data line is `--foreground`; grid, axes, and ticks recede into `--border` / `--muted-foreground`; there is **no hue**. Multiple series are told apart by direct labels and solid-vs-dashed strokes, never color. It themes light/dark automatically because every mark references the shadcn tokens. If you find yourself wanting a colored series, stop — that is not this system.
 
-> **Config note.** The `@components` alias is defined in `astro.config.mjs` (`vite.resolve.alias`). It exists so an MDX article's import survives a private→shared move (the file changes directories; the alias doesn't). Don't replace it with a relative path.
+> **Config note.** The `@components` alias is defined in `astro.config.mjs` (`vite.resolve.alias`) **and** in `tsconfig.json` (`compilerOptions.paths`) — Vite resolves it at build, TypeScript at `astro check`; they must stay in sync. It exists so an MDX article's import survives a private→shared move (the file changes directories; the alias doesn't). Don't replace it with a relative path.
 
 ### `Item` — inline League item reference (icon + name)
 
@@ -701,6 +703,22 @@ suite surface reads. **Everything wears the site's shadcn tokens**; Daniel,
 dashboard should not just be text." Color stays semantic-only (`--caution` for
 awaiting-him, `--safe`/`--destructive` for added/removed in diffs) — never a
 fourth hue.
+
+**The index is an operator console, not an article page** (Daniel, 2026-08-28,
+on the article-width version: "the layout of the dashboard is still
+disgusting"; reference frame SpaceX/DeepMind). Conventions: `wide` on
+`Layout` (threaded to Header/Footer) widens the chrome to `max-w-6xl`; a
+compact header row — small h1, local-only chip, mono uppercase tool nav —
+replaces hero headline + intro prose; instruments sit on a 12-column grid
+(four stat tiles at col-span-3, the chart at col-span-8, live boards at
+col-span-4); the article archive below stays at reading width (`max-w-2xl`).
+Time-series charts collapse quiet stretches — no information, no width:
+`compressedStepSeries` + `breakTickLabels` in `suite.ts` give any gap over 14
+days a fixed 5-unit width and a ⫽ axis break labeled with the real duration,
+with date ticks only at the endpoints and gap edges. Derived data wears its
+age: past the refresh window it renders a `--caution` stale chip instead of
+posing as current (NASA display rule; the full researched convention set is
+the `operator-console-design` skill in `~/config/claude/skills/`).
 
 Current tools:
 

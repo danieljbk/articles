@@ -7,11 +7,14 @@ import Footer from "@/components/Footer.astro";
 interface Props {
   title?: string;
   description?: string;
+  /** widen the page chrome to the dashboard's console width */
+  wide?: boolean;
 }
 
 const {
   title = "articles.kwon.ai",
   description = "Articles by Daniel Kwon.",
+  wide = false,
 } = Astro.props;
 
 const fullTitle =
@@ -60,9 +63,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <ClientRouter />
   </head>
   <body class="flex min-h-screen flex-col">
-    <Header />
+    <Header wide={wide} />
     <slot />
-    <Footer />
+    <Footer wide={wide} />
 
     <script>
       // Decorate every <pre> inside article prose with a copy button.

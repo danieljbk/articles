@@ -5,13 +5,13 @@ import ArticleRow from "@/components/ArticleRow.astro";
 import { splitPrivateId } from "@/utils/slug";
 import LineChart from "@components/LineChart.astro";
 import {
+  breakTickLabels,
   claudeMdStats,
-  dayIndex,
+  compressedStepSeries,
   readBoards,
   readDerived,
   readTelemetry,
   rebuildDiffStats,
-  stepSeries,
 } from "@/utils/suite";
 
 const isLocal = process.env.INCLUDE_PRIVATE === "1";
@@ -29,13 +29,29 @@ const nearCap = cmPct > 95;
 
 const derived = readDerived();
 const daily = derived?.claude_md.daily ?? [];
-const epoch = daily[0]?.date ?? "";
 const lastDay = daily[daily.length - 1];
 const todayUtc = new Date().toISOString().slice(0, 10);
 const deltaToday = lastDay?.date === todayUtc ? lastDay.delta : 0;
-const span = lastDay ? dayIndex(lastDay.date, epoch) : 0;
-const sizePts = stepSeries(daily, epoch, 1000);
+const { pts: sizePts, breaks: sizeBreaks, span: sizeSpan, xOf } =
+  compressedStepSeries(daily, 1000);
+const sizeTicks = breakTickLabels(daily, xOf);
 const maxK = Math.max(...daily.map(d => d.chars), 100_000) / 1000;
+
+// readDerived() refreshes anything older than 10 minutes and serves the last
+// derivation when the refresh fails — so an age beyond 15 minutes means the
+// pipeline is broken, and stale data must not render as current (the
+// NASA-display rule: staleness is a first-class visual state).
+const derivedAgeMin = derived
+  ? Math.round((Date.now() - Date.parse(derived.generated_at)) / 60_000)
+  : null;
+const derivedStale = derivedAgeMin !== null && derivedAgeMin > 15;
+
+const TOOL_LINKS = [
+  { href: "/private/tools/claude-md", label: "claude.md" },
+  { href: "/private/tools/rebuild-diff", label: "rebuild-diff" },
+  { href: "/private/tools/sessions", label: "sessions" },
+  { href: "/private/tools/telemetry", label: "telemetry" },
+];
 
 const BOARD_MARK: Record<string, { glyph: string; cls: string }> = {
   done: { glyph: "✓", cls: "text-safe" },
@@ -88,109 +104,129 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 <Layout
   title="Dashboard"
   description="The local tool suite and private article archive."
+  wide={isLocal}
 >
-  <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
-    <header class="mb-14">
-      <div class="flex items-center gap-3">
-        <h1 class="text-3xl font-semibold tracking-tight">dashboard</h1>
-        <span class="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground/70">
-          local-only
-        </span>
-      </div>
-      <p class="mt-3 max-w-md text-balance text-muted-foreground">
-        The tool suite: live displays to check at any time, then the private
-        article archive grouped by the conversation each piece was written in.
-        Visible only when the site is run locally.
-      </p>
-    </header>
+  <main
+    class:list={[
+      "mx-auto w-full flex-1 px-6",
+      isLocal ? "max-w-6xl py-10" : "max-w-2xl py-16",
+    ]}
+  >
+    {
+      isLocal ? (
+        <header class="mb-8 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+          <h1 class="text-xl font-semibold tracking-tight">dashboard</h1>
+          <span class="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-muted-foreground/70">
+            local-only · live per request
+          </span>
+          <nav class="ml-auto flex flex-wrap gap-x-4 gap-y-1 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-muted-foreground">
+            {TOOL_LINKS.map(t => (
+              <a class="hover:text-foreground" href={t.href}>
+                {t.label}
+              </a>
+            ))}
+          </nav>
+        </header>
+      ) : (
+        <header class="mb-14">
+          <h1 class="text-3xl font-semibold tracking-tight">Private</h1>
+        </header>
+      )
+    }
 
     {
       isLocal && (
-        <section class="mb-14">
-          <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <a
-              href="/private/tools/claude-md"
-              class="rounded-lg border p-4 transition-colors hover:bg-secondary/40"
-            >
-              <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-                CLAUDE.md budget
-              </div>
-              <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
-                {cm ? `${Math.round(cmPct * 10) / 10}%` : "—"}
-              </div>
-              <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
-                <div
-                  class:list={["h-full rounded-full", nearCap ? "bg-caution" : "bg-foreground"]}
-                  style={`width:${Math.min(cmPct, 100)}%`}
-                />
-              </div>
+        <section class="mb-14 grid grid-cols-2 gap-3 lg:grid-cols-12">
+          <a
+            href="/private/tools/claude-md"
+            class="rounded-lg border p-4 transition-colors hover:bg-secondary/40 lg:col-span-3"
+          >
+            <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+              CLAUDE.md budget
+            </div>
+            <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
+              {cm ? `${Math.round(cmPct * 10) / 10}%` : "—"}
+            </div>
+            <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
               <div
-                class:list={[
-                  "mt-1.5 font-mono text-[0.7rem]",
-                  nearCap ? "text-caution" : "text-muted-foreground",
-                ]}
-              >
-                {cm
-                  ? `${cm.chars.toLocaleString()} of ${cm.budget.toLocaleString()}${
-                      deltaToday
-                        ? ` · ${deltaToday > 0 ? "+" : ""}${deltaToday.toLocaleString()} today`
-                        : ""
-                    }${nearCap ? " · near cap" : ""}`
-                  : "unavailable"}
-              </div>
-            </a>
-
-            <a
-              href="/private/tools/rebuild-diff"
-              class="rounded-lg border border-caution/50 p-4 transition-colors hover:bg-secondary/40"
+                class:list={["h-full rounded-full", nearCap ? "bg-caution" : "bg-foreground"]}
+                style={`width:${Math.min(cmPct, 100)}%`}
+              />
+            </div>
+            <div
+              class:list={[
+                "mt-1.5 font-mono text-[0.7rem]",
+                nearCap ? "text-caution" : "text-muted-foreground",
+              ]}
             >
-              <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-                awaiting your ruling
-              </div>
-              <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-caution">
-                {diff?.pending ?? "—"}
-              </div>
-              <div class="mt-1.5 font-mono text-[0.7rem] text-muted-foreground">
-                amber diff items · {diff?.executed ?? "—"} executed
-              </div>
-            </a>
+              {cm
+                ? `${cm.chars.toLocaleString()} of ${cm.budget.toLocaleString()}${
+                    deltaToday
+                      ? ` · ${deltaToday > 0 ? "+" : ""}${deltaToday.toLocaleString()} today`
+                      : ""
+                  }${nearCap ? " · near cap" : ""}`
+                : "unavailable"}
+            </div>
+          </a>
 
-            <a
-              href="/private/tools/sessions"
-              class="rounded-lg border p-4 transition-colors hover:bg-secondary/40"
-            >
-              <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-                open across sessions
-              </div>
-              <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
-                {openItems}
-              </div>
-              <div class="mt-1.5 font-mono text-[0.7rem] text-muted-foreground">
-                {activeBoards.length} active board{activeBoards.length === 1 ? "" : "s"}
-              </div>
-            </a>
+          <a
+            href="/private/tools/rebuild-diff"
+            class="rounded-lg border border-caution/50 p-4 transition-colors hover:bg-secondary/40 lg:col-span-3"
+          >
+            <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+              awaiting your ruling
+            </div>
+            <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-caution">
+              {diff?.pending ?? "—"}
+            </div>
+            <div class="mt-1.5 font-mono text-[0.7rem] text-muted-foreground">
+              amber diff items · {diff?.executed ?? "—"} executed
+            </div>
+          </a>
 
-            <a
-              href="/private/tools/telemetry"
-              class="rounded-lg border p-4 transition-colors hover:bg-secondary/40"
-            >
-              <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-                last session signals
-              </div>
-              <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
-                {lastTel ? `${lastTel.signals?.corrections ?? 0} / ${lastTel.signals?.validations ?? 0}` : "—"}
-              </div>
-              <div class="mt-1.5 font-mono text-[0.7rem] text-muted-foreground">
-                {lastTel ? "corrections / validations" : "no records yet"}
-              </div>
-            </a>
-          </div>
+          <a
+            href="/private/tools/sessions"
+            class="rounded-lg border p-4 transition-colors hover:bg-secondary/40 lg:col-span-3"
+          >
+            <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+              open across sessions
+            </div>
+            <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
+              {openItems}
+            </div>
+            <div class="mt-1.5 font-mono text-[0.7rem] text-muted-foreground">
+              {activeBoards.length} active board{activeBoards.length === 1 ? "" : "s"}
+            </div>
+          </a>
+
+          <a
+            href="/private/tools/telemetry"
+            class="rounded-lg border p-4 transition-colors hover:bg-secondary/40 lg:col-span-3"
+          >
+            <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+              last session signals
+            </div>
+            <div class="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
+              {lastTel ? `${lastTel.signals?.corrections ?? 0} / ${lastTel.signals?.validations ?? 0}` : "—"}
+            </div>
+            <div class="mt-1.5 font-mono text-[0.7rem] text-muted-foreground">
+              {lastTel ? "corrections / validations" : "no records yet"}
+            </div>
+          </a>
 
           {
             daily.length > 1 && (
-              <div class="mt-6 rounded-lg border p-5">
+              <div class="col-span-2 rounded-lg border p-5 lg:col-span-8">
                 <div class="flex items-baseline gap-3">
                   <span class="font-medium">CLAUDE.md over time</span>
+                  <span class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                    quiet gaps collapsed
+                  </span>
+                  {derivedStale && (
+                    <span class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-caution">
+                      stale · {derivedAgeMin}m old
+                    </span>
+                  )}
                   <a
                     href="/private/tools/telemetry"
                     class="ml-auto shrink-0 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground"
@@ -199,29 +235,34 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                   </a>
                 </div>
                 <LineChart
-                  title="CLAUDE.md size in thousands of characters over time, with the flat 100K budget marked"
+                  title="CLAUDE.md size in thousands of characters per change-day, quiet gaps collapsed, with the flat 100K budget marked"
                   series={[{ points: sizePts }]}
-                  xDomain={[0, span + 6]}
+                  xDomain={[0, sizeSpan + 1]}
                   yDomain={[60, Math.ceil(maxK / 10) * 10 + 10]}
-                  xTicks={[0, 30, 60, 90, span]}
+                  xTickLabels={sizeTicks}
+                  xBreaks={sizeBreaks}
                   yTicks={[60, 100, 140]}
-                  xLabel={`days since ${epoch}`}
                   ySuffix="K"
                   refLines={[{ y: 100, label: "budget" }]}
-                  height={200}
+                  height={230}
                 />
               </div>
             )
           }
 
-          {
-            activeBoards.map(b => (
-              <div class="mt-6 rounded-lg border border-caution/50 p-5">
-                <div class="flex items-baseline gap-3">
-                  <span class="font-medium">{b.title}</span>
+          <div
+            class:list={[
+              "col-span-2 space-y-3",
+              daily.length > 1 ? "lg:col-span-4" : "lg:col-span-12",
+            ]}
+          >
+            {activeBoards.map(b => (
+              <div class="rounded-lg border border-caution/50 p-5">
+                <div class="flex items-start justify-between gap-3">
+                  <span class="min-w-0 flex-1 font-medium">{b.title}</span>
                   <a
                     href="/private/tools/sessions"
-                    class="ml-auto shrink-0 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-caution"
+                    class="shrink-0 pt-1 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-caution"
                   >
                     live board →
                   </a>
@@ -250,8 +291,8 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                   </li>
                 </ul>
               </div>
-            ))
-          }
+            ))}
+          </div>
         </section>
       )
     }
@@ -268,47 +309,57 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
       ) : articles.length === 0 ? (
         <p class="text-muted-foreground">No private articles yet.</p>
       ) : (
-        sessions.map(group => (
-          <section class="mb-12">
-            <div class="mb-4 flex items-baseline gap-3 border-b border-border pb-2">
-              <time
-                datetime={group.session.slice(0, 10)}
-                class="font-mono text-sm text-foreground"
-              >
-                {dateFormatter.format(group.date)}
-              </time>
-              {group.theme && (
-                <span class="font-mono text-xs uppercase tracking-wide text-muted-foreground">
-                  {group.theme}
+        <div class="mx-auto w-full max-w-2xl">
+          <div class="mb-6 flex items-baseline gap-3 border-b border-border pb-2">
+            <h2 class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
+              archive — by session
+            </h2>
+            <span class="ml-auto font-mono text-xs text-muted-foreground">
+              {articles.length}
+            </span>
+          </div>
+          {sessions.map(group => (
+            <section class="mb-12">
+              <div class="mb-4 flex items-baseline gap-3 border-b border-border pb-2">
+                <time
+                  datetime={group.session.slice(0, 10)}
+                  class="font-mono text-sm text-foreground"
+                >
+                  {dateFormatter.format(group.date)}
+                </time>
+                {group.theme && (
+                  <span class="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                    {group.theme}
+                  </span>
+                )}
+                <span class="ml-auto font-mono text-xs text-muted-foreground">
+                  {group.items.length}
                 </span>
-              )}
-              <span class="ml-auto font-mono text-xs text-muted-foreground">
-                {group.items.length}
-              </span>
-            </div>
-            <ul class="divide-y divide-border">
-              {group.items.map(({ article, status, slug }) => (
-                <li>
-                  <ArticleRow
-                    href={`/private/${status}/${slug}`}
-                    title={article.data.title}
-                    description={article.data.description}
-                    dense
-                  >
-                    {status !== "completed" && (
-                      <span
-                        slot="meta"
-                        class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground/70"
-                      >
-                        {status}
-                      </span>
-                    )}
-                  </ArticleRow>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))
+              </div>
+              <ul class="divide-y divide-border">
+                {group.items.map(({ article, status, slug }) => (
+                  <li>
+                    <ArticleRow
+                      href={`/private/${status}/${slug}`}
+                      title={article.data.title}
+                      description={article.data.description}
+                      dense
+                    >
+                      {status !== "completed" && (
+                        <span
+                          slot="meta"
+                          class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground/70"
+                        >
+                          {status}
+                        </span>
+                      )}
+                    </ArticleRow>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
       )
     }
   </main>
