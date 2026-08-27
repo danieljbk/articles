@@ -2,7 +2,8 @@
 // ~/config/claude. Every reader returns empty/null unless the server runs
 // with INCLUDE_PRIVATE=1, so production builds never touch these paths —
 // the same guarantee as the private article routes.
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -90,6 +91,76 @@ export function claudeMdStats(): { chars: number; budget: number } | null {
     )?.[1].replace(/_/g, "") ?? 0
   );
   return { chars, budget };
+}
+
+// The derived time series — the flywheel layer. derive_metrics.py computes it
+// incrementally from git history and session transcripts (artifacts that
+// accrue with zero per-session effort); we refresh it when it is older than
+// ten minutes, which is cheap because the derivation is cached per commit and
+// per transcript.
+export type DerivedDay = { date: string; chars: number; delta: number; commits: number };
+export type Derived = {
+  generated_at: string;
+  claude_md: { per_commit: { t: number; chars: number }[]; daily: DerivedDay[] };
+  sessions: {
+    daily: { date: string; started: number }[];
+    recent: {
+      project: string;
+      records: number;
+      first: string | null;
+      last: string | null;
+      enriched?: {
+        topics?: string[];
+        sentiment?: string;
+        corrections?: number;
+        validations?: number;
+        by?: string;
+      } | null;
+    }[];
+  };
+};
+
+export function readDerived(): Derived | null {
+  if (!suiteEnabled) return null;
+  const file = join(ROOT, "telemetry", "derived.json");
+  const stale =
+    !existsSync(file) || Date.now() - statSync(file).mtimeMs > 10 * 60_000;
+  if (stale) {
+    try {
+      execFileSync("python3", [join(ROOT, "derive_metrics.py")], {
+        timeout: 90_000,
+      });
+    } catch {
+      /* serve the last derivation rather than failing the page */
+    }
+  }
+  if (!existsSync(file)) return null;
+  return JSON.parse(readFileSync(file, "utf8")) as Derived;
+}
+
+// Chart helpers. Git only records change-days, so a plain line would invent
+// gradual growth across quiet months; the honest shape is a step — flat until
+// a change-day, vertical at it.
+export function dayIndex(date: string, epoch: string): number {
+  return Math.round(
+    (Date.parse(date + "T00:00:00Z") - Date.parse(epoch + "T00:00:00Z")) / 86_400_000
+  );
+}
+
+export function stepSeries(
+  daily: DerivedDay[],
+  epoch: string,
+  scale = 1
+): { x: number; y: number }[] {
+  const pts: { x: number; y: number }[] = [];
+  let prev: number | null = null;
+  for (const d of daily) {
+    const x = dayIndex(d.date, epoch);
+    if (prev !== null) pts.push({ x, y: prev });
+    pts.push({ x, y: d.chars / scale });
+    prev = d.chars / scale;
+  }
+  return pts;
 }
 
 // Counts derived from the diff tool's own source, so they can never go stale

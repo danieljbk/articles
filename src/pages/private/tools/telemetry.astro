@@ -1,107 +1,214 @@
 ---
-// Session telemetry — per-conversation sentiment, topics, signals, and the
-// CLAUDE.md version each session ran under. Data:
-// ~/config/claude/telemetry/sessions.jsonl (schema in its README). Counts are
-// listable events and quotes are verbatim; no invented scores — which is why
-// this renders records, not charts, until there is enough data to plot.
+// Session telemetry — derived first, curated second.
+//
+// The spine is the flywheel layer: time series derived by
+// ~/config/claude/derive_metrics.py from artifacts that accrue on their own
+// (git history for CLAUDE.md size, transcripts for session activity), plus
+// model-classified topic/sentiment enrichment cached per transcript. No
+// session has to remember to write anything. Hand-written records in
+// sessions.jsonl remain as curated addenda with verbatim evidence.
 import Layout from "@/layouts/Layout.astro";
-import { readTelemetry, suiteEnabled } from "@/utils/suite";
+import LineChart from "@components/LineChart.astro";
+import {
+  dayIndex,
+  readDerived,
+  readTelemetry,
+  stepSeries,
+  suiteEnabled,
+} from "@/utils/suite";
 
-const records = readTelemetry();
-const totals = records.reduce(
-  (t, r) => ({
-    c: t.c + (r.signals?.corrections ?? 0),
-    v: t.v + (r.signals?.validations ?? 0),
-  }),
-  { c: 0, v: 0 }
-);
+const derived = readDerived();
+const curated = readTelemetry();
+
+const daily = derived?.claude_md.daily ?? [];
+const epoch = daily[0]?.date ?? "2026-05-03";
+const lastDay = daily[daily.length - 1];
+const span = lastDay ? dayIndex(lastDay.date, epoch) : 0;
+const sizePts = stepSeries(daily, epoch, 1000);
+const maxK = Math.max(...daily.map(d => d.chars), 100_000) / 1000;
+
+const mark = (date: string, label: string, dy = -9, anchor?: "start" | "end") => {
+  const d = daily.find(x => x.date === date);
+  return d
+    ? [{ x: dayIndex(date, epoch), y: d.chars / 1000, label, dy, anchor }]
+    : [];
+};
+const markers = [
+  ...mark("2026-05-11", "+35K in a day", -12),
+  ...mark("2026-08-25", "v1 cleanup", -30, "end"),
+  ...mark("2026-08-27", "v2 rebuild", 18, "end"),
+];
+
+const sesDaily = derived?.sessions.daily ?? [];
+const recent = (derived?.sessions.recent ?? []).filter(r => r.first);
+const enrichedCount = recent.filter(r => r.enriched).length;
 ---
 
-<Layout title="Session telemetry" description="Per-session performance records.">
+<Layout title="Session telemetry" description="Derived performance data.">
   <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
     <header class="mb-10">
       <div class="flex items-baseline gap-3">
-        <h1 class="text-3xl font-semibold tracking-tight">session telemetry</h1>
+        <h1 class="text-3xl font-semibold tracking-tight">telemetry</h1>
         <a
           href="/private/"
           class="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"
           >← dashboard</a
         >
       </div>
-      <p class="mt-3 font-mono text-xs text-muted-foreground">
-        {records.length} sessions · {totals.c} corrections · {totals.v}
-        validations · schema: telemetry/README.md
+      <p class="mt-3 max-w-lg text-balance text-sm text-muted-foreground">
+        Derived from git and session transcripts — nothing here depends on a
+        session remembering to record anything. Refreshed on open;
+        last derivation {derived?.generated_at ?? "never"}.
       </p>
     </header>
 
     {
       !suiteEnabled ? (
         <p class="text-muted-foreground">Hidden in production.</p>
-      ) : records.length === 0 ? (
-        <p class="text-muted-foreground">No records yet.</p>
+      ) : !derived ? (
+        <p class="text-muted-foreground">
+          No derived data — run <code>python3 ~/config/claude/derive_metrics.py</code>.
+        </p>
       ) : (
-        records.map(r => (
-          <section class="mb-8 rounded-lg border p-6">
-            <div class="flex flex-wrap items-baseline gap-3">
-              <h2 class="font-mono text-sm">{r.session}</h2>
-              <span class="ml-auto shrink-0 rounded-full bg-secondary px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-secondary-foreground">
-                {r.sentiment}
+        <>
+          <section class="mb-12">
+            <h2 class="mb-1 font-medium">CLAUDE.md size over time</h2>
+            <p class="font-mono text-xs text-muted-foreground">
+              {daily.length} change-days across {span} days ·
+              every commit measured in characters · step line: flat means untouched
+            </p>
+            <LineChart
+              title="CLAUDE.md size in thousands of characters over days since the first commit"
+              series={[{ points: sizePts }]}
+              xDomain={[0, span + 6]}
+              yDomain={[60, Math.ceil(maxK / 10) * 10 + 10]}
+              xTicks={[0, 30, 60, 90, span]}
+              yTicks={[60, 80, 100, 120, 140]}
+              xLabel={`days since ${epoch}`}
+              ySuffix="K"
+              refLines={[{ y: 100, label: "flat 100K budget" }]}
+              markers={markers}
+              height={300}
+              caption={`Ends at <strong>${lastDay.chars.toLocaleString()}</strong> chars — under the budget for the first time since it existed.`}
+            />
+          </section>
+
+          <section class="mb-12">
+            <h2 class="mb-3 font-medium">Change-days</h2>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b text-left font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                  <th class="py-2 font-medium">date</th>
+                  <th class="py-2 text-right font-medium">size</th>
+                  <th class="py-2 text-right font-medium">net change</th>
+                  <th class="py-2 text-right font-medium">commits</th>
+                </tr>
+              </thead>
+              <tbody>
+                {daily.map(d => (
+                  <tr class="border-b border-border/60">
+                    <td class="py-2 font-mono text-xs">{d.date}</td>
+                    <td class="py-2 text-right font-mono text-xs tabular-nums">
+                      {d.chars.toLocaleString()}
+                    </td>
+                    <td class="py-2 text-right font-mono text-xs tabular-nums">
+                      {d.delta > 0 ? "+" : ""}
+                      {d.delta.toLocaleString()}
+                    </td>
+                    <td class="py-2 text-right font-mono text-xs tabular-nums">
+                      {d.commits}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p class="mt-2 font-mono text-xs text-muted-foreground">
+              deltas are per change-day, not per calendar day — the file is
+              untouched between rows
+            </p>
+          </section>
+
+          <section class="mb-12">
+            <div class="mb-3 flex items-baseline gap-3 border-b pb-2">
+              <h2 class="font-medium">Sessions</h2>
+              <span class="ml-auto font-mono text-xs text-muted-foreground">
+                {recent.length} recent · {enrichedCount} classified ·
+                {sesDaily.reduce((n, d) => n + d.started, 0)} total started
               </span>
             </div>
-            <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div>
-                <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-                  corrections
-                </div>
-                <div class="text-xl font-semibold tabular-nums">
-                  {r.signals?.corrections ?? "—"}
-                </div>
-              </div>
-              <div>
-                <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-                  validations
-                </div>
-                <div class="text-xl font-semibold tabular-nums">
-                  {r.signals?.validations ?? "—"}
-                </div>
-              </div>
-              <div class="col-span-2">
-                <div class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-                  topics
-                </div>
-                <div class="text-sm text-muted-foreground">
-                  {(r.topics ?? []).join(", ")}
-                </div>
-              </div>
-            </div>
+            <ul class="divide-y">
+              {recent.slice(0, 12).map(r => (
+                <li class="py-3">
+                  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span class="font-mono text-xs text-muted-foreground">
+                      {r.first?.slice(0, 10)}
+                    </span>
+                    <span class="text-sm">
+                      {r.project.replace(/^-Users-daniel-/, "").replace(/-/g, "/")}
+                    </span>
+                    <span class="ml-auto font-mono text-xs tabular-nums text-muted-foreground">
+                      {r.records.toLocaleString()} records
+                      {r.enriched
+                        ? ` · ${r.enriched.corrections ?? "?"} corr / ${r.enriched.validations ?? "?"} val`
+                        : ""}
+                    </span>
+                  </div>
+                  {r.enriched && (
+                    <p class="mt-1 text-sm text-muted-foreground">
+                      {(r.enriched.topics ?? []).join(", ")} —
+                      “{r.enriched.sentiment}”
+                      <span class="font-mono text-[0.65rem] uppercase tracking-wide">
+                        · {r.enriched.by}
+                      </span>
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
             <p class="mt-3 font-mono text-xs text-muted-foreground">
-              {r.date} · {r.model} · CLAUDE.md {r.claude_md?.start} →{" "}
-              {r.claude_md?.end}
+              unclassified sessions catch up whenever
+              <code> derive_metrics.py --enrich N </code> runs — incremental, cached
             </p>
-            <details class="mt-4 border-l-2 pl-4">
-              <summary class="cursor-pointer text-sm text-muted-foreground">
-                evidence & notes
-              </summary>
-              <ul class="mt-3 space-y-2 text-sm">
-                {(r.evidence?.negative ?? []).map(q => (
-                  <li class="flex gap-2">
-                    <span class="shrink-0 font-mono text-muted-foreground">−</span>
-                    <span>“{q}”</span>
-                  </li>
-                ))}
-                {(r.evidence?.positive ?? []).map(q => (
-                  <li class="flex gap-2">
-                    <span class="shrink-0 font-mono text-muted-foreground">+</span>
-                    <span>“{q}”</span>
-                  </li>
-                ))}
-              </ul>
-              {r.notes && (
-                <p class="mt-3 text-sm text-muted-foreground">{r.notes}</p>
-              )}
-            </details>
           </section>
-        ))
+
+          {curated.length > 0 && (
+            <section class="mb-12">
+              <div class="mb-3 flex items-baseline gap-3 border-b pb-2">
+                <h2 class="font-medium">Curated records</h2>
+                <span class="ml-auto font-mono text-xs text-muted-foreground">
+                  hand-written, with verbatim evidence
+                </span>
+              </div>
+              {curated.map(r => (
+                <details class="mb-4 rounded-lg border p-4">
+                  <summary class="cursor-pointer text-sm">
+                    <span class="font-mono text-xs text-muted-foreground">
+                      {r.date}
+                    </span>{" "}
+                    {r.session} — {r.sentiment}
+                  </summary>
+                  <ul class="mt-3 space-y-2 text-sm">
+                    {(r.evidence?.negative ?? []).map(q => (
+                      <li class="flex gap-2">
+                        <span class="shrink-0 font-mono text-muted-foreground">−</span>
+                        <span>“{q}”</span>
+                      </li>
+                    ))}
+                    {(r.evidence?.positive ?? []).map(q => (
+                      <li class="flex gap-2">
+                        <span class="shrink-0 font-mono text-muted-foreground">+</span>
+                        <span>“{q}”</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {r.notes && (
+                    <p class="mt-3 text-sm text-muted-foreground">{r.notes}</p>
+                  )}
+                </details>
+              ))}
+            </section>
+          )}
+        </>
       )
     }
   </main>

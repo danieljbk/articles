@@ -3,11 +3,15 @@ import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import ArticleRow from "@/components/ArticleRow.astro";
 import { splitPrivateId } from "@/utils/slug";
+import LineChart from "@components/LineChart.astro";
 import {
   claudeMdStats,
+  dayIndex,
   readBoards,
+  readDerived,
   readTelemetry,
   rebuildDiffStats,
+  stepSeries,
 } from "@/utils/suite";
 
 const isLocal = process.env.INCLUDE_PRIVATE === "1";
@@ -22,6 +26,16 @@ const openItems = activeBoards.reduce((n, b) => n + b.open, 0);
 const lastTel = telemetry[0];
 const cmPct = cm ? (cm.chars / cm.budget) * 100 : 0;
 const nearCap = cmPct > 95;
+
+const derived = readDerived();
+const daily = derived?.claude_md.daily ?? [];
+const epoch = daily[0]?.date ?? "";
+const lastDay = daily[daily.length - 1];
+const todayUtc = new Date().toISOString().slice(0, 10);
+const deltaToday = lastDay?.date === todayUtc ? lastDay.delta : 0;
+const span = lastDay ? dayIndex(lastDay.date, epoch) : 0;
+const sizePts = stepSeries(daily, epoch, 1000);
+const maxK = Math.max(...daily.map(d => d.chars), 100_000) / 1000;
 
 const BOARD_MARK: Record<string, { glyph: string; cls: string }> = {
   done: { glyph: "✓", cls: "text-safe" },
@@ -117,7 +131,11 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                 ]}
               >
                 {cm
-                  ? `${cm.chars.toLocaleString()} of ${cm.budget.toLocaleString()}${nearCap ? " · near cap" : ""}`
+                  ? `${cm.chars.toLocaleString()} of ${cm.budget.toLocaleString()}${
+                      deltaToday
+                        ? ` · ${deltaToday > 0 ? "+" : ""}${deltaToday.toLocaleString()} today`
+                        : ""
+                    }${nearCap ? " · near cap" : ""}`
                   : "unavailable"}
               </div>
             </a>
@@ -167,6 +185,34 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
               </div>
             </a>
           </div>
+
+          {
+            daily.length > 1 && (
+              <div class="mt-6 rounded-lg border p-5">
+                <div class="flex items-baseline gap-3">
+                  <span class="font-medium">CLAUDE.md over time</span>
+                  <a
+                    href="/private/tools/telemetry"
+                    class="ml-auto shrink-0 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground"
+                  >
+                    telemetry →
+                  </a>
+                </div>
+                <LineChart
+                  title="CLAUDE.md size in thousands of characters over time, with the flat 100K budget marked"
+                  series={[{ points: sizePts }]}
+                  xDomain={[0, span + 6]}
+                  yDomain={[60, Math.ceil(maxK / 10) * 10 + 10]}
+                  xTicks={[0, 30, 60, 90, span]}
+                  yTicks={[60, 100, 140]}
+                  xLabel={`days since ${epoch}`}
+                  ySuffix="K"
+                  refLines={[{ y: 100, label: "budget" }]}
+                  height={200}
+                />
+              </div>
+            )
+          }
 
           {
             activeBoards.map(b => (
