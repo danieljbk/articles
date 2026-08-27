@@ -2,7 +2,7 @@
 /**
  * Exposure assessment for a private article.
  *
- * Sits above the article and reads as a document header, not a widget. Two
+ * Sits above the article and reads as a document header, not a widget. Three
  * design rules govern it:
  *
  *   1. The verdict leads. An earlier version listed every threat first and put
@@ -11,11 +11,19 @@
  *      headline; threats are the reasoning behind it.
  *   2. Unconditional verdicts are stated, not templated. Rendering "ALWAYS →
  *      never publish" forced a plain judgement through a conditional shape.
+ *   3. One spine. Every row in the panel — each rule, the otherwise, each
+ *      threat — hangs off a single fixed label column. An earlier version set
+ *      the labels inline, so "IF" and "OTHERWISE" were different widths and
+ *      the two clauses you are meant to read against each other started at
+ *      different places. The condition and its consequence stacked, rather
+ *      than run together with an em dash and a weight change mid-sentence.
  *
  * Colour is semantic and traffic-light: green means no action needed, amber
  * means think before acting, red means stop. It is never decorative, and the
  * severity word is always printed alongside it so the signal never depends on
- * colour perception alone.
+ * colour perception alone. The same mapping drives the header, the border and
+ * each threat, so a severity never renders one colour in the summary and
+ * another in the row it summarises.
  */
 interface Threat {
   category: string;
@@ -41,9 +49,6 @@ const overall = (["none", "low", "moderate", "high"] as const)[worst];
 const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const conditional = verdict.rules.length > 0;
 
-// Traffic-light mapping. none/low: nothing to weigh. moderate: weigh it.
-// high: stop. Applied to the rule, the header, and each threat so the panel
-// reads at a glance before any of it is read as text.
 const TONE = {
   none: { text: "text-safe", border: "border-safe/60" },
   low: { text: "text-safe", border: "border-safe/60" },
@@ -51,84 +56,85 @@ const TONE = {
   high: { text: "text-destructive", border: "border-destructive/70" },
 } as const;
 const tone = TONE[overall];
+
+// The spine. Declared once because the whole point is that every row shares
+// it — two copies would drift apart, which is the defect this replaced.
+// 4.5rem clears "OTHERWISE", the widest label the panel can produce.
+const ROW = "flex items-baseline gap-4";
+const LABEL = "w-[4.5rem] shrink-0 font-mono text-[0.7rem] uppercase tracking-[0.14em]";
 ---
 
 <aside
   aria-label="Exposure assessment"
   data-print-hide
-  class:list={[
-    "mb-14 border-l-2 pl-5",
-    tone.border,
-  ]}
+  class:list={["mb-14 border-l-2 pl-5", tone.border]}
 >
-  <div class="flex items-baseline gap-2.5">
-    <p class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
-      If published
-    </p>
-    <span
-      class:list={["font-mono text-[0.7rem] uppercase tracking-[0.14em]", tone.text]}
-    >
-      &middot; {overall === "none" ? "no risk" : `${overall} risk`}
-    </span>
-  </div>
+  <p class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
+    If published <span class="text-muted-foreground/40">&middot;</span>
+    <span class:list={[tone.text]}>{overall === "none" ? "no risk" : `${overall} risk`}</span>
+  </p>
 
-  {/* The answer, first. */}
+  {/* The answer, first. Condition quiet, consequence loud, stacked so the
+      break between them is a line break rather than a mid-sentence dash. */}
   {
     conditional ? (
-      <dl class="mt-3 space-y-1.5">
+      <dl class="mt-4 space-y-4">
         {verdict.rules.map(r => (
-          <div class="text-[1.05rem] leading-snug">
-            <dt class="inline font-mono text-[0.7rem] uppercase tracking-wider text-muted-foreground">
-              If&nbsp;
-            </dt>
-            <dd class="inline text-muted-foreground">
-              {r.if} — <span class="font-medium text-foreground">{r.then}</span>
+          <div class={ROW}>
+            <dt class:list={[LABEL, "text-muted-foreground"]}>If</dt>
+            <dd class="min-w-0">
+              <span class="block text-[0.95rem] leading-snug text-muted-foreground">{r.if}</span>
+              <span class="mt-0.5 block text-[1.05rem] font-medium leading-snug text-foreground">
+                {r.then}
+              </span>
             </dd>
           </div>
         ))}
-        <div class="text-[1.05rem] leading-snug">
-          <dt class="inline font-mono text-[0.7rem] uppercase tracking-wider text-muted-foreground">
-            Otherwise&nbsp;
-          </dt>
-          <dd class="inline font-medium text-foreground">{verdict.otherwise}</dd>
+        <div class={ROW}>
+          <dt class:list={[LABEL, "text-muted-foreground"]}>Otherwise</dt>
+          <dd class="min-w-0 text-[1.05rem] font-medium leading-snug text-foreground">
+            {verdict.otherwise}
+          </dd>
         </div>
       </dl>
     ) : (
-      <p class="mt-2 text-[1.35rem] font-semibold leading-tight tracking-tight text-foreground">
-        {sentence(verdict.otherwise)}.
-      </p>
+      <div class:list={["mt-4", ROW]}>
+        <span class={LABEL} aria-hidden="true" />
+        <p class="min-w-0 text-[1.2rem] font-semibold leading-snug tracking-tight text-foreground">
+          {sentence(verdict.otherwise)}.
+        </p>
+      </div>
     )
   }
 
-  {/* The reasoning, second and quieter. */}
-  {
-    threats.length === 0 ? (
-      <p class="mt-4 text-sm text-safe">No threats identified.</p>
+  {/* The reasoning, second and quieter. Severity takes the label column, so
+      it is a column you can read down rather than a word trailing off the end
+      of a title of unpredictable length. */}
+  <div class="mt-5 border-t border-border pt-5">
+    {threats.length === 0 ? (
+      <div class={ROW}>
+        <span class={LABEL} aria-hidden="true" />
+        <p class="min-w-0 text-[0.95rem] text-safe">No threats identified.</p>
+      </div>
     ) : (
-      <ol class="mt-5 space-y-3.5">
+      <ol class="space-y-4">
         {threats.map(t => (
-          <li>
-            <p class="text-[0.9rem] leading-snug">
-              <span class="font-mono text-[0.7rem] uppercase tracking-wider text-muted-foreground">
-                {t.category}
-              </span>
-              <span class="mx-1.5 text-muted-foreground/40">/</span>
-              <span class="font-medium text-foreground">{t.threat}</span>
-              <span
-                class:list={[
-                  "ml-1.5 font-mono text-[0.7rem] uppercase tracking-wider",
-                  t.severity === "high" ? "text-destructive" : "text-muted-foreground/70",
-                ]}
-              >
-                {t.severity}
-              </span>
-            </p>
-            <p class="mt-0.5 text-[0.875rem] leading-relaxed text-muted-foreground">
-              {t.detail}
-            </p>
+          <li class={ROW}>
+            <span class:list={[LABEL, TONE[t.severity].text]}>{t.severity}</span>
+            <div class="min-w-0">
+              <p class="text-[0.95rem] leading-snug">
+                <span class="font-medium text-foreground">{t.threat}</span>
+                <span class="ml-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground/60">
+                  {t.category}
+                </span>
+              </p>
+              <p class="mt-1 text-[0.875rem] leading-relaxed text-muted-foreground">
+                {t.detail}
+              </p>
+            </div>
           </li>
         ))}
       </ol>
-    )
-  }
+    )}
+  </div>
 </aside>
