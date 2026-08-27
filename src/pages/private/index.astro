@@ -54,16 +54,15 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
   <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
     <header class="mb-14">
       <div class="flex items-center gap-3">
-        <h1 class="text-3xl font-semibold tracking-tight">private</h1>
+        <h1 class="text-3xl font-semibold tracking-tight">dashboard</h1>
         <span class="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground/70">
           local-only
         </span>
       </div>
       <p class="mt-3 max-w-md text-balance text-muted-foreground">
-        Articles in <code class="rounded bg-secondary px-1 font-mono text-xs"
-          >../articles-private/</code
-        >, grouped by the conversation they were written in. Visible only when
-        the site is run locally.
+        The tool suite: live displays to check at any time, then the private
+        article archive grouped by the conversation each piece was written in.
+        Visible only when the site is run locally.
       </p>
     </header>
 
@@ -76,6 +75,39 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
             </span>
           </div>
           <ul class="divide-y divide-border">
+            <li>
+              <a
+                href="/private/tools/sessions"
+                class="block py-3 transition-colors hover:text-foreground"
+              >
+                <span class="font-medium">Session boards</span>
+                <span class="ml-3 text-sm text-muted-foreground">
+                  live per-session to-do — what's in flight, what waits on you
+                </span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/private/tools/rebuild-diff"
+                class="block py-3 transition-colors hover:text-foreground"
+              >
+                <span class="font-medium">Rebuild diff</span>
+                <span class="ml-3 text-sm text-muted-foreground">
+                  every CLAUDE.md change as a word-diff; amber items await your ruling
+                </span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/private/tools/telemetry"
+                class="block py-3 transition-colors hover:text-foreground"
+              >
+                <span class="font-medium">Session telemetry</span>
+                <span class="ml-3 text-sm text-muted-foreground">
+                  sentiment, topics, and rulebook version per conversation
+                </span>
+              </a>
+            </li>
             <li>
               <a
                 href="/private/tools/claude-md"

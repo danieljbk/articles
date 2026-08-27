@@ -13,6 +13,8 @@ import { join } from "node:path";
 const TOOLS: Record<string, { script: string; out: string }> = {
   "claude-md": { script: "render.py", out: "CLAUDE.html" },
   "rebuild-diff": { script: "render_rebuild_diff.py", out: "rebuild-diff.html" },
+  "sessions": { script: "render_sessions.py", out: "sessions.html" },
+  "telemetry": { script: "render_telemetry.py", out: "telemetry.html" },
 };
 
 export const getStaticPaths: GetStaticPaths = () => {
