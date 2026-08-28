@@ -8,6 +8,8 @@ import { readReports, suiteEnabled } from "@/utils/suite";
 
 const reports = readReports();
 const awaiting = reports.filter(r => r.awaiting);
+const cutoff = new Date(Date.now() - 7 * 86400e3).toISOString().slice(0, 10);
+const recent = reports.filter(r => !r.awaiting && r.date >= cutoff);
 const MARK: Record<string, { glyph: string; cls: string }> = {
   open: { glyph: "◆", cls: "text-caution" },
   closed: { glyph: "✓", cls: "text-safe" },
@@ -50,6 +52,19 @@ const SERIES: { key: "anomalies" | "decisions"; label: string; blurb: string }[]
                 awaiting his word · {awaiting.length}
               </h2>
               {awaiting.map(r => (
+                <p class="mb-1 flex gap-3 text-sm">
+                  <span class="shrink-0 font-mono text-xs text-muted-foreground">{r.date}</span>
+                  <span>{r.title}</span>
+                </p>
+              ))}
+            </section>
+          )}
+          {recent.length > 0 && (
+            <section class="mb-8 rounded-lg border p-6">
+              <h2 class="mb-3 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+                landed this week · {recent.length}
+              </h2>
+              {recent.map(r => (
                 <p class="mb-1 flex gap-3 text-sm">
                   <span class="shrink-0 font-mono text-xs text-muted-foreground">{r.date}</span>
                   <span>{r.title}</span>
