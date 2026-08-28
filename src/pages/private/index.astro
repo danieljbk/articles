@@ -4,6 +4,7 @@ import Layout from "@/layouts/Layout.astro";
 import ArticleRow from "@/components/ArticleRow.astro";
 import { splitPrivateId } from "@/utils/slug";
 import LineChart from "@components/LineChart.astro";
+import type { BoardItem } from "@/utils/suite";
 import {
   breakTickLabels,
   claudeMdStats,
@@ -22,6 +23,23 @@ const diff = rebuildDiffStats();
 const boards = readBoards();
 const telemetry = readTelemetry();
 const activeBoards = boards.filter(b => b.status === "active");
+
+// Mission control separates what awaits the decider from what is merely
+// running, so those never share a column here. Board items are written as full
+// paragraphs by the sessions that own them, so each shows as one clamped line
+// with the prose one level down on the sessions route, which is where the
+// detail belongs.
+type FlatItem = { state: BoardItem["state"]; text: string; board: string };
+const flatItems: FlatItem[] = activeBoards.flatMap(b =>
+  b.items.map(i => ({ state: i.state, text: i.text, board: b.title }))
+);
+const COLUMNS = [
+  { key: "waits" as const, label: "awaiting your ruling" },
+  { key: "doing" as const, label: "in flight" },
+  { key: "todo" as const, label: "queued" },
+].map(c => ({ ...c, items: flatItems.filter(i => i.state === c.key) }));
+const doneCount = flatItems.filter(i => i.state === "done").length;
+const COLUMN_CAP = 6;
 const openItems = activeBoards.reduce((n, b) => n + b.open, 0);
 const lastTel = telemetry[0];
 // Against the target, not the hard stop: the target is the number a version
@@ -223,11 +241,11 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 
           {
             daily.length > 1 && (
-              <div class="col-span-2 rounded-lg border p-5 lg:col-span-8">
+              <div class="col-span-2 rounded-lg border p-5 lg:col-span-12">
                 <div class="flex items-baseline gap-3">
                   <span class="font-medium">CLAUDE.md over time</span>
                   <span class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-                    quiet gaps collapsed
+                    characters per change-day · quiet gaps collapsed
                   </span>
                   {derivedStale && (
                     <span class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-caution">
@@ -242,7 +260,7 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                   </a>
                 </div>
                 <LineChart
-                  title="CLAUDE.md size in thousands of characters per change-day, quiet gaps collapsed, with the flat 100K budget marked"
+                  title="CLAUDE.md size in thousands of characters per change-day, quiet gaps collapsed"
                   series={[{ points: sizePts }]}
                   xDomain={[0, sizeSpan + 1]}
                   yDomain={[60, Math.ceil(maxK / 10) * 10 + 10]}
@@ -250,56 +268,78 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                   xBreaks={sizeBreaks}
                   yTicks={[60, 100, 140]}
                   ySuffix="K"
-                  refLines={[{ y: 100, label: "budget" }]}
-                  height={230}
+                  height={240}
                 />
               </div>
             )
           }
 
-          <div
-            class:list={[
-              "col-span-2 space-y-3",
-              daily.length > 1 ? "lg:col-span-4" : "lg:col-span-12",
-            ]}
-          >
-            {activeBoards.map(b => (
-              <div class="rounded-lg border border-caution/50 p-5">
-                <div class="flex items-start justify-between gap-3">
-                  <span class="min-w-0 flex-1 font-medium">{b.title}</span>
+          {
+            activeBoards.length > 0 && (
+              <div class="col-span-2 rounded-lg border p-5 lg:col-span-12">
+                <div class="mb-4 flex items-baseline gap-3">
+                  <span class="font-medium">Session board</span>
+                  <span class="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+                    {activeBoards.length} active · {doneCount} done
+                  </span>
                   <a
                     href="/private/tools/sessions"
-                    class="shrink-0 pt-1 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-caution"
+                    class="ml-auto shrink-0 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground"
                   >
-                    live board →
+                    full boards →
                   </a>
                 </div>
-                <ul class="mt-3 space-y-1">
-                  {b.items
-                    .filter(i => i.state !== "done")
-                    .map(i => (
-                      <li class="flex gap-3 text-sm">
-                        <span
-                          class:list={["w-4 shrink-0 text-center font-mono", BOARD_MARK[i.state].cls]}
-                        >
-                          {BOARD_MARK[i.state].glyph}
-                        </span>
-                        <span class:list={[i.state === "waits" && "text-caution"]}>
-                          {i.text}
-                        </span>
-                      </li>
-                    ))}
-                  <li class="flex gap-3 text-sm text-muted-foreground">
-                    <span class="w-4 shrink-0 text-center font-mono text-safe">✓</span>
-                    <span>
-                      {b.items.filter(i => i.state === "done").length} done — full
-                      list on the board
-                    </span>
-                  </li>
-                </ul>
+                <div class="grid gap-x-8 gap-y-6 md:grid-cols-3">
+                  {COLUMNS.map(col => (
+                    <div>
+                      <div
+                        class:list={[
+                          "flex items-baseline gap-2 border-b pb-1.5 font-mono text-[0.65rem] uppercase tracking-[0.12em]",
+                          col.key === "waits" ? "border-caution/40 text-caution" : "text-muted-foreground",
+                        ]}
+                      >
+                        <span>{col.label}</span>
+                        <span class="ml-auto tabular-nums">{col.items.length}</span>
+                      </div>
+                      {col.items.length === 0 ? (
+                        <p class="mt-2.5 text-sm text-muted-foreground/60">none</p>
+                      ) : (
+                        <ul class="mt-2.5 space-y-1.5">
+                          {col.items.slice(0, COLUMN_CAP).map(i => (
+                            <li class="flex gap-2 text-sm">
+                              <span
+                                class:list={[
+                                  "shrink-0 font-mono",
+                                  BOARD_MARK[i.state].cls,
+                                ]}
+                              >
+                                {BOARD_MARK[i.state].glyph}
+                              </span>
+                              <span
+                                title={i.text}
+                                class:list={[
+                                  "line-clamp-1",
+                                  col.key === "waits" ? "text-caution" : "text-muted-foreground",
+                                ]}
+                              >
+                                {i.text}
+                              </span>
+                            </li>
+                          ))}
+                          {col.items.length > COLUMN_CAP && (
+                            <li class="pl-6 font-mono text-xs text-muted-foreground/70">
+                              +{col.items.length - COLUMN_CAP} more
+                            </li>
+                          )}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
+            )
+          }
+
         </section>
       )
     }
